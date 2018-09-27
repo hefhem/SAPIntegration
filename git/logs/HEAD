@@ -1,0 +1,18 @@
+0000000000000000000000000000000000000000 74564061765d6c1b92143f2645ff634c3ba8e3f5 hefhem <hefhem.ng@gmail.com> 1526676372 +0100	commit (initial): initial commit
+74564061765d6c1b92143f2645ff634c3ba8e3f5 74564061765d6c1b92143f2645ff634c3ba8e3f5 hefhem <hefhem.ng@gmail.com> 1526676700 +0100	checkout: moving from master to IS
+74564061765d6c1b92143f2645ff634c3ba8e3f5 ca9d09446ccc720828243a8b11b76735dc904294 hefhem <hefhem.ng@gmail.com> 1526681745 +0100	commit: First Checkin
+ca9d09446ccc720828243a8b11b76735dc904294 a70f3af769c9f6e9b355c4c6d49ba9c25f3a7c68 hefhem <hefhem.ng@gmail.com> 1526745489 +0100	commit: Working Version
+a70f3af769c9f6e9b355c4c6d49ba9c25f3a7c68 d9064032b8b2616e900eafde0574da6e9d4f0e3e hefhem <hefhem.ng@gmail.com> 1526925178 +0100	commit: Changes21052018_1852
+d9064032b8b2616e900eafde0574da6e9d4f0e3e a1f8406e6a393d97ed8863908ea8ab5e1d4fd2ba hefhem <hefhem.ng@gmail.com> 1527112181 +0100	commit: Changes23052018_2249
+a1f8406e6a393d97ed8863908ea8ab5e1d4fd2ba 0a8d8e4f465015751ac7b28e4fed49445e319ece hefhem <hefhem.ng@gmail.com> 1527364566 +0100	commit: Changes_26052018_2055
+0a8d8e4f465015751ac7b28e4fed49445e319ece 86057b337ca1b70609b44dc1acfe1ffae02bacf2 hefhem <hefhem.ng@gmail.com> 1527443497 +0100	commit: Change_27052018_1851
+86057b337ca1b70609b44dc1acfe1ffae02bacf2 d640168d40517ae5d11ff18f53bf1a3bfe65deb7 hefhem <hefhem.ng@gmail.com> 1527530587 +0100	commit: Changes_28052018_1903
+d640168d40517ae5d11ff18f53bf1a3bfe65deb7 d640168d40517ae5d11ff18f53bf1a3bfe65deb7 hefhem <hefhem.ng@gmail.com> 1533097027 +0100	checkout: moving from IS to SAPIntegration
+d640168d40517ae5d11ff18f53bf1a3bfe65deb7 a40c9f0e30147abf1e93f92e317edf0dc805edf1 hefhem <hefhem.ng@gmail.com> 1535638303 +0100	commit: SAPIntegration First Commit
+a40c9f0e30147abf1e93f92e317edf0dc805edf1 0607da680b34a47b7b61d96af36f66413a9c41cc hefhem <hefhem.ng@gmail.com> 1536079816 +0100	commit: Production Receipt modified
+0607da680b34a47b7b61d96af36f66413a9c41cc f45465c0f465efbed6d132a20916d489f74010f9 hefhem <hefhem.ng@gmail.com> 1536921363 +0100	commit: After completion of Receipt from production
+f45465c0f465efbed6d132a20916d489f74010f9 cf0e597f152538922fc562169bba3afb4d7c4106 hefhem <hefhem.ng@gmail.com> 1537635569 +0100	commit: AR Delivery Partial
+cf0e597f152538922fc562169bba3afb4d7c4106 f7226a3882e76807241d6f709d81620419677289 hefhem <hefhem.ng@gmail.com> 1537638198 +0100	commit: AR Delivery Finalized
+f7226a3882e76807241d6f709d81620419677289 a392c5ad6a1144438bf9502e8f978716b138e2e1 hefhem <hefhem.ng@gmail.com> 1537876501 +0100	commit: AR-Delivery Modifications
+a392c5ad6a1144438bf9502e8f978716b138e2e1 b64fa74738049b78d328279511c2388aaca54eae hefhem <hefhem.ng@gmail.com> 1537962630 +0100	commit: ObjectID added to PostToSAP
+b64fa74738049b78d328279511c2388aaca54eae 9cb90aa6a8dffa278e73f42ed577d7d6bffa8903 hefhem <hefhem.ng@gmail.com> 1538055155 +0100	commit: Latest changes

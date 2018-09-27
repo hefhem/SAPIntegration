@@ -1,0 +1,292 @@
+<app-navbar></app-navbar>
+<div class="container">
+  <div class="div-per">
+    <h2 class="bg-secondary text-white h-per">
+      A/R DELIVERY 
+    </h2>
+  </div>
+  <div class="form-row text-center" *ngIf="print">
+      <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <!-- <button class="btn btn-primary" (click)="openModal(packingList)">View Packing List</button> -->
+      &nbsp;
+      <button class="btn btn-secondary" (click)="resetForm()">New Record</button>
+      &nbsp;
+      <button [hidden]="this.auth.userRole.ApprovePR != 'Y'" class="btn btn-info" (click)="approveDelivery()" *ngIf="!deliveryMaster.IsApproved">Approve</button>
+    </div>
+    <div class="col-md-3"></div>
+    
+  </div>
+  <hr/>
+  <div class="row">
+    <div class="col-md-12">
+      <form class="inv-form" #deliveryForm="ngForm">
+        <div class="form-row">
+          <input type="hidden" name="DeliveryMasterID" #DeliveryMasterID="ngModel" [(ngModel)]="deliveryMaster.DeliveryMasterID" value="0">
+          <div class="form-group col-md-2">
+            <label for="SOrderNo">
+              <strong>Order Number: </strong>
+            </label>
+            <br/>
+            <span *ngIf="print">{{deliveryMaster.SOrderNo}}</span>
+            <div class="input-group" *ngIf="!print">
+              <input (blur)="getOrderDetails()" class="form-control" name="SOrderNo" #SOrderNo="ngModel" [(ngModel)]="deliveryMaster.SOrderNo" placeholder="e.g 20180101" autofocus
+                required>
+              <div class="input-group-append">
+                <button [disabled]="SOrderNo.invalid" type="button" class="btn btn-block btn-info" (click)="getOrderDetails()" title="Get record">
+                  <i class="fa fa-sync {{spincls}}"></i>
+                </button>
+              </div>
+            </div>
+            <!-- <div class="validation-error" *ngIf="CustomerName.invalid && CustomerName.touched">This field is required</div> -->
+          </div>
+          <div class="form-group col-md-2">
+            <label for="docDate">
+              <strong>Date:</strong>
+            </label>
+            <br/>
+            <span *ngIf="print">{{deliveryMaster.DocDate | date: 'yyyy-MM-dd'}}</span>
+            <div class="input-group" *ngIf="!print">
+              <input readonly class="form-control" placeholder="yyyy-mm-dd" name="docDate" [(ngModel)]="docDate" ngbDatepicker #d="ngbDatepicker"
+                (change)="setDate()" required>
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button">
+                  <i class="far fa-calendar"></i>
+                </button>
+              </div>
+              <!-- {{currentDate | date: 'yyyy-MM-dd'}} -->
+              <!-- {{prodMaster.ProdDate}} {{prodDate | json}} -->
+            </div>
+          </div>
+          <div class="form-group col-md-4"></div>
+          <div class="form-group form-group col-md-2">
+          </div>
+          <div class="form-group col-md-2">
+            <label for="IsPosted">
+              <strong>Posted:</strong>
+            </label>
+            <br/>
+            <!-- <input disabled class="form-control" name="IsPosted" #IsPosted="ngModel" [(ngModel)]="prodMaster.IsPosted"> -->
+            {{deliveryMaster.IsPosted ? 'Yes' : 'No'}}
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-8">
+            <label for="CardName">
+              <strong>Customer Name:</strong>
+            </label>
+            <!-- <br/> -->
+            <!-- <input class="form-control" name="CardName" #CardName="ngModel" [(ngModel)]="prodMaster.CardName"> -->
+            <!-- <div class="validation-error" *ngIf="ItemCode.invalid && ItemCode.touched">This field is required</div> -->
+            {{deliveryMaster.CardName}}
+          </div>
+          <div class="form-group col-md-2"></div>
+          <div class="form-group col-md-2">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-info" (click)="openModal(pickList)">View Picked List</button>
+      </div>
+  </div>
+  <br/>
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-sm table-hover" width="100px">
+        <thead>
+          <td>
+              <strong>Item Code</strong>
+            </td>
+          <td>
+            <strong>Item Name</strong>
+          </td>
+          <td>
+            <strong>Quantity</strong>
+          </td>
+          <td>
+              <strong>Open Qty</strong>
+            </td>
+          <td>
+              <strong>Picked Qty</strong>
+            </td>
+          <td>
+            <strong>Action</strong>
+          </td>
+        </thead>
+        <tbody>
+          <tr *ngFor="let idt of deliveryDetails">
+              <td>
+                  {{idt.ItemNo}}
+                </td>
+            <td>
+              {{idt.ItemName}}
+            </td>
+            <td>
+              {{idt.Quantity | number: '1.2'}}
+            </td>
+            <td>
+                {{idt.OpenQty | number: '1.2'}}
+              </td>
+            <td>
+                {{idt.SelectedQty | number: '1.2'}}
+              </td>
+            <td>
+              <!-- <a class="btn btn-primary" (click)="showForEdit(idt)" >
+              <i class="fa fa-pencil-square-o"></i>
+            </a> -->
+              <a class="btn btn-success text-white" (click)="openScan(content,idt)" title="Pick items" *ngIf="!print">
+                <i class="fas fa-cubes"></i>
+              </a>
+              &nbsp;
+              <a class="btn btn-danger text-white" (click)="removeSOLine(idt)" title="Remove from list" *ngIf="!print">
+                <i class="fas fa-trash"></i>
+              </a>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <br/>
+  <div class="row">
+    <div class="form-group col-md-3">
+      <button [disabled]="saveBtn=='disabled'" [hidden]="!formValid" type="submit" class="btn btn-lg btn-block btn-success" (click)="submitDelivery()" title="Save record"
+       >
+        <i class="far fa-save"> Save</i>
+      </button>
+    </div>
+    <div class="form-group col-md-3">
+      <button [hidden]="!isPostable || deliveryMaster.IsPosted" type="button" class="btn btn-lg btn-block btn-secondary" (click)="openModalPost(saplogin,'sm')" title="Clear form">
+        <i class="fas fa-rocket"> Post to SAP</i>
+      </button>
+    </div>
+    <div class="form-group col-md-6">
+
+
+    </div>
+  </div>
+
+</div>
+<!-- <ng-template #content let-modal> -->
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Item: {{scanItem}}</h4>
+    <!-- <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button> -->
+  </div>
+  <div class="modal-body">
+    <div class="row" id="print-section">
+      <div class="col-md-12">
+        <form class="inv-form" #barcodeForm="ngForm" (ngSubmit)="onAddBarcode()" *ngIf="!print">
+          <div class="form-row">
+            <div class="col-md-3"></div>  
+            <div class="form-group col-md-6">
+              <label for="barcode">
+                <strong>Barcode:</strong>
+              </label>
+              <input type="hidden" name="ddid" [(ngModel)]="ddid"/>
+              <div class="input-group">
+                  <input class="form-control" name="barcode" [(ngModel)]="barcode" autofocus required autocomplete="off">
+                  <div class="input-group-append">
+                      <button type="submit" [disabled]="!barcodeForm.valid" class="btn btn-block btn-info" title="Add to list">
+                          <i class="fa fa-plus"></i>
+                    </button>
+                  </div>
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+          </div>
+          <div class="form-row">
+            <table class="table table-hover">
+              <thead>
+                  <td><strong>Packing No.</strong> </td>
+                  <td><strong>Quantity</strong></td>
+                  <td><strong>Action</strong></td>
+              </thead>
+              <tbody>
+                <tr *ngFor="let dt of dpb" >
+                  <td>{{dt.PackingNo}}</td>
+                  <td>{{dt.Quantity}}</td>
+                  <td><a class="btn btn-danger text-white" (click)="removeFromBarcodeList(dt)" title="Remove from list">
+                      <i class="fas fa-trash"></i>
+                    </a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" (click)="AddItemToList()">Done</button>
+  </div>
+</ng-template>
+<ng-template #pickList let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Picked Items</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row" id="print-section">
+        <div class="col-md-12">
+          <div class="form-row">
+            <table class="table table-hover">
+              <thead>
+                  <td><strong>Packing No.</strong> </td>
+                  <td><strong>Item Description</strong> </td>
+                  <td><strong>Quantity</strong></td>
+                  <td><strong>Action</strong></td>
+              </thead>
+              <tbody>
+                <tr *ngFor="let dt of deliveryPacking" >
+                  <td>{{dt.PackingNo}}</td>
+                  <td>{{dt.ItemName}}</td>
+                  <td>{{dt.Quantity}}</td>
+                  <td><a class="btn btn-danger text-white" (click)="removeFromPickList(dt)" title="Remove from list" *ngIf="!print">
+                      <i class="fas fa-trash"></i>
+                    </a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="modal.dismiss('Cross click')">Close</button>
+    </div>
+  </ng-template>
+<ng-template #saplogin let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="modal-basic-title">SAP Credentials</h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form class="inv-form" #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+    <div class="modal-body">
+      <div class="form-group">
+        <!-- <label for="AutoQty">Auto Quantity</label> -->
+        <input type="text" class="form-control" name="sapUserName" [(ngModel)]="postDel.sapUserName" placeholder="Username" required>
+
+      </div>
+      <div class="form-group">
+        <!-- <label for="AutoQty">Auto Quantity</label> -->
+        <input type="password" class="form-control" name="sapPassword" [(ngModel)]="postDel.sapPassword" placeholder="Password"
+          required>
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button [disabled]="!loginForm.valid  || this.auth.loading" class="btn btn-primary" (click)="postToSAP()">Post</button>
+    </div>
+  </form>
+</ng-template>

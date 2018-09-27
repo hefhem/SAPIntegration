@@ -1,0 +1,43 @@
+/* You can add global styles to this file, and also import other style files */
+
+form.emp-form,form.price-form,form.company-form, form.user-form{
+    background-color: #e0dede;
+    border-radius: 4px;
+    padding: 10px;
+}
+div.validation-error{
+    color: red;
+    text-align: center;
+}
+button:hover, a.btn:hover{
+    cursor: pointer;
+}
+.div-per{
+    text-align: center; 
+    margin-top: 10%;
+    background-color: #007bff;
+}
+.div-per-inv{
+    text-align: center; 
+    margin-top: 10%;
+    background-color: #fff;
+}
+.h-per {
+    border-radius: 4px; 
+    padding: 2%;
+    background-color: #76aff0!important;
+}
+.h-per-inv {
+    border-radius: 4px; 
+    padding: 2%;
+    background-color: #fff!important;
+    color: black;
+    
+}
+.ng-valid[required], .ng-valid.required  {
+    border-left: 5px solid #42A948; /* green */
+  }
+  
+  .ng-invalid:not(form)  {
+    border-left: 5px solid #a94442; /* red */
+  }

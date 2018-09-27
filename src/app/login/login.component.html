@@ -1,0 +1,17 @@
+  <form class="form-signin" #loginForm="ngForm" (ngSubmit)="doLogin()">
+    <div class="text-center">
+      <!-- <img src="../../assets/images/is_logo.png" alt="" width="200" height="200"> -->
+    </div>
+    <div class="text-center">
+      <h1 class="h3 font-weight-normal">Please sign in</h1>
+    </div>
+    <label for="UserCode" class="sr-only">User Name</label>
+    <input type="text" id="UserCode" name="UserCode" [(ngModel)]="account.UserCode" class="form-control" placeholder="User Name" required autofocus>
+    <br/>
+    <label for="UserPassword" class="sr-only">Password</label>
+    <input type="password" id="UserPassword" name="UserPassword" [(ngModel)]="account.UserPassword" class="form-control" placeholder="Password" required>
+    <button [disabled]="!loginForm.valid || disabled" class="btn btn-lg btn-primary btn-block" type="submit">{{signin}}</button>
+    <div class="text-center">
+      <p class="mt-5 mb-3 text-muted">&copy; {{ currentDate }} Hartford Green Consulting</p>
+    </div>
+  </form>

@@ -1,0 +1,44 @@
+<app-navbar></app-navbar>
+<div class="container">
+<div class="div-per">
+    <h2 class="bg-secondary text-white h-per">
+      PRODUCTION SUMMARY
+    </h2>
+</div>
+<div class="row">
+    <div class="col-md-12"><button class="btn btn-secondary" (click)="getProdSummary()">Refresh</button></div>
+    &nbsp;
+    <div class="col-md-12">
+      <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover table table-sm table-hover">
+        <thead>
+          <tr>
+            <th><strong>Order No.</strong></th>
+            <th><strong>Planned Qty</strong></th>
+            <th><strong>Produced Qty</strong></th>
+            <th><strong>Balance Qty</strong></th>
+            <th><strong>Posted Qty</strong></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let idt of prodSummary">
+            <td>
+                {{idt.DocNum}}
+              </td>
+            <td>
+              {{idt.PlannedQty | number:'1.2'}}
+            </td>
+            <td>
+              {{idt.ProducedQty | number:'1.2'}}
+            </td>
+            <td>
+                {{(idt.PlannedQty - idt.ProducedQty) < 0.0 ? 0 : idt.PlannedQty - idt.ProducedQty | number:'1.2'}}
+              </td>
+            <td>
+              {{idt.PostedQty | number:'1.2'}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  </div>
