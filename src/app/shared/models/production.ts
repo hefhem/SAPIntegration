@@ -8,6 +8,7 @@ export class ProdMaster {
     CompletedQty: number;
     TotalQty = 0;
     MachineNo: string;
+    Warehouse: string;
     CardName: string;
     PackingNo: string;
     ProdDate: Date;

@@ -68,6 +68,7 @@ export class ReceiptProdComponent implements OnInit {
   ProducedQty = 0;
   PostedQty = 0;
   BalanceQty = 0;
+  expiry: Date;
   supervisors = [];
   search = (text$: Observable<string>) =>
     text$.pipe(
@@ -274,6 +275,9 @@ export class ReceiptProdComponent implements OnInit {
     this.value = idt.BatchNo;
     this.bc_batchno = this.value;
     this.bc_weight = idt.Quantity;
+    this.expiry = new Date(this.prodMaster.ProdDate);
+    // console.log(this.prodMaster.ProdDate);
+    this.expiry.setDate(this.expiry.getDate() + 365);
   }
   openModalPost(content, sz: any = 'lg') {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: sz});
@@ -362,12 +366,13 @@ export class ReceiptProdComponent implements OnInit {
     let timestamp = '';
     const now = new Date();
 
-    timestamp = now.getFullYear().toString(); // 2011
+    timestamp = now.getFullYear().toString().substr(2, 2); // 2011
     timestamp += (now.getMonth() < 9 ? '0' : '') + now.getMonth().toString(); // JS months are 0-based, so +1 and pad with 0's
     timestamp += (now.getDate() < 10 ? '0' : '') + now.getDate().toString(); // pad with a 0
+    timestamp += this.prodMaster.MachineNo.substr(0, 2); // pad with a 0
     timestamp += (now.getHours() < 10 ? '0' : '') + now.getHours().toString();
     timestamp += (now.getMinutes() < 10 ? '0' : '') + now.getMinutes().toString();
-    timestamp += now.getMilliseconds().toString().substr(1, 2);
+    timestamp += (now.getMilliseconds() < 100 ? '0' : '') + now.getMilliseconds().toString().substr(0, 3);
     // tslint:disable-next-line:max-line-length
     // timestamp += (parseInt(now.getMilliseconds().toString().substr(1, 2)) < 10 ? '0' : '') + now.getMilliseconds().toString().substr(1, 2);
     return timestamp;

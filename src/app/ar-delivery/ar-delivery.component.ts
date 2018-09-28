@@ -323,6 +323,8 @@ export class ArDeliveryComponent implements OnInit {
             } else {
               this.toastr.warning('The scanned code does not belong to this Item');
             }
+          } else if (data.status === 'Consumed') {
+            this.toastr.error('Item with this barcode is already consumed');
           } else {
             this.toastr.error('Item with this barcode not found');
           }

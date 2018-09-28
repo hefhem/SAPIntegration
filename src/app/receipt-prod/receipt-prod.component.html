@@ -58,7 +58,7 @@
               <!-- {{prodMaster.ProdDate}} {{prodDate | json}} -->
             </div>
           </div>
-          <div class="form-group col-md-3">
+          <div class="form-group col-md-2">
               <label for="Supervisor">
                   <strong>Supervisor: </strong>
               </label>
@@ -68,6 +68,19 @@
                 <input [ngbTypeahead]="search" class="form-control" name="Supervisor" #Supervisor="ngModel" [(ngModel)]="prodMaster.Supervisor" placeholder="Supervisor's name" required>
               </div>
           </div>
+          <div class="form-group col-md-1">
+            <label for="Warehouse">
+                <strong>Warehouse: </strong>
+            </label>
+            <br/>
+            <span *ngIf="print">{{prodMaster.Warehouse}}</span>
+            <div *ngIf="!print">
+              <select name="Warehouse" #Warehouse="ngModel" [(ngModel)]="prodMaster.Warehouse" class="form-control" required>
+                <option value="FG">FG</option>
+                <option value="WIP">WIP</option>
+              </select>
+            </div>
+        </div>
           <div class="form-group col-md-1"></div>
           <div class="form-group form-group col-md-2">
             <label for="MachineNo">
@@ -298,7 +311,7 @@
             </td>
           </tr>
           <tr>
-            <td><strong>Batch No</strong><br/> {{bc_batchno}}</td>
+            <td><strong>Roll No</strong><br/> {{bc_batchno}}</td>
             <td><strong>Weight</strong><br/> {{bc_weight}} KGS</td>
           </tr>
           <tr>
@@ -322,6 +335,14 @@
           <tr>
             <td colspan="2">
               <strong>Note:</strong>  Goods sold in good condition can not be returned.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>Batch No:</strong>  {{prodMaster.DocNum}}
+            </td>
+            <td>
+              <strong>BBD:</strong>  {{expiry | date: 'dd/MM/yyyy' }}
             </td>
           </tr>
         </table>
@@ -388,8 +409,7 @@
             </td>
         </tr>
         <tr style="font-size:25pt;">
-          <td>Customer:</td>
-          <td colspan="2"><strong>{{prodMaster.CardName}}</strong></td>
+          <td colspan="3">Customer: <strong>{{prodMaster.CardName}}</strong></td>
           <td>Packing No.</td>
           <td><strong>{{prodMaster.PackingNo}}</strong></td>
         </tr>
@@ -399,9 +419,14 @@
             <td><strong>Date:</strong></td>
             <td colspan="2">{{prodMaster.ProdDate | date: 'dd/MM/yyyy'}}</td>
           </tr>
+          <tr>
+            <td colspan="5" style="text-align:center; font-size:30pt;"><strong>
+              {{prodMaster.ItemName}}
+            </strong></td>
+        </tr>
         <tr>
-            <td><strong>BATCH NO.</strong> </td>
-            <td><strong>PRODUCT</strong></td>
+            <td colspan="2"><strong>BATCH NO.</strong> </td>
+            <!-- <td><strong>PRODUCT</strong></td> -->
             <td><strong>UOM</strong></td>
             <td><strong>UNIT</strong></td>
             <td><strong>WEIGHT/(KGS)</strong></td>
@@ -414,9 +439,9 @@
             <td>{{prodDetails.length}}</td>
             <td>{{prodMaster.TotalQty}}</td>
         </tr>
-        <tr *ngFor="let idt of prodDetails">
-            <td>{{idt.BatchNo}}</td>
-            <td>{{prodMaster.ItemName}}</td>
+        <tr style="font-size:20pt;" *ngFor="let idt of prodDetails">
+            <td colspan="2">{{idt.BatchNo}}</td>
+            <!-- <td>{{prodMaster.ItemName}}</td> -->
             <td>KGS</td>
             <td>1</td>
             <td>{{idt.Quantity}}</td>
