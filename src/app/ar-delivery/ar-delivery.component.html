@@ -12,7 +12,7 @@
       &nbsp;
       <button class="btn btn-secondary" (click)="resetForm()">New Record</button>
       &nbsp;
-      <button [hidden]="this.auth.userRole.ApprovePR != 'Y'" class="btn btn-info" (click)="approveDelivery()" *ngIf="!deliveryMaster.IsApproved">Approve</button>
+      <button [hidden]="this.auth.userRole.ApproveDV != 'Y'" class="btn btn-info" (click)="approveDelivery()" *ngIf="!deliveryMaster.IsApproved">Approve</button>
     </div>
     <div class="col-md-3"></div>
     
@@ -89,7 +89,7 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-        <button class="btn btn-info" (click)="openModal(pickList)">View Picked List</button>
+        <button class="btn btn-info" (click)="openModal(pickList)">View Pick List</button>
       </div>
   </div>
   <br/>
@@ -229,7 +229,7 @@
 </ng-template>
 <ng-template #pickList let-modal>
     <div class="modal-header">
-      <h4 class="modal-title" id="modal-basic-title">Picked Items</h4>
+      <h4 class="modal-title" id="modal-basic-title">Pick List</h4>
       <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
         <span aria-hidden="true">&times;</span>
       </button>

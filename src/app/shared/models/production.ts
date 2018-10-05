@@ -28,6 +28,7 @@ export class ProdDetail {
     BatchNo: string;
     Quantity: number;
     IsPosted: boolean;
+    IsRedressed = 'N';
 }
 
 export class SAPCompany {
@@ -43,7 +44,7 @@ export class SAPCompany {
     SQLServerVersion: string;
 }
 
-export class PostProductionReceipt {
+export class PostToSAP {
     ObjectID: number;
     sapUserName: string;
     sapPassword: string;
@@ -61,56 +62,36 @@ export class ProductionOrderModel {
     CompltQty: number;
     MachineNo: string;
   }
-/*
-public int ProdMasterID { get; set; }
-public string sapUserName { get; set; }
-public string sapPassword { get; set; }
- */
 
-/*
-public class SAPCompany {
-        [Key]
-        public int SAPCompanyID { get; set; }
-        [Required]
-        [StringLength(50)]
-        public string SAPLicenseServerName { get; set; }
-        [Required]
-        [StringLength(50)]
-        public string SAPdbName { get; set; }
-        [Required]
-        [StringLength(50)]
-        public string SAPdbUserName { get; set; }
-        [Required]
-        [StringLength(100)]
-        public string SAPdbPassWord { get; set; }
-        [Required]
-        [StringLength(50)]
-        public string SQLServerVersion { get; set; }
-    }
-    public class ProdMaster {
-        public int ProdMasterID { get; set; }
-        public string DocEntry { get; set; }
-        public string DocNum { get; set; }
-        public string ItemCode { get; set; }
-        public string ItemName { get; set; }
-        public decimal PlannedQty { get; set; }
-        public string MachineNo { get; set; }
-        public string CardCode { get; set; }
-        public string CardName { get; set; }
-        public string PackingNo { get; set; }
-        public DateTime ProdDate { get; set; }
-        public DateTime PostDate { get; set; }
-        public bool IsApproved { get; set; }
-        public int CreatedBy { get; set; }
-        public DateTime DateCreated { get; set; }
-    }
+  export class GoodsReceiptMaster {
+    GoodsReceiptMasterID = 0;
+    DocEntry = '';
+    DocNum = '';
+    ItemCode = '';
+    ItemName = '';
+    TotalQty = 0;
+    MachineNo = '';
+    ProdDate: Date;
+    Supervisor: '';
+    IsPosted = false;
+    PostDate: Date;
+    PostedBy = '';
+    IsApproved = false;
+    ApprovedBy = '';
+    DateApproved: Date;
+    CreatedBy = '';
+    DateCreated: Date;
+  }
+  export class GoodsReceiptDetail {
+    GoodsReceiptDetailID = 0;
+    Line_No = 0;
+    GoodsReceiptMasterID = 0;
+    ItemCode = '';
+    ItemName = '';
+    BatchNo = '';
+    Quantity = 0;
+    Warehouse = '';
+    IsPosted = false;
+  }
 
-    public class ProdDetail {
-        public int ProdDetailID { get; set; }
-        public int Line_No { get; set; }
-        public int ProdMasterID { get; set; }
-        public string BatchNo { get; set; }
-        public decimal Quantity { get; set; }
-        public DateTime PostDate { get; set; }
-    }
-*/
+

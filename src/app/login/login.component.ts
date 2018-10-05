@@ -29,6 +29,7 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['']);
         return;
     }
+    // this.auth.setAPIUrl();
   }
 
   doLogin() {

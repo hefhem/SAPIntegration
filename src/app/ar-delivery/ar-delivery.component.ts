@@ -132,6 +132,7 @@ export class ArDeliveryComponent implements OnInit {
     this.deliveryDetail = new DeliveryDetail();
     this.deliveryDetails = [];
     this.postDel = new PostDelivery();
+    this.deliveryPacking = [];
     this.formValid = false;
     this.isPostable = false;
     this.print = false;
@@ -309,7 +310,7 @@ export class ArDeliveryComponent implements OnInit {
     this.auth.loading = true;
     this.handleAPI.get('api/GetPackingNoDetails/' + this.barcode)
         .subscribe( (data: any) => {
-          // console.log(data);
+          console.log(data);
           if (data.Status === 'Found') {
             if (this.scanItemCode === data.ItemCode  ) {
               const dt = {

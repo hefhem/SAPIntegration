@@ -1,0 +1,385 @@
+<app-navbar></app-navbar>
+<div class="container">
+  <div class="div-per">
+    <h2 class="bg-secondary text-white h-per">
+      GOODS RECEIPT
+    </h2>
+  </div>
+  <div class="form-row text-center" *ngIf="print">
+      <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <!-- <button class="btn btn-primary" (click)="openModal(packingList)">View Packing List</button>
+      &nbsp; -->
+      <button class="btn btn-secondary" (click)="resetForm()">New Record</button>
+      &nbsp;
+      <button [hidden]="this.auth.userRole.ApproveGR != 'Y'" class="btn btn-info" (click)="approvePR()" *ngIf="!goodsReceiptMaster.IsApproved">Approve</button>
+    </div>
+    <div class="col-md-3"></div>
+    
+  </div>
+  <hr/>
+  <div class="row">
+    <div class="col-md-12">
+      <form class="inv-form" #receiptForm="ngForm" (ngSubmit)="onSubmit(receiptForm)">
+        <div class="form-row">
+          <input type="hidden" name="GoodsReceiptMasterID" #GoodsReceiptMasterID="ngModel" [(ngModel)]="goodsReceiptMaster.GoodsReceiptMasterID" value="0">
+          <div class="form-group col-md-2">
+            <label for="DocNum">
+              <strong>Order Number: </strong>
+            </label>
+            <br/>
+            <span *ngIf="print">{{goodsReceiptMaster.DocNum}}</span>
+            <div class="input-group" *ngIf="!print">
+              <input (blur)="getOrderDetails()" class="form-control" name="DocNum" #DocNum="ngModel" [(ngModel)]="goodsReceiptMaster.DocNum" placeholder="e.g 20180101" autofocus
+                required>
+              <div class="input-group-append">
+                <button [disabled]="DocNum.invalid" type="button" class="btn btn-block btn-info" (click)="getOrderDetails()" title="Get record">
+                  <i class="fa fa-sync {{spincls}}"></i>
+                </button>
+              </div>
+            </div>
+            <!-- <div class="validation-error" *ngIf="CustomerName.invalid && CustomerName.touched">This field is required</div> -->
+          </div>
+          <div class="form-group col-md-2">
+            <label for="ProdDate">
+              <strong>Date:</strong>
+            </label>
+            <br/>
+            <span *ngIf="print">{{goodsReceiptMaster.ProdDate | date: 'yyyy-MM-dd'}}</span>
+            <div class="input-group" *ngIf="!print">
+              <input readonly class="form-control" placeholder="yyyy-mm-dd" name="ProdDate" [(ngModel)]="prodDate" ngbDatepicker #d="ngbDatepicker"
+                (change)="setDate()" required>
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button">
+                  <i class="far fa-calendar"></i>
+                </button>
+              </div>
+              <!-- {{currentDate | date: 'yyyy-MM-dd'}} -->
+              <!-- {{goodsReceiptMaster.ProdDate}} {{prodDate | json}} -->
+            </div>
+          </div>
+          <div class="form-group col-md-2">
+              <label for="Supervisor">
+                  <strong>Supervisor: </strong>
+              </label>
+              <br/>
+              <span *ngIf="print">{{goodsReceiptMaster.Supervisor}}</span>
+              <div *ngIf="!print">
+                <input [ngbTypeahead]="search" class="form-control" name="Supervisor" #Supervisor="ngModel" [(ngModel)]="goodsReceiptMaster.Supervisor" placeholder="Supervisor's name" required>
+              </div>
+          </div>
+          <div class="form-group col-md-1">
+           
+          </div>
+          <div class="form-group col-md-1"></div>
+          <div class="form-group form-group col-md-2">
+            <label for="MachineNo">
+              <strong>Machine No.:</strong>
+            </label>
+            <br/>
+            <!-- <input disabled class="form-control" name="MachineNo" #MachineNo="ngModel" [(ngModel)]="goodsReceiptMaster.MachineNo"> -->
+            {{goodsReceiptMaster.MachineNo}}
+          </div>
+          <div class="form-group col-md-2">
+            <label for="IsPosted">
+              <strong>Posted:</strong>
+            </label>
+            <br/>
+            <!-- <input disabled class="form-control" name="IsPosted" #IsPosted="ngModel" [(ngModel)]="goodsReceiptMaster.IsPosted"> -->
+            {{goodsReceiptMaster.IsPosted ? 'Yes' : 'No'}}
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-2">
+            <label for="ItemCode">
+              <strong>Item Code:</strong>
+            </label>
+            <br/>
+            <!-- <input class="form-control" name="ItemCode" #ItemCode="ngModel" [(ngModel)]="goodsReceiptMaster.ItemCode"> -->
+            {{goodsReceiptMaster.ItemCode}}
+          </div>
+          <div class="form-group col-md-4">
+            <label for="ItemName">
+              <strong>Item Name:</strong>
+            </label>
+            <br/>
+            <!-- <input type="text" class="form-control" name="ItemName" #ItemName="ngModel" [(ngModel)]="goodsReceiptMaster.ItemName"> -->
+            {{goodsReceiptMaster.ItemName}}
+          </div>
+          <!-- <div class="form-group col-md-1"></div> -->
+          <div class="form-group col-md-2">
+            
+          </div>
+          <div class="form-group col-md-2" *ngIf="!print">
+            
+          </div>
+          
+          <div class="form-group col-md-2" *ngIf="!print">
+             
+          </div>
+          <div class="form-group col-md-2" *ngIf="print">
+              <label >
+                <strong>Approved:</strong>
+              </label>
+              <br/>
+              <!-- <input type="text" class="form-control" name="OpenQty" #OpenQty="ngModel" [(ngModel)]="goodsReceiptMaster.OpenQty"> -->
+              {{goodsReceiptMaster.IsApproved ? 'Yes':'No'}}
+            </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-2">
+              <label for="TotalQty">
+                <strong>Current Total Qty:</strong>
+              </label>
+              <br/>
+              <!-- <input type="text" class="form-control" name="TotalQty" #TotalQty="ngModel" [(ngModel)]="goodsReceiptMaster.TotalQty"> -->
+              {{goodsReceiptMaster.TotalQty | number: '1.2'}}
+            </div>
+          <div class="form-group col-md-4">
+            
+          </div>
+          <div class="form-group col-md-2"></div>
+          
+          <div class="form-group col-md-2" *ngIf="print">
+            
+          </div>
+          <div class="form-group col-md-2" *ngIf="!print">
+              
+          </div>
+          <div class="form-group col-md-2" *ngIf="!print">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div *ngIf="!print">
+    <hr/>
+  </div>
+  <form class="inv-form" #qtyForm="ngForm" (ngSubmit)="onAddBatch()" *ngIf="!print">
+    <div class="form-row">
+        <div class="col-md-3">
+            <ng-template #rt let-r="result" let-t="term">
+              <span>{{r.ItemCode}} - </span>
+                <ngb-highlight [result]="r.ItemName" [term]="t"></ngb-highlight>
+              </ng-template>
+              
+              <label for="typeahead-template"><strong>Search for an Item:</strong></label>
+              <div class="input-group">
+              <input id="typeahead-template" type="text" class="form-control" name="AutoItemName" [(ngModel)]="AutoItemName" [ngbTypeahead]="ItemName" [resultTemplate]="rt"
+                [inputFormatter]="formatter" required/>
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-block btn-info" (click)="getSAPItem()" title="Get record">
+                        <i class="fa fa-sync {{spincls}}"></i>
+                      </button>
+                </div>
+              </div>
+                <!-- <pre>Model: {{ AutoItemName | json }}</pre> -->
+            <!-- <label for="ItemName">
+                <strong>Item: </strong>
+            </label>
+            <br/>
+            <input [ngbTypeahead]="ItemName" class="form-control" name="AutoItemName" [(ngModel)]="AutoItemName" 
+            placeholder="Item name" required [inputFormatter]="formatter"> -->
+        </div>
+        <div class="col-md-2">
+            <label for="Warehouse">
+                <strong>Warehouse: </strong>
+            </label>
+            <br/>
+            <select name="AutoWarehouse" [(ngModel)]="AutoWarehouse" class="form-control" required>
+              <option value="FG">FG</option>
+              <option value="WIP">WIP</option>
+            </select>
+        </div>
+      <div class="form-group col-md-2">
+          <label for="AutoQty">
+              <strong>Auto Quantity</strong>
+            </label>
+          <div class="input-group">
+              <input type="number" min="0" class="form-control" name="AutoQty" [(ngModel)]="AutoQty" (keyup)="makeQtyValid()" required>
+              <div class="input-group-append">
+                  <button type="submit" [disabled]="!qtyForm.valid" class="btn btn-block btn-info" title="Add to list">
+                      <i class="fa fa-plus"></i>
+                    </button>
+              </div>
+            </div>
+        </div>
+      <div class="col-md-5"></div>
+    </div>
+  </form>
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-sm table-hover" width="100px">
+        <thead>
+          <td>
+              <strong>Item Code</strong>
+          </td>
+          <td>
+            <strong>Item Name</strong>
+          </td>
+          <td>
+              <strong>Warehouse</strong>
+            </td>
+          <td>
+            <strong>Batch No.</strong>
+          </td>
+          <td>
+            <strong>Quantity</strong>
+          </td>
+          <td>
+            <strong>Action</strong>
+          </td>
+        </thead>
+        <tbody>
+          <tr *ngFor="let idt of goodsReceiptDetails">
+            <td>
+                {{idt.ItemCode}}
+            </td>
+            <td>
+                {{idt.ItemName}}
+            </td>
+            <td>
+                {{idt.Warehouse}}
+            </td>
+            <td>
+              {{idt.BatchNo}}
+            </td>
+            <td>
+              {{idt.Quantity | number: '1.2'}}
+            </td>
+            <td>
+              <!-- <a class="btn btn-primary" (click)="showForEdit(idt)" >
+              <i class="fa fa-pencil-square-o"></i>
+            </a> -->
+              <a class="btn btn-success text-white" (click)="open(content,idt)" title="Preview label">
+                <i class="fas fa-eye"></i>
+              </a>
+              &nbsp;
+              <a class="btn btn-danger text-white" (click)="onRemoveBatch(idt)" title="Remove from list" *ngIf="!print">
+                <i class="fas fa-trash"></i>
+              </a>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <br/>
+  <div class="row">
+    <div class="form-group col-md-3">
+      <button [disabled]="saveBtn=='disabled'" [hidden]="!formValid" type="submit" class="btn btn-lg btn-block btn-success" (click)="onSubmit()" title="Save record"
+       >
+        <i class="far fa-save"> Save</i>
+      </button>
+    </div>
+    <div class="form-group col-md-3">
+      <button [hidden]="!isPostable || goodsReceiptMaster.IsPosted" type="button" class="btn btn-lg btn-block btn-secondary" (click)="openModalPost(saplogin,'sm')" title="Clear form">
+        <i class="fas fa-rocket"> Post to SAP</i>
+      </button>
+    </div>
+    <div class="form-group col-md-6">
+
+
+    </div>
+  </div>
+
+</div>
+<!-- <ng-template #content let-modal> -->
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Barcode Printing</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row" id="print-section">
+      <div class="col-md-12 text-center">
+        <table class="table text-center">
+          <tr>
+            <td colspan="2" style="text-align:center;">
+              <h6 style="font-size:45pt;"><strong>ARISTOCRAT INDUSTRIES LTD.</strong></h6>
+              <P style="font-size:30pt;">
+                PLOT NO. 7&B, BLOCK-X, OTA, INDUSTRIAL ESTATE
+              </P>
+              <P style="font-size:30pt;">
+                 <strong>OGUN STATE, NIGERIA</strong> 
+              </P>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="text-align:center;">
+              <strong>{{lblName}}</strong> 
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Roll No</strong><br/> {{bc_batchno}}</td>
+            <td><strong>Weight</strong><br/> {{bc_weight}} </td>
+          </tr>
+          <tr>
+            <td><strong>PACKED ON</strong><br/>  {{goodsReceiptMaster.ProdDate | date: 'dd/MM/yyyy'}}</td>
+            <td><strong>Machine No</strong><br/>  {{goodsReceiptMaster.MachineNo}}</td>
+          </tr>
+          <tr>
+            <td colspan="2" style="text-align:center;">
+              <ngx-barcode [bc-element-type]="elementType" [bc-value]="value" [bc-format]="format" [bc-line-color]="lineColor" [bc-width]="width"
+                [bc-height]="height" [bc-display-value]="displayValue" [bc-font-options]="fontOptions" [bc-font]="font" [bc-text-align]="textAlign"
+                [bc-text-position]="textPosition" [bc-text-margin]="textMargin" [bc-font-size]="fontSize" [bc-background]="background"
+                [bc-margin]="margin" [bc-margin-top]="marginTop" [bc-margin-bottom]="marginBottom" [bc-margin-left]="marginLeft"
+                [bc-margin-right]="marginRight"></ngx-barcode>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="text-align:center;">
+              <strong>SUPERVISOR</strong><br/>  {{goodsReceiptMaster.Supervisor}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>Note:</strong>  Goods sold in good condition can not be returned.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>Batch No:</strong>  {{goodsReceiptMaster.DocNum}}
+            </td>
+            <td>
+              <strong>BBD:</strong>  {{expiry | date: 'dd/MM/yyyy' }}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" (click)="printRecord('print-section')">print</button>
+  </div>
+</ng-template>
+<ng-template #saplogin let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="modal-basic-title">SAP Credentials</h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form class="inv-form" #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+    <div class="modal-body">
+      <div class="form-group">
+        <!-- <label for="AutoQty">Auto Quantity</label> -->
+        <input type="text" class="form-control" name="sapUserName" [(ngModel)]="postProd.sapUserName" placeholder="Username" required>
+
+      </div>
+      <div class="form-group">
+        <!-- <label for="AutoQty">Auto Quantity</label> -->
+        <input type="password" class="form-control" name="sapPassword" [(ngModel)]="postProd.sapPassword" placeholder="Password"
+          required>
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button [disabled]="!loginForm.valid  || this.auth.loading" class="btn btn-primary" (click)="postToSAP()">Post</button>
+    </div>
+  </form>
+</ng-template>

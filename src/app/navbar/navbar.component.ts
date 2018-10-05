@@ -24,6 +24,7 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit() {
     const tv = this.auth.isTokenValid();
+    // this.auth.setAPIUrl();
     if (!tv) {
         this.router.navigate(['/login']);
         return;

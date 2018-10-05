@@ -205,7 +205,20 @@
   </div>
   <form class="inv-form" #qtyForm="ngForm" (ngSubmit)="onAddBatch()" *ngIf="!print">
     <div class="form-row">
-      <div class="col-md-5"></div>
+        <div class="col-md-3"></div>
+      <div class="form-group col-md-3">
+          <label for="AutoIsRedressed">
+              <strong>Redress Material: </strong>
+          </label>
+          <br/>
+          <div>
+            <select name="AutoIsRedressed" [(ngModel)]="AutoIsRedressed" class="form-control" required>
+              <option value="N">No</option>
+              <option value="Y">Yes</option>
+            </select>
+          </div>
+      </div>
+      
       <div class="form-group col-md-2">
           <label for="AutoQty">
               <strong>Auto Quantity</strong>
@@ -213,7 +226,7 @@
           <div class="input-group">
               <input type="number" min="0" class="form-control" name="AutoQty" [(ngModel)]="AutoQty" (keyup)="makeQtyValid()">
               <div class="input-group-append">
-                  <button type="submit" [disabled]="!qtyValid" class="btn btn-block btn-info" title="Add to list">
+                  <button type="submit" [disabled]="!qtyForm.valid" class="btn btn-block btn-info" title="Add to list">
                       <i class="fa fa-plus"></i>
                     </button>
               </div>
@@ -233,6 +246,9 @@
             <strong>Quantity</strong>
           </td>
           <td>
+              <strong>Redress</strong>
+          </td>
+          <td>
             <strong>Action</strong>
           </td>
         </thead>
@@ -245,9 +261,10 @@
               {{idt.Quantity | number: '1.2'}}
             </td>
             <td>
-              <!-- <a class="btn btn-primary" (click)="showForEdit(idt)" >
-              <i class="fa fa-pencil-square-o"></i>
-            </a> -->
+                {{idt.IsRedressed == 'Y' ? 'Yes' : 'No'}}
+              </td>
+            <td>
+            
               <a class="btn btn-success text-white" (click)="open(content,idt)" title="Preview label">
                 <i class="fas fa-eye"></i>
               </a>

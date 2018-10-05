@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ProdMaster, ProdDetail, PostToSAP, ProductionOrderModel } from '../shared/models/production';
-import {NgbModal, ModalDismissReasons, NgbCalendar} from '@ng-bootstrap/ng-bootstrap';
+import { GoodsReceiptMaster, GoodsReceiptDetail, PostToSAP } from '../shared/models/production';
+import {NgbModal, NgbCalendar} from '@ng-bootstrap/ng-bootstrap';
 import { HandleAPIService } from '../shared/services/handle-api.service';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../shared/services/auth.service';
@@ -11,19 +11,17 @@ import { Observable } from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 
 @Component({
-  selector: 'app-receipt-prod',
-  templateUrl: './receipt-prod.component.html',
-  styleUrls: ['./receipt-prod.component.css']
+  selector: 'app-goods-receipt',
+  templateUrl: './goods-receipt.component.html',
+  styleUrls: ['./goods-receipt.component.css']
 })
-export class ReceiptProdComponent implements OnInit {
-  prodMaster: ProdMaster = new ProdMaster();
-  prodDetail: ProdDetail = new ProdDetail();
-  prodDetails: ProdDetail[] = [];
+export class GoodsReceiptComponent implements OnInit {
+  goodsReceiptMaster: GoodsReceiptMaster = new GoodsReceiptMaster();
+  goodsReceiptDetail: GoodsReceiptDetail = new GoodsReceiptDetail();
+  goodsReceiptDetails: GoodsReceiptDetail[] = [];
   postProd: PostToSAP = new PostToSAP();
-  prodOrderModel: ProductionOrderModel = new ProductionOrderModel();
   AutoBatch = '';
   AutoQty = null;
-  AutoIsRedressed = 'N';
   qtyValid = false;
   formValid = false;
   isPostable = false;
@@ -71,6 +69,10 @@ export class ReceiptProdComponent implements OnInit {
   BalanceQty = 0;
   expiry: Date;
   supervisors = [];
+  lblName = '';
+  ItemArray = [];
+  AutoItemName: any;
+  AutoWarehouse = '';
   search = (text$: Observable<string>) =>
     text$.pipe(
       debounceTime(200),
@@ -78,6 +80,14 @@ export class ReceiptProdComponent implements OnInit {
       map(term => term === '' ? this.supervisors
         : this.supervisors.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
     )
+  ItemName = (text$: Observable<string>) =>
+  text$.pipe(
+    debounceTime(200),
+    distinctUntilChanged(),
+    map(term => term === '' ? []
+      : this.ItemArray.filter(v => v.ItemName.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
+  )
+  formatter = (x: {ItemName: string}) => x.ItemName;
   constructor(
     private modalService: NgbModal,
     private handleAPI: HandleAPIService,
@@ -97,35 +107,36 @@ export class ReceiptProdComponent implements OnInit {
     this.userName = this.auth.getUserName();
     this.id = this.route.snapshot.params['id'];
     if (this.id > 0) {
-      this.getProdMasterDetails(this.id);
+      this.getGoodsReceiptMasterDetails(this.id);
     } else {
-      this.prodMaster.TotalQty = 0;
+      this.goodsReceiptMaster.TotalQty = 0;
       this.currentDate = Date.now();
       this.prodDate = this.calendar.getToday();
-      this.prodMaster.ProdDate = new Date(Date.UTC(this.prodDate.year, this.prodDate.month - 1, this.prodDate.day, 0, 0, 0, 0));
-      // console.log(this.prodMaster.ProdDate);
+      this.goodsReceiptMaster.ProdDate = new Date(Date.UTC(this.prodDate.year, this.prodDate.month - 1, this.prodDate.day, 0, 0, 0, 0));
+      // console.log(this.goodsReceiptMaster.ProdDate);
       // console.log(this.prodDate);
       this.getSupervisors();
-      this.prodMaster.CreatedBy = this.userName;
+      this.getSAPItem();
+      this.goodsReceiptMaster.CreatedBy = this.userName;
     }
     // console.log(this.auth.userRole);
   }
-  getProdMasterDetails(id: any) {
+  getGoodsReceiptMasterDetails(id: any) {
     // console.log('hello');
     this.auth.loading = true;
     // tslint:disable-next-line:triple-equals
-    // if (this.prodMaster.DocNum != '') {
-      this.handleAPI.get('api/GetPR/' + id)
+    // if (this.goodsReceiptMaster.DocNum != '') {
+      this.handleAPI.get('api/GetGoodsReceipt/' + id)
         .subscribe( (data: any) => {
           // console.log(data);
-          if (data.prodMaster != null) {
+          if (data.goodsReceiptMaster != null) {
             this.auth.loading = false;
-            this.prodMaster = data.prodMaster;
-            this.prodDetails = data.prodDetails;
+            this.goodsReceiptMaster = data.goodsReceiptMaster;
+            this.goodsReceiptDetails = data.goodsReceiptDetails;
             this.auth.loading = false;
             this.print = true;
             this.formValid = false;
-            this.isPostable = this.prodMaster.IsApproved ? true : false;
+            this.isPostable = this.goodsReceiptMaster.IsApproved ? true : false;
           } else {
             this.toastr.warning('No record found!');
               this.resetForm(true);
@@ -148,7 +159,7 @@ export class ReceiptProdComponent implements OnInit {
   getSupervisors() {
     // console.log('hello');
     // tslint:disable-next-line:triple-equals
-    if (this.prodMaster.DocNum != '') {
+    // if (this.goodsReceiptMaster.DocNum != '') {
       this.handleAPI.get('api/GetSupervisors/')
         .subscribe( (data: any) => {
           // console.log(data);
@@ -158,34 +169,48 @@ export class ReceiptProdComponent implements OnInit {
            console.log(error);
           }
       );
-    }
+    // }
+  }
+  getSAPItem() {
+    this.auth.loading = true;
+    // this.spincls = 'fa-spin';
+      this.handleAPI.get('api/GetSAPItem')
+        .subscribe( (data: any) => {
+          this.ItemArray = data;
+          this.auth.loading = false;
+          // this.spincls = '';
+          // console.log(this.ItemArray);
+          },
+          error => {
+           console.log(error);
+           this.auth.loading = false;
+          //  this.spincls = '';
+          }
+      );
   }
   getOrderDetails() {
     // console.log('hello');
     // tslint:disable-next-line:triple-equals
-    if (this.prodMaster.DocNum.trim() == '' || this.prodMaster.DocNum == null) {
+    if (this.goodsReceiptMaster.DocNum.trim() == '' || this.goodsReceiptMaster.DocNum == null) {
       this.resetForm(true);
       return;
     }
     this.auth.loading = true;
     this.spincls = 'fa-spin';
     // tslint:disable-next-line:triple-equals
-    if (this.prodMaster.DocNum.trim() != '' || this.prodMaster.DocNum != null) {
-      this.handleAPI.get('api/GetSAPPR/' + this.prodMaster.DocNum)
+    if (this.goodsReceiptMaster.DocNum.trim() != '' || this.goodsReceiptMaster.DocNum != null) {
+      this.handleAPI.get('api/GetSAPPR/' + this.goodsReceiptMaster.DocNum)
         .subscribe( (data: any) => {
           // console.log(data);
-            this.prodMaster.CardName = data.CardName;
-            this.prodMaster.ItemCode = data.ItemCode;
-            this.prodMaster.DocEntry = data.DocEntry;
-            this.prodMaster.ItemName = data.ItemName;
-            this.prodMaster.PlannedQty = data.PlannedQty;
-            this.prodMaster.CompletedQty = data.CompltQty;
-            this.prodMaster.MachineNo = data.MachineNo;
+            // this.goodsReceiptMaster = data;
+
+            this.goodsReceiptMaster.ItemCode = data.ItemCode;
+            this.goodsReceiptMaster.DocEntry = data.DocEntry;
+            this.goodsReceiptMaster.ItemName = data.ItemName;
+            this.goodsReceiptMaster.MachineNo = data.MachineNo;
             // tslint:disable-next-line:max-line-length
-            this.OpenQty = (this.prodMaster.PlannedQty - this.prodMaster.CompletedQty) < 0 ? 0 : (this.prodMaster.PlannedQty - this.prodMaster.CompletedQty);
+            // this.OpenQty = (this.goodsReceiptMaster.PlannedQty - this.goodsReceiptMaster.CompletedQty) < 0 ? 0 : (this.goodsReceiptMaster.PlannedQty - this.goodsReceiptMaster.CompletedQty);
             this.getSupervisors();
-            this.getProducedQty();
-            // this.BalanceQty = this.prodMaster.PlannedQty - this.ProducedQty;
             this.auth.loading = false;
             this.spincls = '';
           },
@@ -206,8 +231,8 @@ export class ReceiptProdComponent implements OnInit {
   }
   getProducedQty() {
     // tslint:disable-next-line:triple-equals
-    if (this.prodMaster.DocNum != '') {
-      this.handleAPI.get('api/GetProducedQty/' + this.prodMaster.DocNum)
+    if (this.goodsReceiptMaster.DocNum != '') {
+      this.handleAPI.get('api/GetProducedQty/' + this.goodsReceiptMaster.DocNum)
         .subscribe( (data: any) => {
           // console.log(data);
             this.ProducedQty = data.ProducedQty;
@@ -220,80 +245,100 @@ export class ReceiptProdComponent implements OnInit {
     }
   }
   setDate() {
-    this.prodMaster.ProdDate = new Date(this.prodDate.year + '-' + this.prodDate.month + '-' + this.prodDate.day);
-    console.log(this.prodMaster.ProdDate);
+    this.goodsReceiptMaster.ProdDate = new Date(this.prodDate.year + '-' + this.prodDate.month + '-' + this.prodDate.day);
+    // console.log(this.goodsReceiptMaster.ProdDate);
   }
   onAddBatch() {
     this.setDate();
     // tslint:disable-next-line:triple-equals
-    if (this.prodMaster.DocNum == null || this.prodMaster.DocNum.trim() == '') {
+    if (this.goodsReceiptMaster.DocNum == null || this.goodsReceiptMaster.DocNum.trim() == '') {
       this.toastr.warning('Order number is required.', 'Validation Error!');
       return;
     }
-    if (this.prodMaster.ProdDate == null) {
+    if (this.goodsReceiptMaster.ProdDate == null) {
       this.toastr.warning('Date is required.', 'Validation Error!');
+      return;
+    }
+    // tslint:disable-next-line:triple-equals
+    if (this.goodsReceiptMaster.Supervisor == null || this.goodsReceiptMaster.Supervisor == '') {
+      this.toastr.warning('Date is required.', 'Validation Error!');
+      return;
+    }
+    if (this.AutoItemName == null) {
+      this.toastr.warning('Please choose an Item');
+      return;
+    }
+    // tslint:disable-next-line:triple-equals
+    if (this.AutoWarehouse == null || this.AutoWarehouse == '') {
+      this.toastr.warning('Please select a Warehouse');
       return;
     }
     if (!(this.AutoQty > 0)) {
       this.toastr.warning('Quantity must greater than zero(0)');
       return;
     }
-    this.prodDetail.BatchNo = this.generateBatchNo();
-    this.prodDetail.Quantity = this.AutoQty;
-    this.prodDetail.IsRedressed = this.AutoIsRedressed;
-    // this.prodDetail.Line_No = this.lineCount + 1;
-    this.prodDetails.push(this.prodDetail);
-    this.prodMaster.TotalQty += this.AutoQty;
-    this.prodDetail = new ProdDetail();
+    const dt = this.ItemArray.filter( x => x.ItemCode === this.AutoItemName.ItemCode);
+    if (!(dt.length > 0) ) {
+      this.toastr.warning('The item does not belong to the list of Items');
+      return;
+    }
+    this.goodsReceiptDetail.BatchNo = this.generateBatchNo();
+    this.goodsReceiptDetail.Quantity = this.AutoQty;
+    this.goodsReceiptDetail.ItemName = this.AutoItemName.ItemName;
+    this.goodsReceiptDetail.ItemCode = this.AutoItemName.ItemCode;
+    this.goodsReceiptDetail.Warehouse = this.AutoWarehouse;
+    // this.goodsReceiptDetail.Line_No = this.lineCount + 1;
+    this.goodsReceiptDetails.push(this.goodsReceiptDetail);
+    if (!(this.goodsReceiptMaster.TotalQty > 0)) {
+      this.goodsReceiptMaster.TotalQty = 0;
+    }
+    this.goodsReceiptMaster.TotalQty += this.AutoQty;
+    this.goodsReceiptDetail = new GoodsReceiptDetail();
+    this.AutoWarehouse = '';
     this.AutoBatch = '';
     this.AutoQty = null;
-    this.AutoIsRedressed = 'N';
+    this.AutoItemName = null;
     this.qtyValid = false;
     this.setDate();
     // tslint:disable-next-line:triple-equals
-    if (this.prodMaster.DocNum.trim() != '' && this.prodMaster.ProdDate != null && this.prodMaster.Supervisor.trim() != '') {
-      this.formValid = true;
-    }
+    this.formValid = true;
   }
-  onRemoveBatch(item: ProdDetail) {
+  onRemoveBatch(item: GoodsReceiptDetail) {
     if (!confirm('Are you sure you want to remove this Batch?')) {
       return;
     }
-    const i = this.prodDetails.indexOf(item);
+    const i = this.goodsReceiptDetails.indexOf(item);
 
     if (i !== -1) {
-      this.prodDetails.splice(i, 1);
-      this.prodMaster.TotalQty = this.prodMaster.TotalQty - item.Quantity;
+      this.goodsReceiptDetails.splice(i, 1);
+      this.goodsReceiptMaster.TotalQty = this.goodsReceiptMaster.TotalQty - item.Quantity;
     }
-    if (this.prodDetails.length < 1) {
+    if (this.goodsReceiptDetails.length < 1) {
       this.formValid = false;
-      this.prodMaster.TotalQty = 0;
+      this.goodsReceiptMaster.TotalQty = 0;
     }
   }
-  open(content, idt: ProdDetail) {
+  open(content, idt: GoodsReceiptDetail) {
     this.setLabelValue(idt, this.printRecord);
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size: 'lg'});
     setTimeout(() => { this.printRecord('print-section'); }, 300);
     setTimeout(() => { this.modalService.dismissAll(); }, 1000);
     // this.modalService.dismissAll();
   }
-  setLabelValue(idt: ProdDetail, callback) {
+  setLabelValue(idt: GoodsReceiptDetail, callback) {
     this.lbl = true;
+    this.lblName = idt.ItemName;
     this.value = idt.BatchNo;
     this.bc_batchno = this.value;
     this.bc_weight = idt.Quantity;
-    this.expiry = new Date(this.prodMaster.ProdDate);
-    // console.log(this.prodMaster.ProdDate);
+    this.expiry = new Date(this.goodsReceiptMaster.ProdDate);
+    // console.log(this.goodsReceiptMaster.ProdDate);
     this.expiry.setDate(this.expiry.getDate() + 365);
   }
   openModalPost(content, sz: any = 'lg') {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: sz});
   }
-  openModal(content, sz: any = 'lg') {
-    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: sz});
-    setTimeout(() => { this.printPlist('packingList'); }, 300);
-    setTimeout(() => { this.modalService.dismissAll(); }, 1000);
-  }
+
   printRecord(elem: any): void {
     let printContents, popupWin;
     printContents = document.getElementById(elem).innerHTML;
@@ -329,46 +374,7 @@ export class ReceiptProdComponent implements OnInit {
     popupWin.document.close();
     this.lbl = false;
   }
-  printPlist(elem: any): void {
-    let printContents, popupWin;
-    printContents = document.getElementById(elem).innerHTML;
-    popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
-    popupWin.document.open();
-    popupWin.document.write(`
-      <html>
-        <head>
-          <title>Print tab</title>
-          <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
-          <link rel="stylesheet" href="../assets/css/fontawesome-all.css">
-          <style>
-          @media print
-          {
-              tbody {
-                  page-break-inside: avoid;
-              }
-              thead {
-                  display: table-header-group;
-                  margin-top: 100px;
-              }
-          }
-          .table {
-            width:100%;
-            font-size:14pt;
-          }
-          td {
-            text-align:left;
-          }
-          </style>
-        </head>
-        <body onload="window.print();window.close()">
-        ${printContents}
-        </div>
-        </div>
-        </body>
-      </html>`
-    );
-    popupWin.document.close();
-  }
+
   generateBatchNo() {
     let timestamp = '';
     const now = new Date();
@@ -376,7 +382,7 @@ export class ReceiptProdComponent implements OnInit {
     timestamp = now.getFullYear().toString().substr(2, 2); // 2011
     timestamp += (now.getMonth() < 9 ? '0' : '') + now.getMonth().toString(); // JS months are 0-based, so +1 and pad with 0's
     timestamp += (now.getDate() < 10 ? '0' : '') + now.getDate().toString(); // pad with a 0
-    timestamp += this.prodMaster.MachineNo.substr(0, 2); // pad with a 0
+    timestamp += this.goodsReceiptMaster.MachineNo.substr(0, 2); // pad with a 0
     timestamp += (now.getHours() < 10 ? '0' : '') + now.getHours().toString();
     timestamp += (now.getMinutes() < 10 ? '0' : '') + now.getMinutes().toString();
     timestamp += (now.getMilliseconds() < 100 ? '0' : '') + now.getMilliseconds().toString().substr(0, 3);
@@ -397,11 +403,10 @@ export class ReceiptProdComponent implements OnInit {
         return;
       }
     }
-    this.prodMaster = new ProdMaster();
-    this.prodDetail = new ProdDetail();
-    this.prodDetails = [];
+    this.goodsReceiptMaster = new GoodsReceiptMaster();
+    this.goodsReceiptDetail = new GoodsReceiptDetail();
+    this.goodsReceiptDetails = [];
     this.postProd = new PostToSAP();
-    this.prodOrderModel = new ProductionOrderModel();
     this.AutoBatch = '';
     this.AutoQty = null;
     this.qtyValid = false;
@@ -410,12 +415,12 @@ export class ReceiptProdComponent implements OnInit {
     this.OpenQty = 0;
     this.print = false;
     this.saveBtn = '';
-    this.prodMaster.TotalQty = 0;
+    this.goodsReceiptMaster.TotalQty = 0;
     this.PostedQty = 0;
     this.ProducedQty = 0;
     this.currentDate = Date.now();
     this.prodDate = this.calendar.getToday();
-    this.prodMaster.CreatedBy = this.userName;
+    this.goodsReceiptMaster.CreatedBy = this.userName;
     this.getSupervisors();
   }
   onSubmit(form?: NgForm) {
@@ -423,35 +428,34 @@ export class ReceiptProdComponent implements OnInit {
       return;
     }
     // tslint:disable-next-line:triple-equals
-    if (this.prodMaster.DocNum == null || this.prodMaster.DocNum.trim() == '') {
+    if (this.goodsReceiptMaster.DocNum == null || this.goodsReceiptMaster.DocNum.trim() == '') {
       this.toastr.warning('Order number is required.', 'Validation Error!');
       return;
     }
-    if (this.prodMaster.ProdDate == null) {
+    if (this.goodsReceiptMaster.ProdDate == null) {
       this.toastr.warning('Date is required.', 'Validation Error!');
       return;
     }
-    if (this.prodMaster.ProdMasterID !== 0) {
+    if (this.goodsReceiptMaster.GoodsReceiptMasterID !== 0) {
       this.toastr.warning('Record already posted', 'Validation Error!');
       return;
     }
     this.saveBtn = 'disabled';
     this.auth.loading = true;
-    this.prodMaster.ProdDate = new Date(Date.UTC(this.prodDate.year, this.prodDate.month - 1, this.prodDate.day, 0, 0, 0, 0));
-    // console.log(this.prodMaster.ProdDate);
+    this.goodsReceiptMaster.ProdDate = new Date(Date.UTC(this.prodDate.year, this.prodDate.month - 1, this.prodDate.day, 0, 0, 0, 0));
+    // console.log(this.goodsReceiptMaster.ProdDate);
     const dt = {
-      ProdMaster: this.prodMaster,
-      ProdDetails: this.prodDetails
+      goodsReceiptMaster: this.goodsReceiptMaster,
+      goodsReceiptDetails: this.goodsReceiptDetails
     };
-    this.handleAPI.create(dt, 'api/ProductionReceipt')
+    this.handleAPI.create(dt, 'api/PostGoodsReceipt')
       .subscribe( (data: any) => {
         if (data.IsSuccess) {
-          this.toastr.success('Production Receipt created!', 'Success');
+          this.toastr.success('Goods Receipt created!', 'Success');
           // console.log(data);
           this.print = true;
           // this.isPostable = true;
-          this.prodMaster.ProdMasterID = data.ID;
-          this.prodMaster.PackingNo = data.PackingNo;
+          this.goodsReceiptMaster.GoodsReceiptMasterID = data.ID;
           this.formValid = false;
           this.saveBtn = '';
         } else {
@@ -475,12 +479,12 @@ export class ReceiptProdComponent implements OnInit {
       return;
     }
     // tslint:disable-next-line:triple-equals
-    if (this.postProd.sapUserName == null || this.prodMaster.DocNum.trim() == '') {
+    if (this.postProd.sapUserName == null || this.goodsReceiptMaster.DocNum.trim() == '') {
       this.toastr.warning('SAP Username is required.', 'Validation Error!');
       return;
     }
     // tslint:disable-next-line:triple-equals
-    if (this.postProd.sapUserName == null || this.prodMaster.DocNum.trim() == '') {
+    if (this.postProd.sapUserName == null || this.goodsReceiptMaster.DocNum.trim() == '') {
       this.toastr.warning('SAP Password is required.', 'Validation Error!');
       return;
     }
@@ -488,14 +492,14 @@ export class ReceiptProdComponent implements OnInit {
     this.isPostable = false;
     const tmp = 'saplogin';
     this.modalService.dismissAll();
-    this.postProd.ObjectID = this.prodMaster.ProdMasterID;
-    this.handleAPI.create(this.postProd, 'api/PostProductionOrder')
+    this.postProd.ObjectID = this.goodsReceiptMaster.GoodsReceiptMasterID;
+    this.handleAPI.create(this.postProd, 'api/PostGoodsReceiptToSAP')
       .subscribe( (data: any) => {
         if (data.IsSuccess) {
-          this.toastr.success('Production posted to SAP successfully!', 'Success');
+          this.toastr.success('Goods Receipt posted to SAP successfully!', 'Success');
           console.log(data);
           this.isPostable = false;
-          this.prodMaster.IsPosted = true;
+          this.goodsReceiptMaster.IsPosted = true;
           this.auth.loading = false;
         } else {
           this.toastr.warning(data.Response, 'Warning');
@@ -520,14 +524,14 @@ export class ReceiptProdComponent implements OnInit {
     }
     this.auth.loading = true;
     this.isPostable = false;
-    const id = this.prodMaster.ProdMasterID;
-    this.handleAPI.create(this.userName, 'api/ApprovePR/' + id)
+    const id = this.goodsReceiptMaster.GoodsReceiptMasterID;
+    this.handleAPI.create(this.userName, 'api/ApproveGoodsReceipt/' + id)
       .subscribe( (data: any) => {
         if (data.IsSuccess) {
           this.toastr.success('Document approved successfully!', 'Success');
           console.log(data);
           this.isPostable = true;
-          this.prodMaster.IsApproved = true;
+          this.goodsReceiptMaster.IsApproved = true;
           this.auth.loading = false;
         } else {
           this.toastr.warning(data.Response, 'Warning');
@@ -546,3 +550,4 @@ export class ReceiptProdComponent implements OnInit {
       );
   }
 }
+

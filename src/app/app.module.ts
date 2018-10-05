@@ -29,6 +29,8 @@ import { ArDeliveryComponent } from './ar-delivery/ar-delivery.component';
 import { PrintArDeliveryComponent } from './ar-delivery/print-ar-delivery/print-ar-delivery.component';
 import { ViewArDeliveryComponent } from './ar-delivery/view-ar-delivery/view-ar-delivery.component';
 import { ViewProdSummaryComponent } from './receipt-prod/view-prod-summary/view-prod-summary.component';
+import { GoodsReceiptComponent } from './goods-receipt/goods-receipt.component';
+import { ViewGoodsReceiptComponent } from './goods-receipt/view-goods-receipt/view-goods-receipt.component';
 
 
 @NgModule({
@@ -43,7 +45,9 @@ import { ViewProdSummaryComponent } from './receipt-prod/view-prod-summary/view-
     ArDeliveryComponent,
     PrintArDeliveryComponent,
     ViewArDeliveryComponent,
-    ViewProdSummaryComponent
+    ViewProdSummaryComponent,
+    GoodsReceiptComponent,
+    ViewGoodsReceiptComponent
   ],
   imports: [
     BrowserModule,

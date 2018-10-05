@@ -1,6 +1,6 @@
 import 'rxjs/add/operator/toPromise';
 
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, Inject, OnInit } from '@angular/core';
 
 import { ApiService } from './api.service';
 import { HttpHeaders } from '@angular/common/http';
@@ -10,14 +10,18 @@ import { HandleAPIService } from './handle-api.service';
 import { UserRole } from '../models/user';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnInit {
     tokenData: any;
     loading = false;
     userRole: UserRole = new UserRole();
-    url = 'http://localhost:59350';
+    url = '';
     constructor(
       @Inject(SESSION_STORAGE) private storage: WebStorageService,
-      private api: ApiService) { }
+      private api: ApiService) {
+      }
+
+      ngOnInit() {
+      }
 
     getHeader() {
         const token = this.getFromLocal('token');
@@ -26,6 +30,10 @@ export class AuthService {
         };
         return httpOptions;
       }
+    setAPIUrl() {
+      this.api.setApiURL();
+      this.url = this.api.url;
+    }
     login(accountInfo: any) {
       const httpOptions = {
         // headers: new HttpHeaders({ 'Content-Type': 'application/json' }) text/plain
@@ -107,7 +115,8 @@ export class AuthService {
       return seq;
     }
     getUserRight(username) {
-      this.userRight(username)
+      const body = '';
+      this.api.get('api/GetUserRole/' + username, body, this.getHeader())
       .subscribe( (data: any) => {
         // console.log(data);
           this.userRole.IsAdmin = data.IsAdmin;
