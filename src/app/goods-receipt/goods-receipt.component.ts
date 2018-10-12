@@ -203,14 +203,17 @@ export class GoodsReceiptComponent implements OnInit {
         .subscribe( (data: any) => {
           // console.log(data);
             // this.goodsReceiptMaster = data;
-
-            this.goodsReceiptMaster.ItemCode = data.ItemCode;
-            this.goodsReceiptMaster.DocEntry = data.DocEntry;
-            this.goodsReceiptMaster.ItemName = data.ItemName;
-            this.goodsReceiptMaster.MachineNo = data.MachineNo;
+            if (data.ItemCode == null) {
+              this.toastr.warning('No record found!');
+            } else {
+              this.goodsReceiptMaster.ItemCode = data.ItemCode;
+              this.goodsReceiptMaster.DocEntry = data.DocEntry;
+              this.goodsReceiptMaster.ItemName = data.ItemName;
+              this.goodsReceiptMaster.MachineNo = data.MachineNo;
+              this.getSupervisors();
+            }
             // tslint:disable-next-line:max-line-length
             // this.OpenQty = (this.goodsReceiptMaster.PlannedQty - this.goodsReceiptMaster.CompletedQty) < 0 ? 0 : (this.goodsReceiptMaster.PlannedQty - this.goodsReceiptMaster.CompletedQty);
-            this.getSupervisors();
             this.auth.loading = false;
             this.spincls = '';
           },

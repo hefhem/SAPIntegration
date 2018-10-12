@@ -23,6 +23,8 @@ export class ReceiptProdComponent implements OnInit {
   prodOrderModel: ProductionOrderModel = new ProductionOrderModel();
   AutoBatch = '';
   AutoQty = null;
+  KgQty = null;
+  IsKg = true;
   AutoIsRedressed = 'N';
   qtyValid = false;
   formValid = false;
@@ -174,6 +176,10 @@ export class ReceiptProdComponent implements OnInit {
       this.handleAPI.get('api/GetSAPPR/' + this.prodMaster.DocNum)
         .subscribe( (data: any) => {
           // console.log(data);
+          // tslint:disable-next-line:triple-equals
+          if ( data.ItemCode == null) {
+            this.toastr.warning('No record found!');
+          } else {
             this.prodMaster.CardName = data.CardName;
             this.prodMaster.ItemCode = data.ItemCode;
             this.prodMaster.DocEntry = data.DocEntry;
@@ -181,10 +187,22 @@ export class ReceiptProdComponent implements OnInit {
             this.prodMaster.PlannedQty = data.PlannedQty;
             this.prodMaster.CompletedQty = data.CompltQty;
             this.prodMaster.MachineNo = data.MachineNo;
+            this.prodMaster.KgFactor = data.KgFactor;
+            this.prodMaster.UOM = data.UOM;
+            this.prodDetails = [];
+            this.AutoQty = null;
+            this.KgQty = null;
+            // tslint:disable-next-line:triple-equals
+            if (data.UOM.toLowerCase() == 'kg' || data.UOM.toLowerCase() == 'kgs' ) {
+              this.IsKg = true;
+            } else {
+              this.IsKg = false;
+            }
             // tslint:disable-next-line:max-line-length
             this.OpenQty = (this.prodMaster.PlannedQty - this.prodMaster.CompletedQty) < 0 ? 0 : (this.prodMaster.PlannedQty - this.prodMaster.CompletedQty);
             this.getSupervisors();
             this.getProducedQty();
+          }
             // this.BalanceQty = this.prodMaster.PlannedQty - this.ProducedQty;
             this.auth.loading = false;
             this.spincls = '';
@@ -221,7 +239,7 @@ export class ReceiptProdComponent implements OnInit {
   }
   setDate() {
     this.prodMaster.ProdDate = new Date(this.prodDate.year + '-' + this.prodDate.month + '-' + this.prodDate.day);
-    console.log(this.prodMaster.ProdDate);
+    // console.log(this.prodMaster.ProdDate);
   }
   onAddBatch() {
     this.setDate();
@@ -235,11 +253,16 @@ export class ReceiptProdComponent implements OnInit {
       return;
     }
     if (!(this.AutoQty > 0)) {
-      this.toastr.warning('Quantity must greater than zero(0)');
+      this.toastr.warning('Quantity must be greater than zero(0)');
+      return;
+    }
+    if (!(this.KgQty > 0)) {
+      this.toastr.warning('Kg Qty must be greater than zero(0)');
       return;
     }
     this.prodDetail.BatchNo = this.generateBatchNo();
     this.prodDetail.Quantity = this.AutoQty;
+    this.prodDetail.KgQty = this.KgQty;
     this.prodDetail.IsRedressed = this.AutoIsRedressed;
     // this.prodDetail.Line_No = this.lineCount + 1;
     this.prodDetails.push(this.prodDetail);
@@ -247,6 +270,7 @@ export class ReceiptProdComponent implements OnInit {
     this.prodDetail = new ProdDetail();
     this.AutoBatch = '';
     this.AutoQty = null;
+    this.KgQty = null;
     this.AutoIsRedressed = 'N';
     this.qtyValid = false;
     this.setDate();
@@ -254,6 +278,12 @@ export class ReceiptProdComponent implements OnInit {
     if (this.prodMaster.DocNum.trim() != '' && this.prodMaster.ProdDate != null && this.prodMaster.Supervisor.trim() != '') {
       this.formValid = true;
     }
+  }
+  setKgQty() {
+    this.KgQty = this.AutoQty / this.prodMaster.KgFactor;
+  }
+  setUOMQty() {
+    this.AutoQty = this.KgQty * this.prodMaster.KgFactor;
   }
   onRemoveBatch(item: ProdDetail) {
     if (!confirm('Are you sure you want to remove this Batch?')) {

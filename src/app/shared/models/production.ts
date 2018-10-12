@@ -4,6 +4,8 @@ export class ProdMaster {
     DocNum = '';
     ItemCode: string;
     ItemName: string;
+    KgFactor = 0;
+    UOM: string;
     PlannedQty = 0;
     CompletedQty: number;
     TotalQty = 0;
@@ -27,6 +29,7 @@ export class ProdDetail {
     ProdMasterID: number;
     BatchNo: string;
     Quantity: number;
+    KgQty: number;
     IsPosted: boolean;
     IsRedressed = 'N';
 }
