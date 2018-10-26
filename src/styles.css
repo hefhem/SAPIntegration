@@ -14,7 +14,7 @@ button:hover, a.btn:hover{
 }
 .div-per{
     text-align: center; 
-    margin-top: 10%;
+    margin-top: 5%;
     background-color: #007bff;
 }
 .div-per-inv{
@@ -38,6 +38,6 @@ button:hover, a.btn:hover{
     border-left: 5px solid #42A948; /* green */
   }
   
-  .ng-invalid:not(form)  {
+.ng-invalid:not(form)  {
     border-left: 5px solid #a94442; /* red */
   }

@@ -5,7 +5,7 @@
       PRODUCTION RECEIPT
     </h2>
   </div>
-  <div class="form-row text-center" *ngIf="print">
+  <div class="form-row text-center">
       <div class="col-md-3"></div>
     <div class="col-md-6">
       <button class="btn btn-primary" (click)="openModal(packingList)">View Packing List</button>
@@ -13,6 +13,8 @@
       <button class="btn btn-secondary" (click)="resetForm()">New Record</button>
       &nbsp;
       <button [hidden]="this.auth.userRole.ApprovePR != 'Y'" class="btn btn-info" (click)="approvePR()" *ngIf="!prodMaster.IsApproved">Approve</button>
+      &nbsp;
+      <button class="btn btn-danger" (click)="cancelRecord()" *ngIf="prodMaster.ProdMasterID > 0">Cancel Record</button>
     </div>
     <div class="col-md-3"></div>
     
@@ -33,7 +35,7 @@
               <input (blur)="getOrderDetails()" class="form-control" name="DocNum" #DocNum="ngModel" [(ngModel)]="prodMaster.DocNum" placeholder="e.g 20180101" autofocus
                 required>
               <div class="input-group-append">
-                <button [disabled]="DocNum.invalid" type="button" class="btn btn-block btn-info" (click)="getOrderDetails()" title="Get record">
+                <button [disabled]="!DocNum.valid" type="button" class="btn btn-block btn-info" (click)="getOrderDetails()" title="Get record">
                   <i class="fa fa-sync {{spincls}}"></i>
                 </button>
               </div>
@@ -126,7 +128,7 @@
             <!-- <div class="validation-error" *ngIf="InvoiceDate.invalid && InvoiceDate.touched">This field is required</div> -->
             {{prodMaster.PlannedQty | number: '1.2'}}
           </div>
-          <div class="form-group col-md-2" *ngIf="!print">
+          <div class="form-group col-md-2">
             <label for="OpenQty">
               <strong>SAP Open Qty: </strong>
             </label>.
@@ -135,14 +137,13 @@
             {{OpenQty | number: '1.2'}}
           </div>
           
-          <div class="form-group col-md-2" *ngIf="!print">
+          <!-- <div class="form-group col-md-2" >
               <label for="OpenQty">
                 <strong>Posted Qty: </strong>
               </label>
               <br/>
-              <!-- <input type="text" class="form-control" name="OpenQty" #OpenQty="ngModel" [(ngModel)]="prodMaster.OpenQty"> -->
               {{PostedQty | number: '1.2'}}
-          </div>
+          </div> -->
           <div class="form-group col-md-2" *ngIf="print">
               <label for="OpenQty">
                 <strong>Approved:</strong>
@@ -172,7 +173,7 @@
             <!-- <input type="text" class="form-control" name="TotalQty" #TotalQty="ngModel" [(ngModel)]="prodMaster.TotalQty"> -->
             {{prodMaster.TotalQty | number: '1.2'}}
           </div>
-          <div class="form-group col-md-2" *ngIf="print">
+          <div class="form-group col-md-2">
             <label for="PackingNo">
               <strong>Packing No:</strong>
             </label>
@@ -180,7 +181,7 @@
             <!-- <input type="text" class="form-control" name="PackingNo" #PackingNo="ngModel" [(ngModel)]="prodMaster.PackingNo"> -->
             {{prodMaster.PackingNo}}
           </div>
-          <div class="form-group col-md-2" *ngIf="!print">
+          <div class="form-group col-md-2">
               <label for="OpenQty">
                 <strong>Produced Qty: </strong>
               </label>
@@ -188,14 +189,13 @@
               <!-- <input type="text" class="form-control" name="OpenQty" #OpenQty="ngModel" [(ngModel)]="prodMaster.OpenQty"> -->
               {{ProducedQty | number: '1.2'}}
           </div>
-          <div class="form-group col-md-2" *ngIf="!print">
+          <!-- <div class="form-group col-md-2" >
               <label for="OpenQty">
                 <strong>Balance Qty: </strong>
               </label>
               <br/>
-              <!-- <input type="text" class="form-control" name="OpenQty" #OpenQty="ngModel" [(ngModel)]="prodMaster.OpenQty"> -->
               {{ prodMaster.PlannedQty - ProducedQty < 0 ? 0 : prodMaster.PlannedQty - ProducedQty  | number: '1.2'}}
-          </div>
+          </div> -->
         </div>
       </form>
     </div>
@@ -203,9 +203,11 @@
   <div *ngIf="!print">
     <hr/>
   </div>
-  <form class="inv-form" #qtyForm="ngForm" (ngSubmit)="onAddBatch()" *ngIf="!print">
+  <form class="inv-form" #qtyForm="ngForm" (ngSubmit)="onAddBatch()" *ngIf="!prodMaster.IsApproved">
     <div class="form-row">
-        <div class="col-md-2"></div>
+        <div class="col-md-2" style="font-size:30pt;">
+          <strong>{{prodDetails.length}}</strong>
+        </div>
       <div class="form-group col-md-2">
           <label for="AutoIsRedressed">
               <strong>Redress Material: </strong>
@@ -297,7 +299,7 @@
                 <i class="fas fa-eye"></i>
               </a>
               &nbsp;
-              <a class="btn btn-danger text-white" (click)="onRemoveBatch(idt)" title="Remove from list" *ngIf="!print">
+              <a class="btn btn-danger text-white" (click)="onRemoveBatch(idt)" title="Remove from list" *ngIf="!prodMaster.IsApproved">
                 <i class="fas fa-trash"></i>
               </a>
             </td>
@@ -310,13 +312,13 @@
   <br/>
   <div class="row">
     <div class="form-group col-md-3">
-      <button [disabled]="saveBtn=='disabled'" [hidden]="!formValid" type="submit" class="btn btn-lg btn-block btn-success" (click)="onSubmit()" title="Save record"
+      <!-- <button [disabled]="saveBtn=='disabled'" [hidden]="!formValid" type="submit" class="btn btn-lg btn-block btn-success" (click)="onSubmit()" title="Save record"
        >
         <i class="far fa-save"> Save</i>
-      </button>
+      </button> -->
     </div>
     <div class="form-group col-md-3">
-      <button [hidden]="!isPostable || prodMaster.IsPosted" type="button" class="btn btn-lg btn-block btn-secondary" (click)="openModalPost(saplogin,'sm')" title="Clear form">
+      <button [hidden]="!prodMaster.IsApproved || prodMaster.IsPosted" type="button" class="btn btn-lg btn-block btn-secondary" (click)="openModalPost(saplogin,'sm')" title="Clear form">
         <i class="fas fa-rocket"> Post to SAP</i>
       </button>
     </div>
@@ -357,7 +359,7 @@
           </tr>
           <tr>
             <td><strong>Roll No</strong><br/> {{bc_batchno}}</td>
-            <td><strong>Weight</strong><br/> {{bc_weight  | number: '1.2'}} {{prodMaster.UOM}}</td>
+            <td><strong>Weight/Qty</strong><br/> {{bc_weight  | number: '1.2'}} {{prodMaster.UOM}}</td>
           </tr>
           <tr>
             <td><strong>PACKED ON</strong><br/>  {{prodMaster.ProdDate | date: 'dd/MM/yyyy'}}</td>

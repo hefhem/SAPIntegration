@@ -2,13 +2,14 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
 import { catchError } from 'rxjs/operators';
 import { HandleErrorService } from './handle-error.service';
+import { environment } from 'src/environments/environment';
 
 /**
  * Api is a generic REST Api handler. Set your API url first.
  */
 @Injectable()
 export class ApiService implements OnInit {
-  url = 'http://localhost:59350';
+  url = environment.api_url;
   // url = this.setApiURL();
 
   constructor(public http: HttpClient, public handleError: HandleErrorService) {

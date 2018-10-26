@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ProdMaster, ProdDetail, PostToSAP, ProductionOrderModel } from '../shared/models/production';
 import {NgbModal, ModalDismissReasons, NgbCalendar} from '@ng-bootstrap/ng-bootstrap';
 import { HandleAPIService } from '../shared/services/handle-api.service';
@@ -16,6 +16,7 @@ import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
   styleUrls: ['./receipt-prod.component.css']
 })
 export class ReceiptProdComponent implements OnInit {
+  @ViewChild('content') labelRef: ElementRef;
   prodMaster: ProdMaster = new ProdMaster();
   prodDetail: ProdDetail = new ProdDetail();
   prodDetails: ProdDetail[] = [];
@@ -128,6 +129,13 @@ export class ReceiptProdComponent implements OnInit {
             this.print = true;
             this.formValid = false;
             this.isPostable = this.prodMaster.IsApproved ? true : false;
+            // tslint:disable-next-line:triple-equals
+            if (this.prodMaster.UOM.toLowerCase() == 'kg' || this.prodMaster.UOM.toLowerCase() == 'kgs' ) {
+              this.IsKg = true;
+            } else {
+              this.IsKg = false;
+            }
+            this.getProducedQty();
           } else {
             this.toastr.warning('No record found!');
               this.resetForm(true);
@@ -242,7 +250,9 @@ export class ReceiptProdComponent implements OnInit {
     // console.log(this.prodMaster.ProdDate);
   }
   onAddBatch() {
-    this.setDate();
+    if (!(this.prodMaster.ProdMasterID > 0)) {
+      this.setDate();
+    }
     // tslint:disable-next-line:triple-equals
     if (this.prodMaster.DocNum == null || this.prodMaster.DocNum.trim() == '') {
       this.toastr.warning('Order number is required.', 'Validation Error!');
@@ -260,23 +270,85 @@ export class ReceiptProdComponent implements OnInit {
       this.toastr.warning('Kg Qty must be greater than zero(0)');
       return;
     }
+    this.auth.loading = true;
     this.prodDetail.BatchNo = this.generateBatchNo();
     this.prodDetail.Quantity = this.AutoQty;
     this.prodDetail.KgQty = this.KgQty;
     this.prodDetail.IsRedressed = this.AutoIsRedressed;
     // this.prodDetail.Line_No = this.lineCount + 1;
-    this.prodDetails.push(this.prodDetail);
-    this.prodMaster.TotalQty += this.AutoQty;
-    this.prodDetail = new ProdDetail();
-    this.AutoBatch = '';
-    this.AutoQty = null;
-    this.KgQty = null;
-    this.AutoIsRedressed = 'N';
-    this.qtyValid = false;
-    this.setDate();
+    const dt = {
+      prodMaster: this.prodMaster,
+      prodDetail: this.prodDetail
+    };
+    this.handleAPI.create(dt, 'api/AddBatchToList')
+        .subscribe( (data: any) => {
+          // console.log(data);
+          const oldid = this.prodMaster.ProdMasterID;
+          if (data.IsSuccess) {
+            if (!(this.prodMaster.ProdMasterID > 0)) {
+              this.prodMaster.ProdMasterID = data.ID;
+              this.prodMaster.PackingNo = data.PackingNo;
+            }
+            this.prodDetail.ProdDetailID = data.prodDetailID;
+            this.prodMaster.TotalQty += this.AutoQty;
+            this.prodDetails.unshift(this.prodDetail);
+            this.open(this.labelRef, this.prodDetail);
+            this.prodDetail = new ProdDetail();
+            this.AutoBatch = '';
+            this.AutoQty = null;
+            this.KgQty = null;
+            this.AutoIsRedressed = 'N';
+            this.qtyValid = false;
+            // this.setDate();
+            if (!(oldid > 0)) {
+              this.router.navigate(['/receipt-prod/' + data.ID]);
+            }
+          } else {
+            this.toastr.error(data.Response, 'Error!');
+          }
+          this.auth.loading = false;
+        },
+          error => {
+            if (typeof error === 'string') {
+              this.toastr.warning(error, 'Oops! An error occurred');
+            } else {
+              this.toastr.warning('Please check the console.', 'Oops! An error occurred');
+            }
+            this.auth.loading = false;
+          }
+      );
     // tslint:disable-next-line:triple-equals
     if (this.prodMaster.DocNum.trim() != '' && this.prodMaster.ProdDate != null && this.prodMaster.Supervisor.trim() != '') {
       this.formValid = true;
+    }
+  }
+  cancelRecord() {
+    if (!confirm('Are you sure you want to cancel this record?')) {
+      return;
+    }
+    if (this.prodMaster.ProdMasterID > 0) {
+      this.handleAPI.create('', 'api/CancelProductionOrder/' + this.prodMaster.ProdMasterID )
+          .subscribe( (data: any) => {
+            // console.log(data);
+            if (data.IsSuccess) {
+              this.toastr.success(data.Response);
+              this.resetForm(true);
+              this.router.navigate(['/receipt-prod']);
+              // this.setDate();
+            } else {
+              this.toastr.error(data.Response, 'Error!');
+            }
+            this.auth.loading = false;
+          },
+            error => {
+              if (typeof error === 'string') {
+                this.toastr.warning(error, 'Oops! An error occurred');
+              } else {
+                this.toastr.warning('Please check the console.', 'Oops! An error occurred');
+              }
+              this.auth.loading = false;
+            }
+        );
     }
   }
   setKgQty() {
@@ -289,6 +361,31 @@ export class ReceiptProdComponent implements OnInit {
     if (!confirm('Are you sure you want to remove this Batch?')) {
       return;
     }
+    this.auth.loading = true;
+    if (this.prodMaster.ProdMasterID > 0) {
+        this.handleAPI.create('', 'api/RemoveBatchFromList/' + item.ProdDetailID)
+        .subscribe( (data: any) => {
+          // console.log(data);
+          if (data.IsSuccess) {
+            this.toastr.success('Item removed successfully');
+            this.rmBatch(item);
+          } else {
+            this.toastr.error(data.Response, 'Error!');
+          }
+          this.auth.loading = false;
+        },
+          error => {
+            if (typeof error === 'string') {
+              this.toastr.warning(error, 'Oops! An error occurred');
+            } else {
+              this.toastr.warning('Please check the console.', 'Oops! An error occurred');
+            }
+            this.auth.loading = false;
+          }
+      );
+    }
+  }
+  rmBatch(item: ProdDetail) {
     const i = this.prodDetails.indexOf(item);
 
     if (i !== -1) {
