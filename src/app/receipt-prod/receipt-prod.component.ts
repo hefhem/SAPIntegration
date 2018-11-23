@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Renderer2, Input } from '@angular/core';
 import { ProdMaster, ProdDetail, PostToSAP, ProductionOrderModel } from '../shared/models/production';
 import {NgbModal, ModalDismissReasons, NgbCalendar} from '@ng-bootstrap/ng-bootstrap';
 import { HandleAPIService } from '../shared/services/handle-api.service';
@@ -53,9 +53,9 @@ export class ReceiptProdComponent implements OnInit {
   fontSize = 60;
   pfontSize = 30;
   background = '#ffffff';
-  margin = 10;
+  margin = 1;
   marginTop = 10;
-  marginBottom = 10;
+  marginBottom = 1;
   marginLeft = 10;
   marginRight = 10;
 
@@ -63,6 +63,7 @@ export class ReceiptProdComponent implements OnInit {
   bc_weight: number;
   bc_batchno: string;
   currentDate: number;
+  cDate: Date;
   prodDate;
   spincls = '';
   id = 0;
@@ -74,6 +75,7 @@ export class ReceiptProdComponent implements OnInit {
   BalanceQty = 0;
   expiry: Date;
   supervisors = [];
+  @Input() cssSelector: string;
   search = (text$: Observable<string>) =>
     text$.pipe(
       debounceTime(200),
@@ -88,7 +90,8 @@ export class ReceiptProdComponent implements OnInit {
     private auth: AuthService,
     private route: ActivatedRoute,
     private router: Router,
-    private calendar: NgbCalendar
+    private calendar: NgbCalendar,
+    private renderer: Renderer2
   ) { }
 
   ngOnInit() {
@@ -101,11 +104,15 @@ export class ReceiptProdComponent implements OnInit {
     this.id = this.route.snapshot.params['id'];
     if (this.id > 0) {
       this.getProdMasterDetails(this.id);
+      this.getCurrentDate();
     } else {
+      this.getCurrentDate();
       this.prodMaster.TotalQty = 0;
       this.currentDate = Date.now();
       this.prodDate = this.calendar.getToday();
+      // this.prodDate = this.cDate;
       this.prodMaster.ProdDate = new Date(Date.UTC(this.prodDate.year, this.prodDate.month - 1, this.prodDate.day, 0, 0, 0, 0));
+      // this.prodMaster.ProdDate = this.cDate;
       // console.log(this.prodMaster.ProdDate);
       // console.log(this.prodDate);
       this.getSupervisors();
@@ -230,6 +237,17 @@ export class ReceiptProdComponent implements OnInit {
       this.spincls = '';
     }
   }
+  getCurrentDate() {
+    // tslint:disable-next-line:triple-equals
+      this.handleAPI.get('api/GetCurrentDate')
+        .subscribe( (data: any) => {
+          this.cDate = data;
+          },
+          error => {
+            console.log(error);
+          }
+      );
+  }
   getProducedQty() {
     // tslint:disable-next-line:triple-equals
     if (this.prodMaster.DocNum != '') {
@@ -246,7 +264,7 @@ export class ReceiptProdComponent implements OnInit {
     }
   }
   setDate() {
-    this.prodMaster.ProdDate = new Date(this.prodDate.year + '-' + this.prodDate.month + '-' + this.prodDate.day);
+    this.prodMaster.ProdDate = new Date(Date.UTC(this.prodDate.year, this.prodDate.month - 1, this.prodDate.day, 0, 0, 0, 0));
     // console.log(this.prodMaster.ProdDate);
   }
   onAddBatch() {
@@ -275,6 +293,7 @@ export class ReceiptProdComponent implements OnInit {
     this.prodDetail.Quantity = this.AutoQty;
     this.prodDetail.KgQty = this.KgQty;
     this.prodDetail.IsRedressed = this.AutoIsRedressed;
+    this.prodMaster.NoOfRolls = this.prodMaster.NoOfRolls + 1;
     // this.prodDetail.Line_No = this.lineCount + 1;
     const dt = {
       prodMaster: this.prodMaster,
@@ -299,9 +318,11 @@ export class ReceiptProdComponent implements OnInit {
             this.KgQty = null;
             this.AutoIsRedressed = 'N';
             this.qtyValid = false;
+            // s etTimeout(() => { this.renderer.selectRootElement(this.cssSelector).focus(); }, 100);
             // this.setDate();
             if (!(oldid > 0)) {
               this.router.navigate(['/receipt-prod/' + data.ID]);
+              // setTimeout(() => { this.renderer.selectRootElement(this.cssSelector).focus(); }, 100);
             }
           } else {
             this.toastr.error(data.Response, 'Error!');
@@ -355,7 +376,11 @@ export class ReceiptProdComponent implements OnInit {
     this.KgQty = this.AutoQty / this.prodMaster.KgFactor;
   }
   setUOMQty() {
-    this.AutoQty = this.KgQty * this.prodMaster.KgFactor;
+    if (this.prodMaster.KgFactor !== 1) {
+      this.AutoQty = Math.round(this.KgQty * this.prodMaster.KgFactor);
+    } else {
+      this.AutoQty = this.KgQty * this.prodMaster.KgFactor;
+    }
   }
   onRemoveBatch(item: ProdDetail) {
     if (!confirm('Are you sure you want to remove this Batch?')) {
@@ -363,6 +388,7 @@ export class ReceiptProdComponent implements OnInit {
     }
     this.auth.loading = true;
     if (this.prodMaster.ProdMasterID > 0) {
+      this.prodMaster.NoOfRolls = this.prodMaster.NoOfRolls - 1;
         this.handleAPI.create('', 'api/RemoveBatchFromList/' + item.ProdDetailID)
         .subscribe( (data: any) => {
           // console.log(data);
@@ -404,6 +430,13 @@ export class ReceiptProdComponent implements OnInit {
     setTimeout(() => { this.modalService.dismissAll(); }, 1000);
     // this.modalService.dismissAll();
   }
+  openMiniLabel(content, idt: ProdDetail) {
+    this.setMiniLabelValue(idt, this.printRecord);
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size: 'sm'});
+    setTimeout(() => { this.printMiniLabel('print-section'); }, 300);
+    setTimeout(() => { this.modalService.dismissAll(); }, 1000);
+    // this.modalService.dismissAll();
+  }
   setLabelValue(idt: ProdDetail, callback) {
     this.lbl = true;
     this.value = idt.BatchNo;
@@ -412,6 +445,11 @@ export class ReceiptProdComponent implements OnInit {
     this.expiry = new Date(this.prodMaster.ProdDate);
     // console.log(this.prodMaster.ProdDate);
     this.expiry.setDate(this.expiry.getDate() + 365);
+  }
+  setMiniLabelValue(idt: ProdDetail, callback) {
+    this.lbl = true;
+    this.value = idt.BatchNo;
+    this.bc_batchno = this.value;
   }
   openModalPost(content, sz: any = 'lg') {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: sz});
@@ -443,6 +481,30 @@ export class ReceiptProdComponent implements OnInit {
             text-align:left;
           }
           </style>
+        </head>
+        <body onload="window.print();window.close()">
+        <!--<div class="row">-->
+          <!--<div class="col-md-12">-->
+          ${printContents}
+          <!--</div>-->
+        <!--</div>-->
+        </body>
+      </html>`
+    );
+    popupWin.document.close();
+    this.lbl = false;
+  }
+  printMiniLabel(elem: any): void {
+    let printContents, popupWin;
+    printContents = document.getElementById(elem).innerHTML;
+    popupWin = window.open('', '_blank', 'top=0,left=0,width=auto');
+    popupWin.document.open();
+    popupWin.document.write(`
+      <html>
+        <head>
+          <title>Print tab</title>
+          <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+          <link rel="stylesheet" href="../assets/css/fontawesome-all.css">
         </head>
         <body onload="window.print();window.close()">
         <!--<div class="row">-->
@@ -501,7 +563,7 @@ export class ReceiptProdComponent implements OnInit {
     const now = new Date();
 
     timestamp = now.getFullYear().toString().substr(2, 2); // 2011
-    timestamp += (now.getMonth() < 9 ? '0' : '') + now.getMonth().toString(); // JS months are 0-based, so +1 and pad with 0's
+    timestamp += (now.getMonth() < 9 ? '0' : '') + (now.getMonth() + 1).toString(); // JS months are 0-based, so +1 and pad with 0's
     timestamp += (now.getDate() < 10 ? '0' : '') + now.getDate().toString(); // pad with a 0
     timestamp += this.prodMaster.MachineNo.substr(0, 2); // pad with a 0
     timestamp += (now.getHours() < 10 ? '0' : '') + now.getHours().toString();
@@ -565,6 +627,7 @@ export class ReceiptProdComponent implements OnInit {
     this.saveBtn = 'disabled';
     this.auth.loading = true;
     this.prodMaster.ProdDate = new Date(Date.UTC(this.prodDate.year, this.prodDate.month - 1, this.prodDate.day, 0, 0, 0, 0));
+    this.prodMaster.NoOfRolls = this.prodDetails.length;
     // console.log(this.prodMaster.ProdDate);
     const dt = {
       ProdMaster: this.prodMaster,

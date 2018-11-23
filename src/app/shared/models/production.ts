@@ -9,6 +9,7 @@ export class ProdMaster {
     PlannedQty = 0;
     CompletedQty: number;
     TotalQty = 0;
+    NoOfRolls = 0;
     MachineNo: string;
     Status: string;
     Warehouse: string;
@@ -29,8 +30,8 @@ export class ProdDetail {
     Line_No: number;
     ProdMasterID: number;
     BatchNo: string;
-    Quantity: number;
-    KgQty: number;
+    Quantity = 0;
+    KgQty = 0;
     IsPosted: boolean;
     IsRedressed = 'N';
 }

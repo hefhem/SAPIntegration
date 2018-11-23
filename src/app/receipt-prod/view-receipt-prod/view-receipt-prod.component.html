@@ -18,6 +18,7 @@
             <th><strong>Customer Name</strong></th>
             <th><strong>Item Name</strong></th>
             <th><strong>Total Qty</strong></th>
+            <th><strong>Total Rolls</strong></th>
             <th><strong>Approved</strong></th>
             <th><strong>Posted</strong></th>
             <th><strong>Action</strong></th>
@@ -43,6 +44,9 @@
             <td>
                 {{idt.TotalQty | number : "1.2"}}
             </td>
+            <td>
+              {{idt.NoOfRolls }}
+          </td>
             <td>
                 {{idt.IsApproved ? 'Yes':'No'}}
             </td>

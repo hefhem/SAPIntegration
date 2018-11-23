@@ -184,7 +184,9 @@
       <div class="col-md-12">
         <form class="inv-form" #barcodeForm="ngForm" (ngSubmit)="onAddBarcode()" *ngIf="!print">
           <div class="form-row">
-            <div class="col-md-3"></div>  
+            <div class="col-md-3" style="font-size:30pt;">
+               <strong>{{dpb.length}}</strong>
+            </div>  
             <div class="form-group col-md-6">
               <label for="barcode">
                 <strong>Barcode:</strong>
@@ -211,7 +213,7 @@
               <tbody>
                 <tr *ngFor="let dt of dpb" >
                   <td>{{dt.PackingNo}}</td>
-                  <td>{{dt.Quantity}}</td>
+                  <td>{{dt.Quantity | number: '1.2'}}</td>
                   <td><a class="btn btn-danger text-white" (click)="removeFromBarcodeList(dt)" title="Remove from list">
                       <i class="fas fa-trash"></i>
                     </a></td>
@@ -235,6 +237,11 @@
       </button>
     </div>
     <div class="modal-body">
+      <div class="row" style="font-size:30pt;">
+        <div class="col-md-12">
+          <strong>{{deliveryPacking.length}}</strong>
+        </div>
+        </div> 
       <div class="row" id="print-section">
         <div class="col-md-12">
           <div class="form-row">
@@ -249,7 +256,7 @@
                 <tr *ngFor="let dt of deliveryPacking" >
                   <td>{{dt.PackingNo}}</td>
                   <td>{{dt.ItemName}}</td>
-                  <td>{{dt.Quantity}}</td>
+                  <td>{{dt.Quantity | number: '1.2'}}</td>
                   <td><a class="btn btn-danger text-white" (click)="removeFromPickList(dt)" title="Remove from list" *ngIf="!print">
                       <i class="fas fa-trash"></i>
                     </a></td>
