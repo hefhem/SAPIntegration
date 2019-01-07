@@ -1,7 +1,9 @@
   <form class="form-signin" #loginForm="ngForm" (ngSubmit)="doLogin()">
     <div class="text-center">
-      <!-- <img src="../../assets/images/is_logo.png" alt="" width="200" height="200"> -->
+      <img src="../../assets/images/Logo.jpg" alt="" width="200" height="100">
     </div>
+    <br/>
+    <br/>
     <div class="text-center">
       <h1 class="h3 font-weight-normal">Please sign in</h1>
     </div>
@@ -10,8 +12,8 @@
     <br/>
     <label for="UserPassword" class="sr-only">Password</label>
     <input type="password" id="UserPassword" name="UserPassword" [(ngModel)]="account.UserPassword" class="form-control" placeholder="Password" required>
-    <button [disabled]="!loginForm.valid || disabled" class="btn btn-lg btn-primary btn-block" type="submit">{{signin}}</button>
+    <button [disabled]="!loginForm.valid || disabled" class="btn btn-lg btn-info btn-block" type="submit">{{signin}}</button>
     <div class="text-center">
-      <p class="mt-5 mb-3 text-muted">&copy; {{ currentDate }} Hartford Green Consulting</p>
+      <p class="mt-5 mb-3 text-muted">&copy; {{ currentDate }} Provatix</p>
     </div>
   </form>

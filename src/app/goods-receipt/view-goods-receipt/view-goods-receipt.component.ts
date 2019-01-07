@@ -15,7 +15,7 @@ import { GoodsReceiptMaster } from '../../shared/models/production';
 })
 export class ViewGoodsReceiptComponent implements OnInit {
 
-  dtOptions: DataTables.Settings = {};
+  dtOptions: any = {};
   endpoint = 'api/GetGoodsReceiptMaster';
   goodsReceiptMaster: GoodsReceiptMaster[] = [];
   userID: any;
@@ -35,6 +35,13 @@ export class ViewGoodsReceiptComponent implements OnInit {
     this.dtOptions = {
       pagingType: 'full_numbers',
       pageLength: 10,
+      dom: 'Bfrtip',
+      // Configure the buttons
+      buttons: [
+        'copy',
+        'print',
+        'excel'
+      ],
       // destroy: true
     };
     // this.userID = this.auth.getUserID();
@@ -51,6 +58,13 @@ export class ViewGoodsReceiptComponent implements OnInit {
           this.dtOptions = {
             pagingType: 'full_numbers',
             pageLength: 10,
+            dom: 'Bfrtip',
+            // Configure the buttons
+            buttons: [
+              'copy',
+              'print',
+              'excel'
+            ],
             destroy: true
           };
           this.dtTrigger.next();

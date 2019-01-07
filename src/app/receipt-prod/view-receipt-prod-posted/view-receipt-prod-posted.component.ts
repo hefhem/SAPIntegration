@@ -6,17 +6,17 @@ import { AuthService } from '../../shared/services/auth.service';
 import { Subject } from 'rxjs';
 
 import 'rxjs/add/operator/map';
-import { DeliveryMaster } from '../../shared/models/delivery';
+import { ProdMaster } from '../../shared/models/production';
 
 @Component({
-  selector: 'app-view-ar-delivery',
-  templateUrl: './view-ar-delivery.component.html',
-  styleUrls: ['./view-ar-delivery.component.css']
+  selector: 'app-view-receipt-prod-posted',
+  templateUrl: './view-receipt-prod-posted.component.html',
+  styleUrls: ['./view-receipt-prod-posted.component.css']
 })
-export class ViewArDeliveryComponent implements OnInit {
+export class ViewReceiptProdPostedComponent implements OnInit {
   dtOptions: any = {};
-  endpoint = 'api/nGetDelivery';
-  deliveryMaster: DeliveryMaster[] = [];
+  endpoint = 'api/ProductionReceipt';
+  prodMaster: ProdMaster[] = [];
   userID: any;
   dtTrigger: Subject<any> = new Subject();
   constructor(
@@ -33,30 +33,31 @@ export class ViewArDeliveryComponent implements OnInit {
     }
     this.dtOptions = {
       pagingType: 'full_numbers',
-      pageLength: 10,
+      pageLength: 50,
       dom: 'Bfrtip',
       // Configure the buttons
       buttons: [
         'copy',
         'print',
         'excel'
-      ],
+      ]
       // destroy: true
     };
     // this.userID = this.auth.getUserID();
-    this.getDeliveryMaster();
+    this.getProdMaster();
   }
 
-  getDeliveryMaster() {
+  getProdMaster() {
     this.auth.loading = true;
-    this.deliveryMaster = [];
+    this.prodMaster = [];
     this.handleAPI.get(this.endpoint)
       .subscribe( (data: any) => {
           // console.log(data);
-          this.deliveryMaster = data;
+          this.prodMaster = data;
+          this.prodMaster = this.prodMaster.filter(x => x.IsPosted);
           this.dtOptions = {
             pagingType: 'full_numbers',
-            pageLength: 10,
+            pageLength: 50,
             dom: 'Bfrtip',
             // Configure the buttons
             buttons: [
@@ -82,7 +83,26 @@ export class ViewArDeliveryComponent implements OnInit {
 
   viewRecord(id: any) {
     console.log(id);
-    this.router.navigate(['/ar-delivery', id]);
+    this.router.navigate(['/receipt-prod', id]);
   }
-}
 
+  // reverseInvoice(inv: Invoice) {
+  //   if (confirm('Are you sure you want to cancel this Invoice ' + inv.invoiceNumber + ' ?')) {
+  //     this.handleAPI.deleteWithUserID(inv.invoiceMasterID, 'api/Invoice', this.userID )
+  //       .subscribe( data => {
+  //           this.toastr.success('Invoice cancelled', 'Success');
+  //           this.getInvoices();
+  //           // console.log(data);
+  //         },
+  //         error => {
+  //           if (error.object) {
+  //             this.toastr.warning('Please check the console.', 'Oops! An error occurred');
+  //           } else {
+  //             this.toastr.warning(error, 'Oops! An error occurred');
+  //           }
+  //         }
+  //     );
+  //  }
+  // }
+
+}

@@ -5,6 +5,7 @@ export class UserRole {
     ApprovePR: string;
     ApproveDV: string;
     ApproveGR: string;
+    Password: string;
 }
 export class ClsTokenResponse {
     IsSuccess: boolean;

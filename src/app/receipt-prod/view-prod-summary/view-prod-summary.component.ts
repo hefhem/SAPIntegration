@@ -15,7 +15,7 @@ import { ProdMaster } from '../../shared/models/production';
 })
 export class ViewProdSummaryComponent implements OnInit {
 
-  dtOptions: DataTables.Settings = {};
+  dtOptions: any = {};
   endpoint = 'api/GetProductionSummary';
   prodSummary = [];
   dtTrigger: Subject<any> = new Subject();
@@ -34,6 +34,13 @@ export class ViewProdSummaryComponent implements OnInit {
     this.dtOptions = {
       pagingType: 'full_numbers',
       pageLength: 10,
+      dom: 'Bfrtip',
+      // Configure the buttons
+      buttons: [
+        'copy',
+        'print',
+        'excel'
+      ],
       // destroy: true
     };
     // this.userID = this.auth.getUserID();
@@ -50,6 +57,13 @@ export class ViewProdSummaryComponent implements OnInit {
           this.dtOptions = {
             pagingType: 'full_numbers',
             pageLength: 10,
+            dom: 'Bfrtip',
+            // Configure the buttons
+            buttons: [
+              'copy',
+              'print',
+              'excel'
+            ],
             destroy: true
           };
           this.dtTrigger.next();

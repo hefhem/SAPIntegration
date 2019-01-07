@@ -214,7 +214,7 @@
           </label>
           <br/>
           <div>
-            <select name="AutoIsRedressed" [(ngModel)]="AutoIsRedressed" class="form-control" required>
+            <select name="AutoIsRedressed" [(ngModel)]="AutoIsRedressed" class="form-control form-control-lg" required style="font-size: 20pt;">
               <option value="N">No</option>
               <option value="Y">Yes</option>
             </select>
@@ -227,7 +227,7 @@
             </label>
           <!-- <div class="input-group"> -->
               <input type="number" class="form-control" name="KgQty" id="KQty" cssSelector="#KQty"
-              [(ngModel)]="KgQty" (keyup)="setUOMQty()" style="background-color:rgb(0, 255, 98); font-size: 20pt; font-weight: bold;">
+              [(ngModel)]="KgQty" (keyup)="setUOMQty()" style="background-color:rgb(0, 255, 98); font-size: 20pt; font-weight: bold;" required >
               <!-- <div class="input-group-append">
                   <button type="submit" [disabled]="!qtyForm.valid" class="btn btn-block btn-info" title="Add to list">
                       <i class="fa fa-plus"></i>
@@ -241,24 +241,16 @@
 
         </label>
         <br/>
-        <div style="font-size:30pt;" class="text-center">
-            <strong>{{AutoQty}}</strong>
-          </div>
-      <!-- <div class="input-group"> -->
-          <!-- <input disabled type="number" min="0" class="form-control" name="AutoQty" 
-            [(ngModel)]="AutoQty" style="font-size: 20pt; font-weight: bold;"> -->
-          <!-- <div class="input-group-append">
-              <button type="submit" [disabled]="!qtyForm.valid" class="btn btn-block btn-info" title="Add to list">
-                  <i class="fa fa-plus"></i>
-                </button>
-          </div>
-        </div> -->
+        
+          <input  type="number" min="0" class="form-control" name="AutoQty" 
+            [(ngModel)]="AutoQty" style="font-size: 20pt; font-weight: bold;" (keyup)="setKgQty()"> 
+          
       </div>
       <div class="col-md-2 text-center">
           <label for="">
                &nbsp;
             </label>
-        <button type="submit" [disabled]="!qtyForm.valid" class="btn btn-block btn-info" title="Add to list">
+        <button type="submit" [disabled]="!qtyForm.valid" class="btn btn-block btn-lg btn-info" title="Add to list">
           <i class="fa fa-plus"></i>
         </button>
       </div>

@@ -31,6 +31,7 @@ import { ViewArDeliveryComponent } from './ar-delivery/view-ar-delivery/view-ar-
 import { ViewProdSummaryComponent } from './receipt-prod/view-prod-summary/view-prod-summary.component';
 import { GoodsReceiptComponent } from './goods-receipt/goods-receipt.component';
 import { ViewGoodsReceiptComponent } from './goods-receipt/view-goods-receipt/view-goods-receipt.component';
+import { ViewReceiptProdPostedComponent } from './receipt-prod/view-receipt-prod-posted/view-receipt-prod-posted.component';
 
 
 @NgModule({
@@ -47,7 +48,8 @@ import { ViewGoodsReceiptComponent } from './goods-receipt/view-goods-receipt/vi
     ViewArDeliveryComponent,
     ViewProdSummaryComponent,
     GoodsReceiptComponent,
-    ViewGoodsReceiptComponent
+    ViewGoodsReceiptComponent,
+    ViewReceiptProdPostedComponent
   ],
   imports: [
     BrowserModule,

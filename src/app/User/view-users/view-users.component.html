@@ -26,6 +26,12 @@
           <td>
             <strong>Approve GR</strong>
           </td>
+          <td>
+            <strong>Password</strong>
+          </td>
+          <td>
+            <strong>Action</strong>
+          </td>
         </thead>
         <tbody>
           <tr *ngFor="let userRole of userRoles">
@@ -55,6 +61,9 @@
                   <option value="N">No</option>
                   <option value="Y">Yes</option>
                 </select>
+            </td>
+            <td>
+              <input type="password" class="form-control" name="Password" [(ngModel)]="userRole.Password"/>
             </td>
             <td align="right">
               <a class="btn btn-primary" (click)="onUpdate(userRole)">

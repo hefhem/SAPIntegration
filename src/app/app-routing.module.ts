@@ -5,6 +5,7 @@ import { ViewUsersComponent } from './User/view-users/view-users.component';
 import { LoginComponent } from './login/login.component';
 import { ReceiptProdComponent } from './receipt-prod/receipt-prod.component';
 import { ViewReceiptProdComponent } from './receipt-prod/view-receipt-prod/view-receipt-prod.component';
+import { ViewReceiptProdPostedComponent } from './receipt-prod/view-receipt-prod-posted/view-receipt-prod-posted.component';
 import { ArDeliveryComponent } from './ar-delivery/ar-delivery.component';
 import { PrintArDeliveryComponent } from './ar-delivery/print-ar-delivery/print-ar-delivery.component';
 import { ViewArDeliveryComponent } from './ar-delivery/view-ar-delivery/view-ar-delivery.component';
@@ -32,6 +33,10 @@ const routes: Routes = [
   {
     path: 'view-receipt-prod',
     component: ViewReceiptProdComponent
+  },
+  {
+    path: 'view-receipt-prod-posted',
+    component: ViewReceiptProdPostedComponent
   },
   {
     path: 'goods-receipt',

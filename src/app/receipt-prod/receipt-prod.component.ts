@@ -289,7 +289,12 @@ export class ReceiptProdComponent implements OnInit {
       return;
     }
     this.auth.loading = true;
-    this.prodDetail.BatchNo = this.generateBatchNo();
+    let batch = this.generateBatchNo();
+    while (this.batchExist(batch)) {
+      batch = this.generateBatchNo();
+    }
+    
+    this.prodDetail.BatchNo = batch;
     this.prodDetail.Quantity = this.AutoQty;
     this.prodDetail.KgQty = this.KgQty;
     this.prodDetail.IsRedressed = this.AutoIsRedressed;
@@ -341,6 +346,14 @@ export class ReceiptProdComponent implements OnInit {
     // tslint:disable-next-line:triple-equals
     if (this.prodMaster.DocNum.trim() != '' && this.prodMaster.ProdDate != null && this.prodMaster.Supervisor.trim() != '') {
       this.formValid = true;
+    }
+  }
+  batchExist(batch: string) {
+    const bc = this.prodDetails.filter(x => x.BatchNo == batch);
+    if (bc.length > 0) {
+      return true;
+    } else {
+      return false;
     }
   }
   cancelRecord() {

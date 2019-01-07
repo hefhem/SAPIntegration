@@ -14,7 +14,7 @@ import { ProdMaster } from '../../shared/models/production';
   styleUrls: ['./view-receipt-prod.component.css']
 })
 export class ViewReceiptProdComponent implements OnInit {
-  dtOptions: DataTables.Settings = {};
+  dtOptions:any = {};
   endpoint = 'api/ProductionReceipt';
   prodMaster: ProdMaster[] = [];
   userID: any;
@@ -33,7 +33,14 @@ export class ViewReceiptProdComponent implements OnInit {
     }
     this.dtOptions = {
       pagingType: 'full_numbers',
-      pageLength: 10,
+      pageLength: 50,
+      dom: 'Bfrtip',
+      // Configure the buttons
+      buttons: [
+        'copy',
+        'print',
+        'excel'
+      ],
       // destroy: true
     };
     // this.userID = this.auth.getUserID();
@@ -47,9 +54,17 @@ export class ViewReceiptProdComponent implements OnInit {
       .subscribe( (data: any) => {
           // console.log(data);
           this.prodMaster = data;
+          this.prodMaster = this.prodMaster.filter(x => !x.IsPosted);
           this.dtOptions = {
             pagingType: 'full_numbers',
-            pageLength: 10,
+            pageLength: 50,
+            dom: 'Bfrtip',
+            // Configure the buttons
+            buttons: [
+              'copy',
+              'print',
+              'excel'
+            ],
             destroy: true
           };
           this.dtTrigger.next();
