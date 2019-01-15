@@ -260,12 +260,12 @@
       </div> 
       <div class="row" id="print-section">
         <div class="col-md-12 text-center" *ngIf="print">
-          <h6 class="text-center" style="font-size:35pt;"><strong>ARISTOCRAT INDUSTRIES LTD.</strong> </h6>
+          <h6 class="text-center" style="font-size:25pt;"><strong>ARISTOCRAT INDUSTRIES LTD.</strong> </h6>
         </div>
-        <div class="col-md-12 text-center" style="font-size:25pt;" *ngIf="print">
+        <div class="col-md-12 text-center" style="font-size:15pt;" *ngIf="print">
             <p class="text-center"><strong>LOADING SHEET</strong> </p>
         </div>
-        <div class="col-md-12 text-center" style="margin-bottom: 5%;" *ngIf="print">
+        <div class="col-md-12 text-center" style="margin-bottom: 2%;" *ngIf="print">
             <table class="table table-hover">
               <tr>
                 <td>Customer:</td>
@@ -285,6 +285,12 @@
                   <td>Phone No.:</td>
                   <td></td>
                 </tr>
+                <tr>
+                  <td>Transporter:</td>
+                  <td></td>
+                  <td>Cust. Ref.:</td>
+                  <td></td>
+                </tr>
             </table>
         </div>
         
@@ -296,7 +302,7 @@
                   <td><strong>Item Description</strong> </td>
                   <td><strong>UOM</strong> </td>
                   <td><strong>Quantity</strong></td>
-                  <td><strong>Batch Count</strong></td>
+                  <td><strong>No. of Rolls/Bundles</strong></td>
                   <td *ngIf="!print"><strong>Action</strong></td>
               </thead>
               <tbody>
@@ -314,6 +320,30 @@
             </table>
           </div>
         </div>
+        <div class="col-md-12 text-center" style="margin-top: 2%;" *ngIf="print">
+          <table class="table">
+            <tr>
+              <td>Dispatch by:</td>
+              <td>Checked by:</td>
+              <td>Approved by:</td>
+            </tr>
+            <tr>
+              <td>Name:...............</td>
+              <td>Name:...............</td>
+              <td>Name:...............</td>
+            </tr>
+            <tr>
+              <td>Sign:...............</td>
+              <td>Sign:...............</td>
+              <td>Sign:...............</td>
+            </tr>
+            <tr>
+              <td>Date:...............</td>
+              <td>Date:...............</td>
+              <td>Date:...............</td>
+            </tr>
+          </table>
+      </div>
       </div>
     </div>
     <div class="modal-footer">
