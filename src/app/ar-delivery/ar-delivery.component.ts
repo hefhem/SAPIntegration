@@ -81,8 +81,13 @@ export class ArDeliveryComponent implements OnInit {
   openModalPost(content, sz: any = 'lg') {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: sz});
   }
+  
   openModal(content, sz: any = 'lg') {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: sz});
+    if(this.print){
+      setTimeout(() => { this.printPlist('print-section'); }, 300);
+      setTimeout(() => { this.modalService.dismissAll(); }, 1000);
+    }
   }
   getOrderDetails() {
     // tslint:disable-next-line:triple-equals
@@ -318,7 +323,9 @@ export class ArDeliveryComponent implements OnInit {
                 DeliveryDetailID: this.ddid,
                 ItemName: this.scanItem,
                 PackingNo: this.barcode,
-                Quantity: data.TotalQty
+                Quantity: data.TotalQty,
+                BatchCount: data.BatchCount,
+                UOM: data.UOM
               };
               this.dpb.push(dt);
             } else {
@@ -398,5 +405,73 @@ export class ArDeliveryComponent implements OnInit {
     } else {
       this.formValid = false;
     }
+  }
+  
+  printPlist(elem: any): void {
+    let printContents, popupWin;
+    printContents = document.getElementById(elem).innerHTML;
+    popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
+    popupWin.document.open();
+    popupWin.document.write(`
+      <html>
+        <head>
+          <title>Print tab</title>
+          <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+          <link rel="stylesheet" href="../assets/css/fontawesome-all.css">
+          <style>
+          @media print
+          {
+              tbody {
+                  page-break-inside: avoid;
+              }
+              thead {
+                  display: table-header-group;
+                  margin-top: 100px;
+              }
+          }
+          .table {
+            width:100%;
+            font-size:14pt;
+          }
+          td {
+            text-align:left;
+          }
+          </style>
+        </head>
+        <body onload="window.print();window.close()">
+        ${printContents}
+        </div>
+        </div>
+        </body>
+      </html>`
+    );
+    popupWin.document.close();
+  }
+  archiveDocument() {
+    // tslint:disable-next-line:triple-equals
+    if(!confirm("Are you sure you want to archive this document?")) {
+      return;
+    }
+    this.auth.loading = true;
+    this.handleAPI.get('api/ArchiveDelivery/' + this.deliveryMaster.DeliveryMasterID)
+        .subscribe( (data: any) => {
+          if(data.IsSuccess){
+            this.deliveryMaster.IsArchived = true;
+            this.toastr.success('Document successfully archived','Success!')
+            
+          } else {
+            this.toastr.warning(data.Response, 'Error archiving document!')
+          }
+          this.auth.loading = false;
+          },
+          error => {
+            if (typeof error === 'string') {
+              this.toastr.warning(error, 'Oops! An error occurred');
+            } else {
+              this.toastr.warning('Please check the console.', 'Oops! An error occurred');
+            }
+            this.auth.loading = false;
+          }
+      );
   }
 }

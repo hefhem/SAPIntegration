@@ -228,6 +228,8 @@
           <!-- <div class="input-group"> -->
               <input type="number" class="form-control" name="KgQty" id="KQty" cssSelector="#KQty"
               [(ngModel)]="KgQty" (keyup)="setUOMQty()" style="background-color:rgb(0, 255, 98); font-size: 20pt; font-weight: bold;" required >
+              <!-- <input type="number" class="form-control" name="KgQty" id="KQty" cssSelector="#KQty"
+              [(ngModel)]="KgQty" (keyup)="setUOMQty()" style="background-color:rgb(0, 255, 98); font-size: 20pt; font-weight: bold;" required > -->
               <!-- <div class="input-group-append">
                   <button type="submit" [disabled]="!qtyForm.valid" class="btn btn-block btn-info" title="Add to list">
                       <i class="fa fa-plus"></i>
@@ -243,7 +245,9 @@
         <br/>
         
           <input  type="number" min="0" class="form-control" name="AutoQty" 
-            [(ngModel)]="AutoQty" style="font-size: 20pt; font-weight: bold;" (keyup)="setKgQty()"> 
+            [(ngModel)]="AutoQty" style="font-size: 20pt; font-weight: bold;"> 
+            <!-- <input  type="number" min="0" class="form-control" name="AutoQty" 
+            [(ngModel)]="AutoQty" style="font-size: 20pt; font-weight: bold;" (keyup)="setKgQty()">  -->
           
       </div>
       <div class="col-md-2 text-center">

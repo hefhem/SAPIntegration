@@ -389,11 +389,14 @@ export class ReceiptProdComponent implements OnInit {
     this.KgQty = this.AutoQty / this.prodMaster.KgFactor;
   }
   setUOMQty() {
-    if (this.prodMaster.KgFactor !== 1) {
-      this.AutoQty = Math.round(this.KgQty * this.prodMaster.KgFactor);
-    } else {
+    if (this.IsKg) {
       this.AutoQty = this.KgQty * this.prodMaster.KgFactor;
     }
+    // if (this.prodMaster.KgFactor === 1) {
+    //   this.AutoQty = Math.round(this.KgQty * this.prodMaster.KgFactor);
+    // } else {
+    //   this.AutoQty = this.KgQty * this.prodMaster.KgFactor;
+    // }
   }
   onRemoveBatch(item: ProdDetail) {
     if (!confirm('Are you sure you want to remove this Batch?')) {

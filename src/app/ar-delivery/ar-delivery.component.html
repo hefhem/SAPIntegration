@@ -13,6 +13,8 @@
       <button class="btn btn-secondary" (click)="resetForm()">New Record</button>
       &nbsp;
       <button [hidden]="this.auth.userRole.ApproveDV != 'Y'" class="btn btn-info" (click)="approveDelivery()" *ngIf="!deliveryMaster.IsApproved">Approve</button>
+      &nbsp;
+      <button [hidden]="this.deliveryMaster.IsPosted || deliveryMaster.IsArchived" class="btn btn-danger" (click)="archiveDocument()">Archive Document</button>
     </div>
     <div class="col-md-3"></div>
     
@@ -60,6 +62,12 @@
           </div>
           <div class="form-group col-md-4"></div>
           <div class="form-group form-group col-md-2">
+              <label for="">
+                  <strong>Archived:</strong>
+                </label>
+                <br/>
+                <!-- <input disabled class="form-control" name="IsPosted" #IsPosted="ngModel" [(ngModel)]="prodMaster.IsPosted"> -->
+                {{deliveryMaster.IsArchived ? 'Yes' : 'No'}}
           </div>
           <div class="form-group col-md-2">
             <label for="IsPosted">
@@ -87,7 +95,7 @@
       </form>
     </div>
   </div>
-  <div class="row">
+  <div class="row" *ngIf="!deliveryMaster.IsArchived">
     <div class="col-md-12">
         <button class="btn btn-info" (click)="openModal(pickList)">View Pick List</button>
       </div>
@@ -104,6 +112,9 @@
             <strong>Item Name</strong>
           </td>
           <td>
+              <strong>UOM</strong>
+            </td>
+          <td>
             <strong>Quantity</strong>
           </td>
           <td>
@@ -112,7 +123,7 @@
           <td>
               <strong>Picked Qty</strong>
             </td>
-          <td>
+          <td *ngIf="!print">
             <strong>Action</strong>
           </td>
         </thead>
@@ -125,6 +136,9 @@
               {{idt.ItemName}}
             </td>
             <td>
+                {{idt.UOM}}
+              </td>
+            <td>
               {{idt.Quantity | number: '1.2'}}
             </td>
             <td>
@@ -133,15 +147,15 @@
             <td>
                 {{idt.SelectedQty | number: '1.2'}}
               </td>
-            <td>
+            <td *ngIf="!print">
               <!-- <a class="btn btn-primary" (click)="showForEdit(idt)" >
               <i class="fa fa-pencil-square-o"></i>
             </a> -->
-              <a class="btn btn-success text-white" (click)="openScan(content,idt)" title="Pick items" *ngIf="!print">
+              <a class="btn btn-success text-white" (click)="openScan(content,idt)" title="Pick items" >
                 <i class="fas fa-cubes"></i>
               </a>
               &nbsp;
-              <a class="btn btn-danger text-white" (click)="removeSOLine(idt)" title="Remove from list" *ngIf="!print">
+              <a class="btn btn-danger text-white" (click)="removeSOLine(idt)" title="Remove from list">
                 <i class="fas fa-trash"></i>
               </a>
             </td>
@@ -160,7 +174,7 @@
       </button>
     </div>
     <div class="form-group col-md-3">
-      <button [hidden]="!isPostable || deliveryMaster.IsPosted" type="button" class="btn btn-lg btn-block btn-secondary" (click)="openModalPost(saplogin,'sm')" title="Clear form">
+      <button [hidden]="!isPostable || deliveryMaster.IsPosted || deliveryMaster.IsArchived" type="button" class="btn btn-lg btn-block btn-secondary" (click)="openModalPost(saplogin,'sm')" title="Clear form">
         <i class="fas fa-rocket"> Post to SAP</i>
       </button>
     </div>
@@ -208,12 +222,14 @@
               <thead>
                   <td><strong>Packing No.</strong> </td>
                   <td><strong>Quantity</strong></td>
+                  <td><strong>Batch Count</strong></td>
                   <td><strong>Action</strong></td>
               </thead>
               <tbody>
                 <tr *ngFor="let dt of dpb" >
                   <td>{{dt.PackingNo}}</td>
                   <td>{{dt.Quantity | number: '1.2'}}</td>
+                  <td>{{dt.BatchCount | number: '1.2'}}</td>
                   <td><a class="btn btn-danger text-white" (click)="removeFromBarcodeList(dt)" title="Remove from list">
                       <i class="fas fa-trash"></i>
                     </a></td>
@@ -237,27 +253,60 @@
       </button>
     </div>
     <div class="modal-body">
-      <div class="row" style="font-size:30pt;">
+      <div class="row" style="font-size:30pt;" *ngIf="!print">
         <div class="col-md-12">
           <strong>{{deliveryPacking.length}}</strong>
         </div>
-        </div> 
+      </div> 
       <div class="row" id="print-section">
+        <div class="col-md-12 text-center" *ngIf="print">
+          <h6 class="text-center" style="font-size:35pt;"><strong>ARISTOCRAT INDUSTRIES LTD.</strong> </h6>
+        </div>
+        <div class="col-md-12 text-center" style="font-size:25pt;" *ngIf="print">
+            <p class="text-center"><strong>LOADING SHEET</strong> </p>
+        </div>
+        <div class="col-md-12 text-center" style="margin-bottom: 5%;" *ngIf="print">
+            <table class="table table-hover">
+              <tr>
+                <td>Customer:</td>
+                <td>{{deliveryMaster.CardName}}</td>
+                <td>Date:</td>
+                <td>{{deliveryMaster.DocDate | date: 'yyyy-MM-dd'}}</td>
+              </tr>
+              <tr>
+                <td>Driver's Name:</td>
+                <td></td>
+                <td>Order No.:</td>
+                <td>{{deliveryMaster.SOrderNo}}</td>
+              </tr>
+              <tr>
+                  <td>Vehicle No.:</td>
+                  <td></td>
+                  <td>Phone No.:</td>
+                  <td></td>
+                </tr>
+            </table>
+        </div>
+        
         <div class="col-md-12">
           <div class="form-row">
             <table class="table table-hover">
               <thead>
                   <td><strong>Packing No.</strong> </td>
                   <td><strong>Item Description</strong> </td>
+                  <td><strong>UOM</strong> </td>
                   <td><strong>Quantity</strong></td>
-                  <td><strong>Action</strong></td>
+                  <td><strong>Batch Count</strong></td>
+                  <td *ngIf="!print"><strong>Action</strong></td>
               </thead>
               <tbody>
                 <tr *ngFor="let dt of deliveryPacking" >
                   <td>{{dt.PackingNo}}</td>
                   <td>{{dt.ItemName}}</td>
+                  <td>{{dt.UOM}}</td>
                   <td>{{dt.Quantity | number: '1.2'}}</td>
-                  <td><a class="btn btn-danger text-white" (click)="removeFromPickList(dt)" title="Remove from list" *ngIf="!print">
+                  <td>{{dt.BatchCount | number: '1.2'}}</td>
+                  <td *ngIf="!print"><a class="btn btn-danger text-white" (click)="removeFromPickList(dt)" title="Remove from list">
                       <i class="fas fa-trash"></i>
                     </a></td>
                 </tr>

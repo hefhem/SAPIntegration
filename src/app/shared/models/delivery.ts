@@ -11,6 +11,7 @@ export class DeliveryMaster {
     PostDate: Date;
     CreatedBy = '';
     DateCreated = '';
+    IsArchived = false;
 }
 export class DeliveryDetail {
     DeliveryDetailID = 0;
@@ -18,6 +19,7 @@ export class DeliveryDetail {
     LineNum = 0;
     ItemNo = '';
     ItemName = '';
+    UOM = '';
     Quantity = 0;
     OpenQty = 0;
     SelectedQty = 0;
@@ -31,6 +33,8 @@ export class DeliveryPacking {
     ItemName = '';
     PackingNo = '';
     Quantity = 0;
+    BatchCount = 0;
+    UOM = '';
 }
 export class DeliveryData {
     deliveryMaster = new DeliveryMaster;
