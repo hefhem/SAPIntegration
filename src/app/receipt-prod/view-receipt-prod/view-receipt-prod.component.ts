@@ -54,7 +54,7 @@ export class ViewReceiptProdComponent implements OnInit {
       .subscribe( (data: any) => {
           // console.log(data);
           this.prodMaster = data;
-          this.prodMaster = this.prodMaster.filter(x => !x.IsPosted);
+          this.prodMaster = this.prodMaster.filter(x => !x.IsPosted && x.Status !== 'C');
           this.dtOptions = {
             pagingType: 'full_numbers',
             pageLength: 50,

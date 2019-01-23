@@ -14,7 +14,9 @@
       &nbsp;
       <button [hidden]="this.auth.userRole.ApprovePR != 'Y'" class="btn btn-info" (click)="approvePR()" *ngIf="!prodMaster.IsApproved">Approve</button>
       &nbsp;
-      <button class="btn btn-danger" (click)="cancelRecord()" *ngIf="prodMaster.ProdMasterID > 0 && !prodMaster.IsPosted">Cancel Record</button>
+      <button class="btn btn-danger" (click)="cancelRecord()" *ngIf="prodMaster.ProdMasterID > 0 && !prodMaster.IsPosted && prodMaster.Status != 'C'">Cancel Record</button>
+      &nbsp;
+      <button class="btn btn-danger" (click)="openRecord()" *ngIf="prodMaster.ProdMasterID > 0 prodMaster.Status == 'C'">Re-Open Record</button>
     </div>
     <div class="col-md-3"></div>
     

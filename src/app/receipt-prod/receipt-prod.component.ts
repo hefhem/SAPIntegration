@@ -385,6 +385,34 @@ export class ReceiptProdComponent implements OnInit {
         );
     }
   }
+  openRecord() {
+    if (!confirm('Are you sure you want to open this record?')) {
+      return;
+    }
+    if (this.prodMaster.ProdMasterID > 0) {
+      this.handleAPI.create('', 'api/OpenProductionOrder/' + this.prodMaster.ProdMasterID )
+          .subscribe( (data: any) => {
+            // console.log(data);
+            if (data.IsSuccess) {
+              this.toastr.success(data.Response);
+              this.router.navigate(['/receipt-prod/' + this.prodMaster.ProdMasterID]);
+              // this.setDate();
+            } else {
+              this.toastr.error(data.Response, 'Error!');
+            }
+            this.auth.loading = false;
+          },
+            error => {
+              if (typeof error === 'string') {
+                this.toastr.warning(error, 'Oops! An error occurred');
+              } else {
+                this.toastr.warning('Please check the console.', 'Oops! An error occurred');
+              }
+              this.auth.loading = false;
+            }
+        );
+    }
+  }
   setKgQty() {
     this.KgQty = this.AutoQty / this.prodMaster.KgFactor;
   }

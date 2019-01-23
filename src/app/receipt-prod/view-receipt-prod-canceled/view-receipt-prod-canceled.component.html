@@ -1,0 +1,67 @@
+<app-navbar></app-navbar>
+<div class="container">
+<div class="div-per">
+    <h2 class="bg-secondary text-white h-per">
+      POSTED TO SAP
+    </h2>
+</div>
+<div class="row">
+    <div class="col-md-12"><button class="btn btn-secondary" (click)="getProdMaster()">Refresh</button></div>
+    &nbsp;
+    <div class="col-md-12">
+      <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover table table-sm table-hover">
+        <thead>
+          <tr>
+            <th><strong>Order No</strong></th>
+            <th><strong>Packing No</strong></th>
+            <th><strong>Date</strong></th>
+            <th><strong>Customer Name</strong></th>
+            <th><strong>Item Name</strong></th>
+            <th><strong>Total Qty</strong></th>
+            <th><strong>Total Rolls</strong></th>
+            <th><strong>Approved</strong></th>
+            <th><strong>Posted</strong></th>
+            <th><strong>Action</strong></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let idt of prodMaster">
+            <td>
+                {{idt.DocNum}}
+              </td>
+            <td>
+              {{idt.PackingNo}}
+            </td>
+            <td>
+              {{idt.ProdDate | date:'dd-MM-yyyy'}}
+            </td>
+            <td>
+              {{idt.CardName}}
+            </td>
+            <td>
+              {{idt.ItemName}}
+            </td>
+            <td>
+                {{idt.TotalQty | number : "1.2"}}
+            </td>
+            <td>
+              {{idt.NoOfRolls }}
+          </td>
+            <td>
+                {{idt.IsApproved ? 'Yes':'No'}}
+            </td>
+            <td>
+                {{idt.IsPosted ? 'Yes':'No'}}
+            </td>
+            <td>
+              <a class="btn btn-primary text-white" [routerLink]="['/receipt-prod', idt.ProdMasterID]" >
+                <i class="fas fa-eye"></i>
+              </a>
+            </td>
+        
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  </div>

@@ -12,6 +12,7 @@ import { ViewArDeliveryComponent } from './ar-delivery/view-ar-delivery/view-ar-
 import { ViewProdSummaryComponent } from './receipt-prod/view-prod-summary/view-prod-summary.component';
 import { GoodsReceiptComponent } from './goods-receipt/goods-receipt.component';
 import { ViewGoodsReceiptComponent } from './goods-receipt/view-goods-receipt/view-goods-receipt.component';
+import { ViewReceiptProdCanceledComponent } from './receipt-prod/view-receipt-prod-canceled/view-receipt-prod-canceled.component';
 
 const routes: Routes = [
   {
@@ -37,6 +38,10 @@ const routes: Routes = [
   {
     path: 'view-receipt-prod-posted',
     component: ViewReceiptProdPostedComponent
+  },
+  {
+    path: 'view-receipt-prod-canceled',
+    component: ViewReceiptProdCanceledComponent
   },
   {
     path: 'goods-receipt',

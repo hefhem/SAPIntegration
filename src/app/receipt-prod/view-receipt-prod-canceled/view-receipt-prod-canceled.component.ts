@@ -9,11 +9,11 @@ import 'rxjs/add/operator/map';
 import { ProdMaster } from '../../shared/models/production';
 
 @Component({
-  selector: 'app-view-receipt-prod-posted',
-  templateUrl: './view-receipt-prod-posted.component.html',
-  styleUrls: ['./view-receipt-prod-posted.component.css']
+  selector: 'app-view-receipt-prod-canceled',
+  templateUrl: './view-receipt-prod-canceled.component.html',
+  styleUrls: ['./view-receipt-prod-canceled.component.css']
 })
-export class ViewReceiptProdPostedComponent implements OnInit {
+export class ViewReceiptProdCanceledComponent implements OnInit {
   dtOptions: any = {};
   endpoint = 'api/ProductionReceipt';
   prodMaster: ProdMaster[] = [];
@@ -54,7 +54,7 @@ export class ViewReceiptProdPostedComponent implements OnInit {
       .subscribe( (data: any) => {
           // console.log(data);
           this.prodMaster = data;
-          this.prodMaster = this.prodMaster.filter(x => x.IsPosted && x.Status !== 'C');
+          this.prodMaster = this.prodMaster.filter(x => x.Status == 'C');
           this.dtOptions = {
             pagingType: 'full_numbers',
             pageLength: 50,
