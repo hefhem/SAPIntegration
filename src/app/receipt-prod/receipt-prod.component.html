@@ -8,15 +8,15 @@
   <div class="form-row text-center">
       <div class="col-md-3"></div>
     <div class="col-md-6">
-      <button class="btn btn-primary" (click)="openModal(packingList)">View Packing List</button>
+      <button class="btn btn-primary" (click)="openModal(packingList)" *ngIf="prodMaster.Status != 'C'">View Packing List</button>
       &nbsp;
       <button class="btn btn-secondary" (click)="resetForm()">New Record</button>
       &nbsp;
-      <button [hidden]="this.auth.userRole.ApprovePR != 'Y'" class="btn btn-info" (click)="approvePR()" *ngIf="!prodMaster.IsApproved">Approve</button>
+      <button [hidden]="this.auth.userRole.ApprovePR != 'Y'" class="btn btn-info" (click)="approvePR()" *ngIf="!prodMaster.IsApproved && prodMaster.Status != 'C'">Approve</button>
       &nbsp;
       <button class="btn btn-danger" (click)="cancelRecord()" *ngIf="prodMaster.ProdMasterID > 0 && !prodMaster.IsPosted && prodMaster.Status != 'C'">Cancel Record</button>
       &nbsp;
-      <button class="btn btn-danger" (click)="openRecord()" *ngIf="prodMaster.ProdMasterID > 0 prodMaster.Status == 'C'">Re-Open Record</button>
+      <button class="btn btn-danger" (click)="openRecord()" *ngIf="prodMaster.ProdMasterID > 0 && prodMaster.Status == 'C'">Re-Open Record</button>
     </div>
     <div class="col-md-3"></div>
     
@@ -205,7 +205,7 @@
   <div *ngIf="!print">
     <hr/>
   </div>
-  <form class="inv-form" #qtyForm="ngForm" (ngSubmit)="onAddBatch()" *ngIf="!prodMaster.IsApproved">
+  <form class="inv-form" #qtyForm="ngForm" (ngSubmit)="onAddBatch()" *ngIf="!prodMaster.IsApproved && prodMaster.Status != 'C'">
     <div class="form-row">
         <div class="col-md-2" style="font-size:30pt;">
           <strong>{{prodDetails.length}}</strong>
@@ -304,7 +304,7 @@
               <a class="btn btn-primary text-white" (click)="open(miniSticker,idt)" title="Preview Mini label"style="margin-right: 1%">
                   <i class="fas fa-tags"></i>
                 </a>
-              <a class="btn btn-danger text-white" (click)="onRemoveBatch(idt)" title="Remove from list" *ngIf="!prodMaster.IsApproved">
+              <a class="btn btn-danger text-white" (click)="onRemoveBatch(idt)" title="Remove from list" *ngIf="!prodMaster.IsApproved && prodMaster.Status != 'C'">
                 <i class="fas fa-trash"></i>
               </a>
             </td>
@@ -323,7 +323,7 @@
       </button> -->
     </div>
     <div class="form-group col-md-3">
-      <button [hidden]="!prodMaster.IsApproved || prodMaster.IsPosted" type="button" class="btn btn-lg btn-block btn-secondary" (click)="openModalPost(saplogin,'sm')" title="Clear form">
+      <button [hidden]="!prodMaster.IsApproved || prodMaster.IsPosted && prodMaster.Status != 'C'" type="button" class="btn btn-lg btn-block btn-secondary" (click)="openModalPost(saplogin,'sm')" title="Clear form">
         <i class="fas fa-rocket"> Post to SAP</i>
       </button>
     </div>

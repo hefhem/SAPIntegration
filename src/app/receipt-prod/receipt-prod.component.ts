@@ -395,7 +395,7 @@ export class ReceiptProdComponent implements OnInit {
             // console.log(data);
             if (data.IsSuccess) {
               this.toastr.success(data.Response);
-              this.router.navigate(['/receipt-prod/' + this.prodMaster.ProdMasterID]);
+              this.prodMaster.Status = 'O';
               // this.setDate();
             } else {
               this.toastr.error(data.Response, 'Error!');
