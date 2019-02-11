@@ -298,8 +298,11 @@
               </td>
             <td>
             
-              <a class="btn btn-success text-white" (click)="open(content,idt)" title="Preview label" style="margin-right: 1%">
+              <a class="btn btn-success text-white" (click)="open(newSticker,idt)" title="Preview label" style="margin-right: 1%">
                 <i class="fas fa-eye"></i>
+              </a>
+              <a class="btn btn-info text-white" (click)="openOldLabel(content,idt)" title="Preview label" style="margin-right: 1%">
+                <i>ol</i>
               </a>
               <a class="btn btn-primary text-white" (click)="open(miniSticker,idt)" title="Preview Mini label"style="margin-right: 1%">
                   <i class="fas fa-tags"></i>
@@ -353,6 +356,56 @@
                   [bc-text-position]="textPosition" [bc-text-margin]="textMargin" [bc-font-size]="fontSize" [bc-background]="background"
                   [bc-margin]="margin" [bc-margin-top]="marginTop" [bc-margin-bottom]="marginBottom" [bc-margin-left]="marginLeft"
                   [bc-margin-right]="marginRight"></ngx-barcode>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="printRecord('print-section')">print</button>
+    </div>
+  </ng-template>
+  <ng-template #newSticker let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Barcode Printing</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row" id="print-section">
+        <div class="col-md-12 text-center">
+          <table class="table text-center">
+            <tr>
+              <td colspan="2" style="text-align:center;">
+                <h6 style="font-size:50pt;"><strong>ARISTOCRAT INDUSTRIES LTD.</strong></h6>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="text-align:center;">
+                <strong>{{prodMaster.ItemName}}</strong> 
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Roll No</strong><br/> <strong>{{bc_batchno}}</strong> </td>
+              <td><strong>Weight/Qty</strong><br/> <strong>{{bc_weight  | number: '1.2'}} {{prodMaster.UOM}}</strong> </td>
+            </tr>
+            <tr>
+              <td><strong>PACKED ON</strong><br/>  {{prodMaster.ProdDate | date: 'dd/MM/yyyy'}}</td>
+              <td><strong>Machine No</strong><br/>  {{prodMaster.MachineNo}}</td>
+            </tr>
+            <tr>
+              <td colspan="2" style="text-align:center;">
+                <strong>SUPERVISOR:</strong>&nbsp;{{prodMaster.Supervisor}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <strong>Batch No:</strong> <strong>{{prodMaster.DocNum}}</strong> 
+              </td>
+              <td>
+                <strong>BBD:</strong>  {{expiry | date: 'dd/MM/yyyy' }}
               </td>
             </tr>
           </table>

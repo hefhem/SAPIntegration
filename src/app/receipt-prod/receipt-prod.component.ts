@@ -16,7 +16,7 @@ import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
   styleUrls: ['./receipt-prod.component.css']
 })
 export class ReceiptProdComponent implements OnInit {
-  @ViewChild('content') labelRef: ElementRef;
+  @ViewChild('newSticker') labelRef: ElementRef;
   prodMaster: ProdMaster = new ProdMaster();
   prodDetail: ProdDetail = new ProdDetail();
   prodDetails: ProdDetail[] = [];
@@ -75,6 +75,7 @@ export class ReceiptProdComponent implements OnInit {
   BalanceQty = 0;
   expiry: Date;
   supervisors = [];
+  lastValue = 0;
   @Input() cssSelector: string;
   search = (text$: Observable<string>) =>
     text$.pipe(
@@ -132,6 +133,7 @@ export class ReceiptProdComponent implements OnInit {
             this.auth.loading = false;
             this.prodMaster = data.prodMaster;
             this.prodDetails = data.prodDetails;
+            this.lastValue = this.prodDetails[this.prodDetails.length-1].Quantity;
             this.auth.loading = false;
             this.print = true;
             this.formValid = false;
@@ -288,7 +290,20 @@ export class ReceiptProdComponent implements OnInit {
       this.toastr.warning('Kg Qty must be greater than zero(0)');
       return;
     }
+
+    if (this.lastValue != 0){
+      const diff = this.AutoQty - this.lastValue;
+      const perc = (diff/this.AutoQty) * 100;
+      console.log(perc);
+      if (perc >= 1 || perc <= -1){
+        if (!confirm(`The difference between this batch and last batch quantity is ${perc}%. Do you want to continue?`)){
+          return;
+        }
+      }
+    }
+    console.log(this.lastValue);
     this.auth.loading = true;
+
     let batch = this.generateBatchNo();
     while (this.batchExist(batch)) {
       batch = this.generateBatchNo();
@@ -474,6 +489,13 @@ export class ReceiptProdComponent implements OnInit {
     setTimeout(() => { this.modalService.dismissAll(); }, 1000);
     // this.modalService.dismissAll();
   }
+  openOldLabel(content, idt: ProdDetail) {
+    this.setLabelValue(idt, this.printRecord);
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size: 'lg'});
+    setTimeout(() => { this.printRecord2('print-section'); }, 300);
+    setTimeout(() => { this.modalService.dismissAll(); }, 1000);
+    // this.modalService.dismissAll();
+  }
   openMiniLabel(content, idt: ProdDetail) {
     this.setMiniLabelValue(idt, this.printRecord);
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size: 'sm'});
@@ -504,6 +526,36 @@ export class ReceiptProdComponent implements OnInit {
     setTimeout(() => { this.modalService.dismissAll(); }, 1000);
   }
   printRecord(elem: any): void {
+    let printContents, popupWin;
+    printContents = document.getElementById(elem).innerHTML;
+    popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
+    popupWin.document.open();
+    popupWin.document.write(`
+      <html>
+        <head>
+          <title>Print tab</title>
+          <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+          <link rel="stylesheet" href="../assets/css/fontawesome-all.css">
+          <style>
+          .table {
+            width:100%;
+            font-size:40pt;
+          }
+          </style>
+        </head>
+        <body onload="window.print();window.close()">
+        <!--<div class="row">-->
+          <!--<div class="col-md-12">-->
+          ${printContents}
+          <!--</div>-->
+        <!--</div>-->
+        </body>
+      </html>`
+    );
+    popupWin.document.close();
+    this.lbl = false;
+  }
+  printRecord2(elem: any): void {
     let printContents, popupWin;
     printContents = document.getElementById(elem).innerHTML;
     popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
@@ -649,6 +701,7 @@ export class ReceiptProdComponent implements OnInit {
     this.currentDate = Date.now();
     this.prodDate = this.calendar.getToday();
     this.prodMaster.CreatedBy = this.userName;
+    this.lastValue = 0;
     this.getSupervisors();
   }
   onSubmit(form?: NgForm) {
