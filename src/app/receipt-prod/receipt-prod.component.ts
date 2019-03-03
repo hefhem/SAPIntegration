@@ -133,16 +133,19 @@ export class ReceiptProdComponent implements OnInit {
             this.auth.loading = false;
             this.prodMaster = data.prodMaster;
             this.prodDetails = data.prodDetails;
-            this.lastValue = this.prodDetails[this.prodDetails.length-1].Quantity;
             this.auth.loading = false;
             this.print = true;
             this.formValid = false;
             this.isPostable = this.prodMaster.IsApproved ? true : false;
+            this.lastValue = this.prodDetails[this.prodDetails.length-1].Quantity;
             // tslint:disable-next-line:triple-equals
             if (this.prodMaster.UOM.toLowerCase() == 'kg' || this.prodMaster.UOM.toLowerCase() == 'kgs' ) {
               this.IsKg = true;
             } else {
               this.IsKg = false;
+              if (data.prodMaster.AutoConvert == 'N'){
+                this.AutoQty = data.prodMaster.QtyInUOM;
+              }
             }
             this.getProducedQty();
           } else {
@@ -209,11 +212,16 @@ export class ReceiptProdComponent implements OnInit {
             this.prodDetails = [];
             this.AutoQty = null;
             this.KgQty = null;
+            this.prodMaster.AutoConvert = data.AutoConvert;
+            this.prodMaster.QtyInUOM = data.QtyInUOM;
             // tslint:disable-next-line:triple-equals
             if (data.UOM.toLowerCase() == 'kg' || data.UOM.toLowerCase() == 'kgs' ) {
               this.IsKg = true;
             } else {
               this.IsKg = false;
+              if (data.AutoConvert == 'N'){
+                this.AutoQty = this.prodMaster.QtyInUOM;
+              }
             }
             // tslint:disable-next-line:max-line-length
             this.OpenQty = (this.prodMaster.PlannedQty - this.prodMaster.CompletedQty) < 0 ? 0 : (this.prodMaster.PlannedQty - this.prodMaster.CompletedQty);
@@ -278,6 +286,14 @@ export class ReceiptProdComponent implements OnInit {
       this.toastr.warning('Order number is required.', 'Validation Error!');
       return;
     }
+    if (this.prodMaster.Supervisor == null || this.prodMaster.Supervisor.trim() == '') {
+      this.toastr.warning('Supervisor is required.', 'Validation Error!');
+      return;
+    }
+    if (this.prodMaster.Warehouse == null || this.prodMaster.Warehouse.trim() == '') {
+      this.toastr.warning('Warehouse is required.', 'Validation Error!');
+      return;
+    }
     if (this.prodMaster.ProdDate == null) {
       this.toastr.warning('Date is required.', 'Validation Error!');
       return;
@@ -290,13 +306,21 @@ export class ReceiptProdComponent implements OnInit {
       this.toastr.warning('Kg Qty must be greater than zero(0)');
       return;
     }
+    const tt = (((this.AutoQty + this.ProducedQty)/this.prodMaster.PlannedQty) * 100) - 100
+    if (tt > 5) {
+      const ntt = tt.toFixed(2);
+      if (!confirm(`Produced quantity is about to exceed planned quantity by ${ntt}%. \n Do you want to proceed?`)){
+        return;
+      }
+    }
 
     if (this.lastValue != 0){
       const diff = this.AutoQty - this.lastValue;
       const perc = (diff/this.AutoQty) * 100;
-      console.log(perc);
+      //console.log(perc);
+      const nperc = perc.toFixed(2);
       if (perc >= 1 || perc <= -1){
-        if (!confirm(`The difference between this batch and last batch quantity is ${perc}%. Do you want to continue?`)){
+        if (!confirm(`The difference between this batch and last batch quantity is ${nperc}%. Do you want to continue?`)){
           return;
         }
       }
@@ -328,16 +352,23 @@ export class ReceiptProdComponent implements OnInit {
               this.prodMaster.ProdMasterID = data.ID;
               this.prodMaster.PackingNo = data.PackingNo;
             }
+            this.getProducedQty();
+            this.lastValue = this.AutoQty;
             this.prodDetail.ProdDetailID = data.prodDetailID;
-            this.prodMaster.TotalQty += this.AutoQty;
+            this.prodMaster.TotalQty = this.prodMaster.TotalQty + this.AutoQty;
             this.prodDetails.unshift(this.prodDetail);
             this.open(this.labelRef, this.prodDetail);
             this.prodDetail = new ProdDetail();
             this.AutoBatch = '';
-            this.AutoQty = null;
+            if (this.prodMaster.AutoConvert == 'N'){
+              this.AutoQty = this.prodMaster.QtyInUOM;
+            } else {
+              this.AutoQty = null;
+            }
             this.KgQty = null;
             this.AutoIsRedressed = 'N';
             this.qtyValid = false;
+            this.print = true;
             // s etTimeout(() => { this.renderer.selectRootElement(this.cssSelector).focus(); }, 100);
             // this.setDate();
             if (!(oldid > 0)) {
@@ -434,6 +465,10 @@ export class ReceiptProdComponent implements OnInit {
   setUOMQty() {
     if (this.IsKg) {
       this.AutoQty = this.KgQty * this.prodMaster.KgFactor;
+    } else {
+      if (this.prodMaster.AutoConvert == 'Y'){
+        this.AutoQty = (this.KgQty * this.prodMaster.KgFactor).toFixed(2);
+      }
     }
     // if (this.prodMaster.KgFactor === 1) {
     //   this.AutoQty = Math.round(this.KgQty * this.prodMaster.KgFactor);
@@ -454,6 +489,8 @@ export class ReceiptProdComponent implements OnInit {
           if (data.IsSuccess) {
             this.toastr.success('Item removed successfully');
             this.rmBatch(item);
+            this.getProducedQty();
+            this.lastValue = this.prodDetails[this.prodDetails.length-1].Quantity;
           } else {
             this.toastr.error(data.Response, 'Error!');
           }
@@ -521,6 +558,10 @@ export class ReceiptProdComponent implements OnInit {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: sz});
   }
   openModal(content, sz: any = 'lg') {
+    this.prodMaster.TotalQty = 0;
+    this.prodDetails.forEach(x => {
+      this.prodMaster.TotalQty += x.Quantity;
+    });
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: sz});
     setTimeout(() => { this.printPlist('packingList'); }, 300);
     setTimeout(() => { this.modalService.dismissAll(); }, 1000);
@@ -789,6 +830,10 @@ export class ReceiptProdComponent implements OnInit {
           console.log(data);
           this.auth.loading = false;
           this.isPostable = true;
+          if (data.ID == -2){
+            this.prodMaster.IsPosted = true;
+            this.isPostable = false;
+          }
         }
         },
         error => {

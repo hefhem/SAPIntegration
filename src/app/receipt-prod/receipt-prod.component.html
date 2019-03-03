@@ -166,7 +166,7 @@
             <!-- <div class="validation-error" *ngIf="ItemCode.invalid && ItemCode.touched">This field is required</div> -->
             {{prodMaster.CardName}}
           </div>
-          <div class="form-group col-md-2"></div>
+          
           <div class="form-group col-md-2">
             <label for="TotalQty">
               <strong>Current Total Qty:</strong>
@@ -175,6 +175,15 @@
             <!-- <input type="text" class="form-control" name="TotalQty" #TotalQty="ngModel" [(ngModel)]="prodMaster.TotalQty"> -->
             {{prodMaster.TotalQty | number: '1.2'}}
           </div>
+          <div class="form-group col-md-2">
+              <label for="TotalQty">
+                <strong>% Produced:</strong>
+              </label>
+              <br/>
+              <span style="font-size: 25pt; font-weight: bold; color: red;"                                                                                                                           >
+                {{((ProducedQty/prodMaster.PlannedQty) * 100) | number: '1.2-2'}}%
+              </span>
+            </div>
           <div class="form-group col-md-2">
             <label for="PackingNo">
               <strong>Packing No:</strong>
@@ -185,11 +194,11 @@
           </div>
           <div class="form-group col-md-2">
               <label for="OpenQty">
-                <strong>Produced Qty: </strong>
+                <strong>Produced/Posted Qty: </strong>
               </label>
               <br/>
               <!-- <input type="text" class="form-control" name="OpenQty" #OpenQty="ngModel" [(ngModel)]="prodMaster.OpenQty"> -->
-              {{ProducedQty | number: '1.2'}}
+              {{ProducedQty | number: '1.2'}}/{{PostedQty | number: '1.2'}}
           </div>
           <!-- <div class="form-group col-md-2" >
               <label for="OpenQty">
@@ -246,7 +255,7 @@
         </label>
         <br/>
         
-          <input  type="number" min="0" class="form-control" name="AutoQty" 
+          <input [disabled]="prodMaster.AutoConvert == 'Y'" type="number" min="0" class="form-control" name="AutoQty" 
             [(ngModel)]="AutoQty" style="font-size: 20pt; font-weight: bold;"> 
             <!-- <input  type="number" min="0" class="form-control" name="AutoQty" 
             [(ngModel)]="AutoQty" style="font-size: 20pt; font-weight: bold;" (keyup)="setKgQty()">  -->

@@ -198,7 +198,7 @@
       <div class="col-md-12">
         <form class="inv-form" #barcodeForm="ngForm" (ngSubmit)="onAddBarcode()" *ngIf="!print">
           <div class="form-row">
-            <div class="col-md-3" style="font-size:30pt;">
+            <div class="col-md-3 text-center" style="font-size:25pt;">
                <strong>{{dpb.length}}</strong>
             </div>  
             <div class="form-group col-md-6">
@@ -215,7 +215,13 @@
                   </div>
                 </div>
             </div>
-            <div class="col-md-3"></div>
+            <div class="col-md-3 text-center" style="font-size:15pt;">
+                <label for="">
+                    <strong>Selected:</strong>
+                  </label>
+                  <br/>
+                <strong>{{pickedQty | number: '1.2-2'}}</strong>
+            </div>
           </div>
           <div class="form-row">
             <table class="table table-hover">

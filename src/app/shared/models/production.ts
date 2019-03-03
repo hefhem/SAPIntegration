@@ -12,6 +12,8 @@ export class ProdMaster {
     NoOfRolls = 0;
     MachineNo: string;
     Status: string;
+    QtyInUOM: number;
+    AutoConvert: string;
     Warehouse: string;
     CardName: string;
     PackingNo: string;

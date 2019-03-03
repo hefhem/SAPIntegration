@@ -34,6 +34,7 @@ export class ArDeliveryComponent implements OnInit {
   formValid = false;
   spincls = '';
   id = 0;
+  pickedQty = 0;
 
   constructor(
     private modalService: NgbModal,
@@ -67,6 +68,7 @@ export class ArDeliveryComponent implements OnInit {
     this.deliveryMaster.DocDate = new Date(this.docDate.year + '-' + this.docDate.month + '-' + this.docDate.day);
   }
   openScan(content, idt: DeliveryDetail) {
+    this.pickedQty = 0;
     this.scanItem = idt.ItemName;
     this.scanItemCode = idt.ItemNo;
     this.ddid = idt.LineNum;
@@ -74,6 +76,9 @@ export class ArDeliveryComponent implements OnInit {
     if (ed.length > 0) {
       this.dpb = [];
       this.dpb = ed;
+      ed.forEach(x => {
+        this.pickedQty = this.pickedQty + x.Quantity;
+      });
     }
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: 'lg'});
     // this.barcodeid.nativeElement.focus();
@@ -313,7 +318,7 @@ export class ArDeliveryComponent implements OnInit {
       return;
     }
     this.auth.loading = true;
-    this.handleAPI.get('api/GetPackingNoDetails/' + this.barcode)
+    this.handleAPI.get('api/GetPackingNoDetails?packingNo=' + this.barcode + '&itemCode=' + this.scanItemCode )
         .subscribe( (data: any) => {
           console.log(data);
           if (data.Status === 'Found') {
@@ -327,6 +332,7 @@ export class ArDeliveryComponent implements OnInit {
                 BatchCount: data.BatchCount,
                 UOM: data.UOM
               };
+              this.pickedQty = this.pickedQty + data.TotalQty;
               this.dpb.push(dt);
             } else {
               this.toastr.warning('The scanned code does not belong to this Item');
@@ -355,6 +361,19 @@ export class ArDeliveryComponent implements OnInit {
       let sum = 0;
       this.dpb.forEach((dp) => {
         const ex = this.deliveryPacking.filter(x => x.PackingNo === dp.PackingNo);
+        sum = sum + dp.Quantity;
+      });
+      const dde = this.deliveryDetails.filter( x => x.LineNum === this.ddid)[0];
+      const tt = ((sum/dde.OpenQty) * 100) - 100;
+      const ntt = tt.toFixed(2);
+      if (tt > 10){
+        if(!confirm(`Selected quantity is greater than open quantity by ${ntt}% \nDo you want to continue?`)){
+          return;
+        }
+      }
+      sum = 0;
+      this.dpb.forEach((dp) => {
+        const ex = this.deliveryPacking.filter(x => x.PackingNo === dp.PackingNo);
         if (!(ex.length > 0)) {
           this.deliveryPacking.push(dp);
         }
@@ -362,6 +381,7 @@ export class ArDeliveryComponent implements OnInit {
       });
       const dd = this.deliveryDetails.filter( x => x.LineNum === this.ddid)[0];
       const dr = this.deliveryDetails.filter( x => x.LineNum !== this.ddid);
+      
       dd.SelectedQty = sum;
       dr.push(dd);
       this.deliveryDetails = dr;
