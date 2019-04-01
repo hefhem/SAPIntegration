@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, AfterViewInit } from '@angular/core';
 import { HandleAPIService } from '../../shared/services/handle-api.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
@@ -9,12 +9,13 @@ import 'rxjs/add/operator/map';
 import { ProdMaster } from '../../shared/models/production';
 
 @Component({
-  selector: 'app-view-receipt-prod-posted',
-  templateUrl: './view-receipt-prod-posted.component.html',
-  styleUrls: ['./view-receipt-prod-posted.component.css']
+  selector: 'app-view-receipt-prod-t',
+  templateUrl: './view-receipt-prod-t.component.html',
+  styleUrls: ['./view-receipt-prod-t.component.css']
 })
-export class ViewReceiptProdPostedComponent implements OnInit {
-  dtOptions: any = {};
+export class ViewReceiptProdTComponent implements OnInit, AfterViewInit {
+  @Input('prodData') prodData: ProdMaster[] = [];
+  dtOptions:any = {};
   endpoint = 'api/GetPRByDate';
   prodMaster: ProdMaster[] = [];
   userID: any;
@@ -30,46 +31,41 @@ export class ViewReceiptProdPostedComponent implements OnInit {
   private auth: AuthService) { }
 
   ngOnInit() {
-    const tv = this.auth.isTokenValid();
-    if (!tv) {
-        this.router.navigate(['/login']);
-        return;
-    }
-  }
-  getProdMaster() {
-    this.auth.loading = true;
-    this.prodMaster = [];
-    this.fDate = new Date(Date.UTC(this.fromDate.year, this.fromDate.month - 1, this.fromDate.day, 0, 0, 0, 0));
-    this.tDate = new Date(Date.UTC(this.toDate.year, this.toDate.month - 1, this.toDate.day, 0, 0, 0, 0));
-    let dr = {
-      FromDate: this.fDate,
-      ToDate: this.tDate
+    this.prodMaster = this.prodData;
+    this.dtOptions = {
+      pagingType: 'full_numbers',
+      pageLength: 50,
+      dom: 'Bfrtip',
+      // Configure the buttons
+      buttons: [
+        'copy',
+        'print',
+        'excel'
+      ],
+      // destroy: true
     };
-    // setTimeout(() => {
-    //   dr = {
-    //     FromDate: this.fDate,
-    //     ToDate: this.tDate
-    //   };
-    // }, 300);
-    this.handleAPI.create(dr, this.endpoint)
-      .subscribe( (data: any) => {
-          // console.log(data);
-          this.prodMaster = data;
-          this.prodMaster = this.prodMaster.filter(x => x.IsPosted && x.Status !== 'C');
-          
-          this.auth.loading = false;
-        },
-        error => {
-          if (typeof error === 'string') {
-            this.toastr.warning(error, 'Oops! An error occurred');
-          } else {
-            this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-          }
-          this.auth.loading = false;
-        }
-    );
+    
+    this.dtTrigger.next();
+    // this.userID = this.auth.getUserID();
+    //this.getProdMaster();
   }
-
+  ngAfterViewInit() {
+    this.prodMaster = this.prodData;
+    this.dtOptions = {
+      pagingType: 'full_numbers',
+      pageLength: 50,
+      dom: 'Bfrtip',
+      // Configure the buttons
+      buttons: [
+        'copy',
+        'print',
+        'excel'
+      ],
+      // destroy: true
+    };
+    
+    this.dtTrigger.next();
+  }
   viewRecord(id: any) {
     console.log(id);
     this.router.navigate(['/receipt-prod', id]);

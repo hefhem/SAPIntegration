@@ -65,6 +65,7 @@ export class ReceiptProdComponent implements OnInit {
   currentDate: number;
   cDate: Date;
   prodDate;
+  postDate;
   spincls = '';
   id = 0;
   userID = 1;
@@ -76,6 +77,7 @@ export class ReceiptProdComponent implements OnInit {
   expiry: Date;
   supervisors = [];
   lastValue = 0;
+  postLoading = 'Post';
   @Input() cssSelector: string;
   search = (text$: Observable<string>) =>
     text$.pipe(
@@ -111,6 +113,7 @@ export class ReceiptProdComponent implements OnInit {
       this.prodMaster.TotalQty = 0;
       this.currentDate = Date.now();
       this.prodDate = this.calendar.getToday();
+      //this.prodDate = this.calendar.getPrev(this.prodDate,'d',1);
       // this.prodDate = this.cDate;
       this.prodMaster.ProdDate = new Date(Date.UTC(this.prodDate.year, this.prodDate.month - 1, this.prodDate.day, 0, 0, 0, 0));
       // this.prodMaster.ProdDate = this.cDate;
@@ -120,6 +123,14 @@ export class ReceiptProdComponent implements OnInit {
       this.prodMaster.CreatedBy = this.userName;
     }
     // console.log(this.auth.userRole);
+  }
+  changeShift(event){
+    //console.log(event.target.value);
+    if (event.target.value == 'Night'){
+      this.prodDate = this.calendar.getPrev(this.prodDate,'d',1);
+    } else if (event.target.value == 'Day'){
+      this.prodDate = this.calendar.getToday();
+    }
   }
   getProdMasterDetails(id: any) {
     // console.log('hello');
@@ -154,14 +165,10 @@ export class ReceiptProdComponent implements OnInit {
           }
           this.auth.loading = false;
         },
-          error => {
-            if (typeof error === 'string') {
-              this.toastr.warning(error, 'Oops! An error occurred');
-            } else {
-              this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-            }
-            this.auth.loading = false;
-          }
+        error => {
+          this.toastr.warning(error, 'Oops! An error occurred');
+          this.auth.loading = false;
+        }
       );
     // } else {
     //   this.auth.loading = false;
@@ -233,11 +240,7 @@ export class ReceiptProdComponent implements OnInit {
             this.spincls = '';
           },
           error => {
-            if (typeof error === 'string') {
-              this.toastr.warning(error, 'Oops! An error occurred');
-            } else {
-              this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-            }
+            this.toastr.warning(error, 'Oops! An error occurred');
             this.auth.loading = false;
             this.spincls = '';
           }
@@ -288,6 +291,10 @@ export class ReceiptProdComponent implements OnInit {
     }
     if (this.prodMaster.Supervisor == null || this.prodMaster.Supervisor.trim() == '') {
       this.toastr.warning('Supervisor is required.', 'Validation Error!');
+      return;
+    }
+    if (this.prodMaster.Shift == null || this.prodMaster.Shift.trim() == '') {
+      this.toastr.warning('Shift is required.', 'Validation Error!');
       return;
     }
     if (this.prodMaster.Warehouse == null || this.prodMaster.Warehouse.trim() == '') {
@@ -380,14 +387,10 @@ export class ReceiptProdComponent implements OnInit {
           }
           this.auth.loading = false;
         },
-          error => {
-            if (typeof error === 'string') {
-              this.toastr.warning(error, 'Oops! An error occurred');
-            } else {
-              this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-            }
-            this.auth.loading = false;
-          }
+        error => {
+          this.toastr.warning(error, 'Oops! An error occurred');
+          this.auth.loading = false;
+        }
       );
     // tslint:disable-next-line:triple-equals
     if (this.prodMaster.DocNum.trim() != '' && this.prodMaster.ProdDate != null && this.prodMaster.Supervisor.trim() != '') {
@@ -420,14 +423,10 @@ export class ReceiptProdComponent implements OnInit {
             }
             this.auth.loading = false;
           },
-            error => {
-              if (typeof error === 'string') {
-                this.toastr.warning(error, 'Oops! An error occurred');
-              } else {
-                this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-              }
-              this.auth.loading = false;
-            }
+          error => {
+            this.toastr.warning(error, 'Oops! An error occurred');
+            this.auth.loading = false;
+          }
         );
     }
   }
@@ -448,14 +447,10 @@ export class ReceiptProdComponent implements OnInit {
             }
             this.auth.loading = false;
           },
-            error => {
-              if (typeof error === 'string') {
-                this.toastr.warning(error, 'Oops! An error occurred');
-              } else {
-                this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-              }
-              this.auth.loading = false;
-            }
+          error => {
+            this.toastr.warning(error, 'Oops! An error occurred');
+            this.auth.loading = false;
+          }
         );
     }
   }
@@ -496,14 +491,10 @@ export class ReceiptProdComponent implements OnInit {
           }
           this.auth.loading = false;
         },
-          error => {
-            if (typeof error === 'string') {
-              this.toastr.warning(error, 'Oops! An error occurred');
-            } else {
-              this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-            }
-            this.auth.loading = false;
-          }
+        error => {
+          this.toastr.warning(error, 'Oops! An error occurred');
+          this.auth.loading = false;
+        }
       );
     }
   }
@@ -555,6 +546,7 @@ export class ReceiptProdComponent implements OnInit {
     this.bc_batchno = this.value;
   }
   openModalPost(content, sz: any = 'lg') {
+    this.postProd.sapUserName = this.auth.getUserName();
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: sz});
   }
   openModal(content, sz: any = 'lg') {
@@ -788,12 +780,7 @@ export class ReceiptProdComponent implements OnInit {
           this.auth.loading = false;
         },
         error => {
-          if (typeof error === 'string') {
-            this.toastr.warning(error, 'Oops! An error occurred');
-          } else {
-            this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-          }
-          this.saveBtn = '';
+          this.toastr.warning(error, 'Oops! An error occurred');
           this.auth.loading = false;
         }
       );
@@ -803,16 +790,23 @@ export class ReceiptProdComponent implements OnInit {
       return;
     }
     // tslint:disable-next-line:triple-equals
-    if (this.postProd.sapUserName == null || this.prodMaster.DocNum.trim() == '') {
+    if (this.postProd.sapUserName == null || this.postProd.sapUserName.trim() == '') {
       this.toastr.warning('SAP Username is required.', 'Validation Error!');
       return;
     }
     // tslint:disable-next-line:triple-equals
-    if (this.postProd.sapUserName == null || this.prodMaster.DocNum.trim() == '') {
+    if (this.postProd.sapPassword == null || this.postProd.sapPassword.trim() == '') {
       this.toastr.warning('SAP Password is required.', 'Validation Error!');
       return;
     }
+    // tslint:disable-next-line:triple-equals
+    if (this.postDate == null) {
+      this.toastr.warning('Posting date is required.', 'Validation Error!');
+      return;
+    }
     this.auth.loading = true;
+    this.postLoading = 'Executing...';
+    this.postProd.postDate = new Date(Date.UTC(this.postDate.year, this.postDate.month - 1, this.postDate.day, 0, 0, 0, 0));
     this.isPostable = false;
     const tmp = 'saplogin';
     this.modalService.dismissAll();
@@ -835,14 +829,12 @@ export class ReceiptProdComponent implements OnInit {
             this.isPostable = false;
           }
         }
+        this.postLoading = 'Post';
         },
         error => {
-          if (typeof error === 'string') {
-            this.toastr.warning(error, 'Oops! An error occurred');
-          } else {
-            this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-          }
+          this.toastr.warning(error, 'Oops! An error occurred');
           this.auth.loading = false;
+          this.postLoading = 'Post';
         }
       );
   }
@@ -868,11 +860,7 @@ export class ReceiptProdComponent implements OnInit {
         }
         },
         error => {
-          if (typeof error === 'string') {
-            this.toastr.warning(error, 'Oops! An error occurred');
-          } else {
-            this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-          }
+          this.toastr.warning(error, 'Oops! An error occurred');
           this.auth.loading = false;
         }
       );

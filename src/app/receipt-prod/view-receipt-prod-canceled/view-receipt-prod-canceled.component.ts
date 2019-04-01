@@ -15,9 +15,13 @@ import { ProdMaster } from '../../shared/models/production';
 })
 export class ViewReceiptProdCanceledComponent implements OnInit {
   dtOptions: any = {};
-  endpoint = 'api/ProductionReceipt';
+  endpoint = 'api/GetPRByDate';
   prodMaster: ProdMaster[] = [];
   userID: any;
+  fromDate: any;
+  toDate: any;
+  fDate: Date;
+  tDate: Date;
   dtTrigger: Subject<any> = new Subject();
   constructor(
     private handleAPI: HandleAPIService,
@@ -31,51 +35,34 @@ export class ViewReceiptProdCanceledComponent implements OnInit {
         this.router.navigate(['/login']);
         return;
     }
-    this.dtOptions = {
-      pagingType: 'full_numbers',
-      pageLength: 50,
-      dom: 'Bfrtip',
-      // Configure the buttons
-      buttons: [
-        'copy',
-        'print',
-        'excel'
-      ]
-      // destroy: true
-    };
-    // this.userID = this.auth.getUserID();
-    this.getProdMaster();
+    
   }
 
   getProdMaster() {
     this.auth.loading = true;
     this.prodMaster = [];
-    this.handleAPI.get(this.endpoint)
+    this.fDate = new Date(Date.UTC(this.fromDate.year, this.fromDate.month - 1, this.fromDate.day, 0, 0, 0, 0));
+    this.tDate = new Date(Date.UTC(this.toDate.year, this.toDate.month - 1, this.toDate.day, 0, 0, 0, 0));
+    let dr = {
+      FromDate: this.fDate,
+      ToDate: this.tDate
+    };
+    // setTimeout(() => {
+    //   dr = {
+    //     FromDate: this.fDate,
+    //     ToDate: this.tDate
+    //   };
+    // }, 300);
+    this.handleAPI.create(dr, this.endpoint)
       .subscribe( (data: any) => {
           // console.log(data);
           this.prodMaster = data;
           this.prodMaster = this.prodMaster.filter(x => x.Status == 'C');
-          this.dtOptions = {
-            pagingType: 'full_numbers',
-            pageLength: 50,
-            dom: 'Bfrtip',
-            // Configure the buttons
-            buttons: [
-              'copy',
-              'print',
-              'excel'
-            ],
-            destroy: true
-          };
-          this.dtTrigger.next();
+          
           this.auth.loading = false;
         },
         error => {
-          if (typeof error === 'string') {
-            this.toastr.warning(error, 'Oops! An error occurred');
-          } else {
-            this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-          }
+          this.toastr.warning(error, 'Oops! An error occurred');
           this.auth.loading = false;
         }
     );

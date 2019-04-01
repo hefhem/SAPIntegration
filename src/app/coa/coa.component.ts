@@ -11,11 +11,11 @@ import { Observable } from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 
 @Component({
-  selector: 'app-goods-receipt',
-  templateUrl: './goods-receipt.component.html',
-  styleUrls: ['./goods-receipt.component.css']
+  selector: 'app-coa',
+  templateUrl: './coa.component.html',
+  styleUrls: ['./coa.component.css']
 })
-export class GoodsReceiptComponent implements OnInit {
+export class COAComponent implements OnInit {
   goodsReceiptMaster: GoodsReceiptMaster = new GoodsReceiptMaster();
   goodsReceiptDetail: GoodsReceiptDetail = new GoodsReceiptDetail();
   goodsReceiptDetails: GoodsReceiptDetail[] = [];

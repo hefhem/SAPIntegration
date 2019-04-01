@@ -15,9 +15,13 @@ import { ProdMaster } from '../../shared/models/production';
 })
 export class ViewReceiptProdComponent implements OnInit {
   dtOptions:any = {};
-  endpoint = 'api/ProductionReceipt';
+  endpoint = 'api/GetPRByDate';
   prodMaster: ProdMaster[] = [];
   userID: any;
+  fromDate: any;
+  toDate: any;
+  fDate: Date;
+  tDate: Date;
   dtTrigger: Subject<any> = new Subject();
   constructor(
     private handleAPI: HandleAPIService,
@@ -44,18 +48,44 @@ export class ViewReceiptProdComponent implements OnInit {
       // destroy: true
     };
     // this.userID = this.auth.getUserID();
-    this.getProdMaster();
+    //this.getProdMaster();
   }
-
+  setFromDate() {
+    this.fDate = new Date(Date.UTC(this.fromDate.year, this.fromDate.month - 1, this.fromDate.day, 0, 0, 0, 0));
+    // console.log(this.prodMaster.ProdDate);
+  }
+  setToDate() {
+    this.tDate = new Date(Date.UTC(this.toDate.year, this.toDate.month - 1, this.toDate.day, 0, 0, 0, 0));
+    // console.log(this.prodMaster.ProdDate);
+  }
   getProdMaster() {
     this.auth.loading = true;
     this.prodMaster = [];
-    this.handleAPI.get(this.endpoint)
+    this.fDate = new Date(Date.UTC(this.fromDate.year, this.fromDate.month - 1, this.fromDate.day, 0, 0, 0, 0));
+    this.tDate = new Date(Date.UTC(this.toDate.year, this.toDate.month - 1, this.toDate.day, 0, 0, 0, 0));
+    let dr = {
+      FromDate: this.fDate,
+      ToDate: this.tDate
+    };
+    // setTimeout(() => {
+    //   dr = {
+    //     FromDate: this.fDate,
+    //     ToDate: this.tDate
+    //   };
+    // }, 300);
+    this.handleAPI.create(dr, this.endpoint)
       .subscribe( (data: any) => {
           // console.log(data);
-          this.prodMaster = data;
-          this.prodMaster = this.prodMaster.filter(x => !x.IsPosted && x.Status !== 'C');
+          
+          this.prodMaster = [];
+          // setTimeout(() => {
+          //   this.prodMaster = data.filter(x => !x.IsPosted && x.Status !== 'C');
+          // }, 300);
+          //this.prodMaster = data.filter(x => !x.IsPosted && x.Status !== 'C');
+          this.prodMaster = data.filter(x => x.Status !== 'C');
+          //this.dtTrigger.next();
           this.dtOptions = {
+            destroy: true,
             pagingType: 'full_numbers',
             pageLength: 50,
             dom: 'Bfrtip',
@@ -65,7 +95,7 @@ export class ViewReceiptProdComponent implements OnInit {
               'print',
               'excel'
             ],
-            destroy: true
+            
           };
           this.dtTrigger.next();
           this.auth.loading = false;

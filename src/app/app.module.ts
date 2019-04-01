@@ -33,6 +33,9 @@ import { GoodsReceiptComponent } from './goods-receipt/goods-receipt.component';
 import { ViewGoodsReceiptComponent } from './goods-receipt/view-goods-receipt/view-goods-receipt.component';
 import { ViewReceiptProdPostedComponent } from './receipt-prod/view-receipt-prod-posted/view-receipt-prod-posted.component';
 import { ViewReceiptProdCanceledComponent } from './receipt-prod/view-receipt-prod-canceled/view-receipt-prod-canceled.component';
+import { ViewReceiptProdTComponent } from './receipt-prod/view-receipt-prod-t/view-receipt-prod-t.component';
+import { COAComponent } from './coa/coa.component';
+import { ViewCOAComponent } from './coa/view-coa/view-coa.component';
 
 
 @NgModule({
@@ -51,7 +54,10 @@ import { ViewReceiptProdCanceledComponent } from './receipt-prod/view-receipt-pr
     GoodsReceiptComponent,
     ViewGoodsReceiptComponent,
     ViewReceiptProdPostedComponent,
-    ViewReceiptProdCanceledComponent
+    ViewReceiptProdCanceledComponent,
+    ViewReceiptProdTComponent,
+    COAComponent,
+    ViewCOAComponent,
   ],
   imports: [
     BrowserModule,
@@ -67,6 +73,9 @@ import { ViewReceiptProdCanceledComponent } from './receipt-prod/view-receipt-pr
     ToastrModule.forRoot(),
     StorageServiceModule
   ],
+  // exports:[
+  //   ViewReceiptProdTComponent
+  // ],
   providers: [
     ApiService,
     AuthService,

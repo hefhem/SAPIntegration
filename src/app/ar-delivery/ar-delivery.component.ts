@@ -84,6 +84,7 @@ export class ArDeliveryComponent implements OnInit {
     // this.barcodeid.nativeElement.focus();
   }
   openModalPost(content, sz: any = 'lg') {
+    this.postDel.sapUserName = this.auth.getUserName();
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: sz});
   }
   
@@ -122,14 +123,11 @@ export class ArDeliveryComponent implements OnInit {
             this.spincls = '';
           },
           error => {
-            if (typeof error === 'string') {
-              this.toastr.warning(error, 'Oops! An error occurred');
-            } else {
-              this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-            }
+            this.toastr.warning(error, 'Oops! An error occurred');
             this.auth.loading = false;
             this.spincls = '';
           }
+          
       );
   }
   resetForm(silent = false) {
@@ -173,11 +171,7 @@ export class ArDeliveryComponent implements OnInit {
             this.auth.loading = false;
           },
           error => {
-            if (typeof error === 'string') {
-              this.toastr.warning(error, 'Oops! An error occurred');
-            } else {
-              this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-            }
+            this.toastr.warning(error, 'Oops! An error occurred');
             this.auth.loading = false;
           }
       );
@@ -224,14 +218,11 @@ export class ArDeliveryComponent implements OnInit {
           this.auth.loading = false;
         },
         error => {
-          if (typeof error === 'string') {
-            this.toastr.warning(error, 'Oops! An error occurred');
-          } else {
-            this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-          }
+          this.toastr.warning(error, 'Oops! An error occurred');
           this.saveBtn = '';
           this.auth.loading = false;
         }
+        
       );
   }
   postToSAP() {
@@ -269,11 +260,7 @@ export class ArDeliveryComponent implements OnInit {
         }
         },
         error => {
-          if (typeof error === 'string') {
-            this.toastr.warning(error, 'Oops! An error occurred');
-          } else {
-            this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-          }
+          this.toastr.warning(error, 'Oops! An error occurred');
           this.auth.loading = false;
         }
       );
@@ -300,11 +287,7 @@ export class ArDeliveryComponent implements OnInit {
         }
         },
         error => {
-          if (typeof error === 'string') {
-            this.toastr.warning(error, 'Oops! An error occurred');
-          } else {
-            this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-          }
+          this.toastr.warning(error, 'Oops! An error occurred');
           this.auth.loading = false;
         }
       );
@@ -346,11 +329,7 @@ export class ArDeliveryComponent implements OnInit {
           this.auth.loading = false;
           },
           error => {
-            if (typeof error === 'string') {
-              this.toastr.warning(error, 'Oops! An error occurred');
-            } else {
-              this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-            }
+            this.toastr.warning(error, 'Oops! An error occurred');
             this.auth.loading = false;
           }
       );
@@ -485,11 +464,7 @@ export class ArDeliveryComponent implements OnInit {
           this.auth.loading = false;
           },
           error => {
-            if (typeof error === 'string') {
-              this.toastr.warning(error, 'Oops! An error occurred');
-            } else {
-              this.toastr.warning('Please check the console.', 'Oops! An error occurred');
-            }
+            this.toastr.warning(error, 'Oops! An error occurred');
             this.auth.loading = false;
           }
       );

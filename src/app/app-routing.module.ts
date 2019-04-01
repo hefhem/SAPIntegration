@@ -13,6 +13,8 @@ import { ViewProdSummaryComponent } from './receipt-prod/view-prod-summary/view-
 import { GoodsReceiptComponent } from './goods-receipt/goods-receipt.component';
 import { ViewGoodsReceiptComponent } from './goods-receipt/view-goods-receipt/view-goods-receipt.component';
 import { ViewReceiptProdCanceledComponent } from './receipt-prod/view-receipt-prod-canceled/view-receipt-prod-canceled.component';
+import { COAComponent } from './coa/coa.component';
+import { ViewCOAComponent } from './coa/view-coa/view-coa.component';
 
 const routes: Routes = [
   {
@@ -75,6 +77,18 @@ const routes: Routes = [
   {
     path: 'print-ar-delivery',
     component: PrintArDeliveryComponent
+  },
+  {
+    path: 'coa',
+    component: COAComponent
+  },
+  {
+    path: 'coa/:id',
+    component: COAComponent
+  },
+  {
+    path: 'view-coa',
+    component: ViewCOAComponent
   },
   {
     path: 'view-users',

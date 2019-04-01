@@ -44,6 +44,19 @@
             </div>
             <!-- <div class="validation-error" *ngIf="CustomerName.invalid && CustomerName.touched">This field is required</div> -->
           </div>
+          <div class="form-group col-md-1">
+            <label for="Shift">
+                <strong>Shift: </strong>
+            </label>
+            <br/>
+            <span *ngIf="print">{{prodMaster.Shift}}</span>
+            <div *ngIf="!print">
+              <select name="Shift" #Shift="ngModel" [(ngModel)]="prodMaster.Shift" class="form-control" required>
+                <option value="Day">Day</option>
+                <option value="Night">Night</option>
+              </select>
+            </div>
+          </div>
           <div class="form-group col-md-2">
             <label for="ProdDate">
               <strong>Date:</strong>
@@ -72,6 +85,7 @@
                 <input [ngbTypeahead]="search" class="form-control" name="Supervisor" #Supervisor="ngModel" [(ngModel)]="prodMaster.Supervisor" placeholder="Supervisor's name" required>
               </div>
           </div>
+          
           <div class="form-group col-md-1">
             <label for="Warehouse">
                 <strong>Warehouse: </strong>
@@ -84,8 +98,9 @@
                 <option value="WIP">WIP</option>
               </select>
             </div>
-        </div>
-          <div class="form-group col-md-1"></div>
+          </div>
+          
+          <!-- <div class="form-group form-group col-md-1"></div> -->
           <div class="form-group form-group col-md-2">
             <label for="MachineNo">
               <strong>Machine No.:</strong>
@@ -132,11 +147,12 @@
           </div>
           <div class="form-group col-md-2">
             <label for="OpenQty">
-              <strong>SAP Open Qty: </strong>
+              <!-- <strong>SAP Open Qty: </strong> -->
+              <strong>Open Qty: </strong>
             </label>.
             <br/>
-            <!-- <input type="text" class="form-control" name="OpenQty" #OpenQty="ngModel" [(ngModel)]="prodMaster.OpenQty"> -->
-            {{OpenQty | number: '1.2'}}
+            <!-- {{OpenQty | number: '1.2'}} -->
+            {{prodMaster.PlannedQty - ProducedQty | number: '1.2'}}
           </div>
           
           <!-- <div class="form-group col-md-2" >
@@ -168,20 +184,22 @@
           </div>
           
           <div class="form-group col-md-2">
-            <label for="TotalQty">
-              <strong>Current Total Qty:</strong>
-            </label>
-            <br/>
-            <!-- <input type="text" class="form-control" name="TotalQty" #TotalQty="ngModel" [(ngModel)]="prodMaster.TotalQty"> -->
-            {{prodMaster.TotalQty | number: '1.2'}}
+            <label for="OpenQty">
+                <strong>Produced Qty: </strong>
+              </label>
+              <br/>
+              <!-- <input type="text" class="form-control" name="OpenQty" #OpenQty="ngModel" [(ngModel)]="prodMaster.OpenQty"> -->
+              <span style="font-size: 20pt; font-weight: bold;">
+              {{ProducedQty | number: '1.2'}}
+              </span>
           </div>
           <div class="form-group col-md-2">
               <label for="TotalQty">
                 <strong>% Produced:</strong>
               </label>
               <br/>
-              <span style="font-size: 25pt; font-weight: bold; color: red;"                                                                                                                           >
-                {{((ProducedQty/prodMaster.PlannedQty) * 100) | number: '1.2-2'}}%
+              <span style="font-size: 20pt; font-weight: bold; color: red;">
+                {{((ProducedQty/prodMaster.PlannedQty) * 100) | number: '1.0-0'}}%
               </span>
             </div>
           <div class="form-group col-md-2">
@@ -194,11 +212,13 @@
           </div>
           <div class="form-group col-md-2">
               <label for="OpenQty">
-                <strong>Produced/Posted Qty: </strong>
+                <strong>Posted Qty: </strong>
               </label>
               <br/>
               <!-- <input type="text" class="form-control" name="OpenQty" #OpenQty="ngModel" [(ngModel)]="prodMaster.OpenQty"> -->
-              {{ProducedQty | number: '1.2'}}/{{PostedQty | number: '1.2'}}
+              <span>
+              {{PostedQty | number: '1.2'}}
+              </span>
           </div>
           <!-- <div class="form-group col-md-2" >
               <label for="OpenQty">
@@ -216,8 +236,14 @@
   </div>
   <form class="inv-form" #qtyForm="ngForm" (ngSubmit)="onAddBatch()" *ngIf="!prodMaster.IsApproved && prodMaster.Status != 'C'">
     <div class="form-row">
-        <div class="col-md-2" style="font-size:30pt;">
-          <strong>{{prodDetails.length}}</strong>
+        <div class="col-md-1" >
+            <label for="">
+              Batches:
+            </label>
+            <br/>
+            <span style="font-size:30pt;">
+              {{ prodDetails.length}}
+            </span>
         </div>
       <div class="form-group col-md-2 text-center">
           <label for="AutoIsRedressed">
@@ -268,6 +294,15 @@
         <button type="submit" [disabled]="!qtyForm.valid" class="btn btn-block btn-lg btn-info" title="Add to list">
           <i class="fa fa-plus"></i>
         </button>
+      </div>
+      <div class="col-md-3 text-center">
+          <label for="TotalQty">
+              <strong>Current Total Qty:</strong>
+            </label>
+            <br/>
+            <span style="font-size:30pt;">
+              {{prodMaster.TotalQty | number: '1.2'}}
+            </span>
       </div>
     </div>
   </form>
@@ -502,11 +537,22 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <form class="inv-form" #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+  <form class="inv-form" #loginForm="ngForm">
     <div class="modal-body">
       <div class="form-group">
+        <div class="input-group">
+          <input readonly class="form-control" placeholder="yyyy-mm-dd" name="PostDate" [(ngModel)]="postDate" ngbDatepicker #p="ngbDatepicker"
+            required>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calendar" (click)="p.toggle()" type="button">
+              <i class="far fa-calendar"></i>
+            </button>
+          </div>
+      </div>
+      </div>
+      <div class="form-group">
         <!-- <label for="AutoQty">Auto Quantity</label> -->
-        <input type="text" class="form-control" name="sapUserName" [(ngModel)]="postProd.sapUserName" placeholder="Username" required>
+        <input type="text" class="form-control" name="sapUserName" [(ngModel)]="postProd.sapUserName" placeholder="Username" required readonly>
 
       </div>
       <div class="form-group">
@@ -517,7 +563,7 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button [disabled]="!loginForm.valid  || this.auth.loading" class="btn btn-primary" (click)="postToSAP()">Post</button>
+      <button [disabled]="!loginForm.valid  || this.auth.loading" class="btn btn-primary" (click)="postToSAP()">{{postLoading}}</button>
     </div>
   </form>
 </ng-template>

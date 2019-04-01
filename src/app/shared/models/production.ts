@@ -15,6 +15,7 @@ export class ProdMaster {
     QtyInUOM: number;
     AutoConvert: string;
     Warehouse: string;
+    Shift: string;
     CardName: string;
     PackingNo: string;
     ProdDate: Date;
@@ -53,6 +54,7 @@ export class SAPCompany {
 
 export class PostToSAP {
     ObjectID: number;
+    postDate: Date;
     sapUserName: string;
     sapPassword: string;
 }
