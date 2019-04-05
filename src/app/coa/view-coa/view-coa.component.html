@@ -2,36 +2,42 @@
 <div class="container">
 <div class="div-per">
     <h2 class="bg-secondary text-white h-per">
-      EXISTING  GOODS RECEIPT
+      EXISTING  COA
     </h2>
 </div>
 <div class="row">
-    <div class="col-md-12"><button class="btn btn-secondary" (click)="getGoodsReceiptMaster()">Refresh</button></div>
+    <div class="col-md-12"><button class="btn btn-secondary" (click)="getCOA()">Refresh</button></div>
     &nbsp;
     <div class="col-md-12">
       <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover table table-sm table-hover">
         <thead>
           <tr>
-              <th><strong>Goods Receipt ID</strong></th>
-            <th><strong>Order No</strong></th>
+            <th><strong>COA ID</strong></th>
             <th><strong>Date</strong></th>
-            <th><strong>Approved</strong></th>
+            <th><strong>SAP Delivery No.</strong></th>
+            <th><strong>Customer Name</strong></th>
+            <th><strong>Item Name</strong></th>
+            <th><strong>Is Approved</strong></th>
             <th><strong>Approved By</strong></th>
-            <th><strong>Posted</strong></th>
-            <th><strong>Post Date</strong></th>
             <th><strong>Action</strong></th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let idt of goodsReceiptMaster">
+          <tr *ngFor="let idt of coa">
               <td>
-                  {{idt.GoodsReceiptMasterID}}
+                  {{idt.COA_ID}}
                 </td>
             <td>
+                {{idt.DocDate | date:'dd-MM-yyyy'}}
+              </td>
+              <td>
                 {{idt.DocNum}}
               </td>
               <td>
-                {{idt.ProdDate | date:'dd-MM-yyyy'}}
+                {{idt.CustomerName}}
+              </td>
+              <td>
+                {{idt.ItemName}}
               </td>
             <td>
                 {{idt.IsApproved ? 'Yes':'No'}}
@@ -40,13 +46,7 @@
                 {{idt.ApprovedBy}}
               </td>
             <td>
-                {{idt.IsPosted ? 'Yes':'No'}}
-            </td>
-            <td>
-                {{idt.PostDate | date:'dd-MM-yyyy'}}
-              </td>
-            <td>
-              <a class="btn btn-primary text-white" [routerLink]="['/goods-receipt', idt.GoodsReceiptMasterID]" >
+              <a class="btn btn-primary text-white" [routerLink]="['/coa', idt.COA_ID]" >
                 <i class="fas fa-eye"></i>
               </a>
             </td>

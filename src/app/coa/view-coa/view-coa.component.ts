@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 
 import 'rxjs/add/operator/map';
 import { GoodsReceiptMaster } from '../../shared/models/production';
+import { COA } from 'src/app/shared/models/coa';
 
 @Component({
   selector: 'app-view-coa',
@@ -16,8 +17,8 @@ import { GoodsReceiptMaster } from '../../shared/models/production';
 export class ViewCOAComponent implements OnInit {
 
   dtOptions: any = {};
-  endpoint = 'api/GetGoodsReceiptMaster';
-  goodsReceiptMaster: GoodsReceiptMaster[] = [];
+  endpoint = 'api/GetCOA';
+  coa: COA[] = [];
   userID: any;
   dtTrigger: Subject<any> = new Subject();
   constructor(
@@ -45,16 +46,16 @@ export class ViewCOAComponent implements OnInit {
       // destroy: true
     };
     // this.userID = this.auth.getUserID();
-    this.getGoodsReceiptMaster();
+    this.getCOA();
   }
 
-  getGoodsReceiptMaster() {
+  getCOA() {
     this.auth.loading = true;
-    this.goodsReceiptMaster = [];
+    this.coa = [];
     this.handleAPI.get(this.endpoint)
       .subscribe( (data: any) => {
           // console.log(data);
-          this.goodsReceiptMaster = data;
+          this.coa = data;
           this.dtOptions = {
             pagingType: 'full_numbers',
             pageLength: 10,
@@ -83,7 +84,7 @@ export class ViewCOAComponent implements OnInit {
 
   viewRecord(id: any) {
     console.log(id);
-    this.router.navigate(['/ar-delivery', id]);
+    this.router.navigate(['/coa', id]);
   }
 }
 

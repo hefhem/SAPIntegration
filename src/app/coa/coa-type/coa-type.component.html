@@ -1,0 +1,66 @@
+<app-navbar></app-navbar>
+<div class="container">
+<div class="div-per">
+    <h2 class="bg-secondary text-white h-per">
+      COA Type
+    </h2>
+</div>
+<div class="row">
+    <div class="col-md-12">
+      <button class="btn btn-primary" (click)="openModal(coatypeform)">Add Record</button>
+      &nbsp;
+      <button class="btn btn-secondary" (click)="getCOAType()">Refresh</button>
+    </div>
+    &nbsp;
+    <div class="col-md-12">
+      <table class="row-border hover table table-sm table-hover">
+        <thead>
+          <tr>
+              <th><strong>COA Type Name</strong></th>
+              <th><strong>Action</strong></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let idt of coaTypeList">
+            <td>
+                {{idt.COATypeName}}
+            </td>
+            <td>
+              <a class="btn btn-success text-white" (click)="openModal(coatypeform,idt)" title="Preview label">
+                <i class="fas fa-edit"></i>
+              </a>
+              &nbsp;
+              <a class="btn btn-danger text-white" (click)="ondelete(idt)" title="Remove from list">
+                <i class="fas fa-trash"></i>
+              </a>
+            </td>
+        
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  </div>
+  <ng-template #coatypeform let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title" id="modal-basic-title">COA Type</h5>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form class="inv-form" #COATypeForm="ngForm">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="COATypeName">COA Type Name</label>
+          <input type="hidden" name="COATypeID" [(ngModel)]="coatype.COATypeID">
+          <input type="text" class="form-control" name="COATypeName" [(ngModel)]="coatype.COATypeName"
+            placeholder="COA Type Name" required>
+  
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button [disabled]="!COATypeForm.valid  || this.auth.loading" class="btn btn-primary"
+          (click)="addEditRecord()">{{recordStatus}}</button>
+      </div>
+    </form>
+  </ng-template>

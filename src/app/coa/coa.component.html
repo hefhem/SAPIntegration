@@ -2,7 +2,7 @@
 <div class="container">
   <div class="div-per">
     <h2 class="bg-secondary text-white h-per">
-      GOODS RECEIPT
+      COA
     </h2>
   </div>
   <div class="form-row text-center" *ngIf="print">
@@ -12,8 +12,8 @@
       &nbsp; -->
       <button class="btn btn-secondary" (click)="resetForm()">New Record</button>
       &nbsp;
-      <button [hidden]="this.auth.userRole.ApproveGR != 'Y'" class="btn btn-info" (click)="approvePR()"
-        *ngIf="!goodsReceiptMaster.IsApproved">Approve</button>
+      <button [hidden]="this.auth.userRole.ApproveCOA != 'Y'" class="btn btn-info" (click)="approveCOA()"
+        *ngIf="!coa.IsApproved">Approve</button>
     </div>
     <div class="col-md-3"></div>
 
@@ -21,22 +21,22 @@
   <hr />
   <div class="row">
     <div class="col-md-12">
-      <form class="inv-form" #receiptForm="ngForm" (ngSubmit)="onSubmit(receiptForm)">
+      <form class="inv-form" #coaForm="ngForm" (ngSubmit)="onSubmit(coaForm)">
         <div class="form-row">
-          <input type="hidden" name="GoodsReceiptMasterID" #GoodsReceiptMasterID="ngModel"
-            [(ngModel)]="goodsReceiptMaster.GoodsReceiptMasterID" value="0">
+          <input type="hidden" name="COA_ID" #COA_ID="ngModel"
+            [(ngModel)]="coa.COA_ID" value="0">
           <div class="form-group col-md-2">
             <label for="DocNum">
-              <strong>Order Number: </strong>
+              <strong>Delivery Number: </strong>
             </label>
             <br />
-            <span *ngIf="print">{{goodsReceiptMaster.DocNum}}</span>
+            <span *ngIf="print">{{coa.SAPDocNum}}</span>
             <div class="input-group" *ngIf="!print">
-              <input (blur)="getOrderDetails()" class="form-control" name="DocNum" #DocNum="ngModel"
-                [(ngModel)]="goodsReceiptMaster.DocNum" placeholder="e.g 20180101" autofocus required>
+              <input (blur)="getSAPDeliveryDetails()" class="form-control" name="SAPDocNum" #SAPDocNum="ngModel"
+                [(ngModel)]="coa.SAPDocNum" placeholder="e.g 20180101" autofocus required>
               <div class="input-group-append">
-                <button [disabled]="DocNum.invalid" type="button" class="btn btn-block btn-info"
-                  (click)="getOrderDetails()" title="Get record">
+                <button [disabled]="SAPDocNum.invalid" type="button" class="btn btn-block btn-info"
+                  (click)="getSAPDeliveryDetails()" title="Get record">
                   <i class="fa fa-sync {{spincls}}"></i>
                 </button>
               </div>
@@ -48,67 +48,44 @@
               <strong>Date:</strong>
             </label>
             <br />
-            <span *ngIf="print">{{goodsReceiptMaster.ProdDate | date: 'yyyy-MM-dd'}}</span>
-            <div class="input-group" *ngIf="!print">
-              <input readonly class="form-control" placeholder="yyyy-mm-dd" name="ProdDate" [(ngModel)]="prodDate"
-                ngbDatepicker #d="ngbDatepicker" (change)="setDate()" required>
-              <div class="input-group-append">
-                <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button">
-                  <i class="far fa-calendar"></i>
-                </button>
-              </div>
-              <!-- {{currentDate | date: 'yyyy-MM-dd'}} -->
-              <!-- {{goodsReceiptMaster.ProdDate}} {{prodDate | json}} -->
-            </div>
+            <span>{{coa.DocDate | date: 'yyyy-MM-dd'}}</span>
           </div>
-          <div class="form-group col-md-2">
-            <label for="Supervisor">
-              <strong>Supervisor: </strong>
-            </label>
-            <br />
-            <span *ngIf="print">{{goodsReceiptMaster.Supervisor}}</span>
-            <div *ngIf="!print">
-              <input [ngbTypeahead]="search" class="form-control" name="Supervisor" #Supervisor="ngModel"
-                [(ngModel)]="goodsReceiptMaster.Supervisor" placeholder="Supervisor's name" required>
-            </div>
+          <div class="form-group col-md-4">
+              <label for="ProdDate">
+                  <strong>Customer:</strong>
+                </label>
+                <br />
+                <span>{{coa.CustomerName}}</span>
           </div>
-          <div class="form-group col-md-1">
-
-          </div>
-          <div class="form-group col-md-1"></div>
           <div class="form-group form-group col-md-2">
-            <label for="MachineNo">
-              <strong>Machine No.:</strong>
-            </label>
-            <br />
-            <!-- <input disabled class="form-control" name="MachineNo" #MachineNo="ngModel" [(ngModel)]="goodsReceiptMaster.MachineNo"> -->
-            {{goodsReceiptMaster.MachineNo}}
+              <label>
+                  <strong>Approved:</strong>
+                </label>
+                <br />
+                <!-- <input type="text" class="form-control" name="OpenQty" #OpenQty="ngModel" [(ngModel)]="goodsReceiptMaster.OpenQty"> -->
+                {{coa.IsApproved ? 'Yes':'No'}}
           </div>
           <div class="form-group col-md-2">
             <label for="IsPosted">
-              <strong>Posted:</strong>
+              <strong>Archived:</strong>
             </label>
             <br />
             <!-- <input disabled class="form-control" name="IsPosted" #IsPosted="ngModel" [(ngModel)]="goodsReceiptMaster.IsPosted"> -->
-            {{goodsReceiptMaster.IsPosted ? 'Yes' : 'No'}}
+            {{coa.IsArchived ? 'Yes' : 'No'}}
           </div>
         </div>
         <div class="form-row">
-          <div class="form-group col-md-2">
-            <label for="ItemCode">
-              <strong>Item Code:</strong>
-            </label>
-            <br />
-            <!-- <input class="form-control" name="ItemCode" #ItemCode="ngModel" [(ngModel)]="goodsReceiptMaster.ItemCode"> -->
-            {{goodsReceiptMaster.ItemCode}}
+          
+          <div class="form-group col-md-3">
+            <label for="ItemName" *ngIf="!print"><strong>Select a Job:</strong></label>
+            <select (change)="getItemDetails($event)" *ngIf="!print" name="ItemName" [(ngModel)]="coa.ItemName" class="form-control" required>
+              <option *ngFor="let it of itemDetail" value="{{it.ItemCode}}">{{it.ItemName}}</option>
+            </select>
+            
           </div>
-          <div class="form-group col-md-4">
-            <label for="ItemName">
-              <strong>Item Name:</strong>
-            </label>
-            <br />
-            <!-- <input type="text" class="form-control" name="ItemName" #ItemName="ngModel" [(ngModel)]="goodsReceiptMaster.ItemName"> -->
-            {{goodsReceiptMaster.ItemName}}
+          <div class="form-group col-md-2">
+              <label for="ItemName" *ngIf="!print"><strong>Material Type</strong></label>
+              <input type="text" name="MaterialType" [(ngModel)]="coa.MaterialType" class="form-control" required >
           </div>
           <!-- <div class="form-group col-md-1"></div> -->
           <div class="form-group col-md-2">
@@ -122,28 +99,32 @@
 
           </div>
           <div class="form-group col-md-2" *ngIf="print">
-            <label>
-              <strong>Approved:</strong>
-            </label>
-            <br />
-            <!-- <input type="text" class="form-control" name="OpenQty" #OpenQty="ngModel" [(ngModel)]="goodsReceiptMaster.OpenQty"> -->
-            {{goodsReceiptMaster.IsApproved ? 'Yes':'No'}}
+            
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-group col-md-2">
-            <label for="TotalQty">
-              <strong>Current Total Qty:</strong>
-            </label>
-            <br />
-            <!-- <input type="text" class="form-control" name="TotalQty" #TotalQty="ngModel" [(ngModel)]="goodsReceiptMaster.TotalQty"> -->
-            {{goodsReceiptMaster.TotalQty | number: '1.2'}}
-          </div>
           <div class="form-group col-md-4">
-
+              <label for="ItemName">
+                  <strong>Item Name:</strong>
+                </label>
+                <br />
+                <span>{{coa.ItemName}}</span>
           </div>
-          <div class="form-group col-md-2"></div>
+          <div class="form-group col-md-2">
+              <label for="ItemName">
+                  <strong>Quantity:</strong>
+                </label>
+                <br />
+                <span >{{coa.Quantity | number: "1.2"}}</span>
+          </div>
+          <div class="form-group col-md-2">
+              <label for="ItemName">
+                  <strong>UOM:</strong>
+                </label>
+                <br />
+                <span>{{coa.UOM}}</span>
+          </div>
 
           <div class="form-group col-md-2" *ngIf="print">
 
@@ -163,52 +144,11 @@
   <form class="inv-form" #qtyForm="ngForm" (ngSubmit)="onAddBatch()" *ngIf="!print">
     <div class="form-row">
       <div class="col-md-3">
-        <ng-template #rt let-r="result" let-t="term">
-          <span>{{r.ItemCode}} - </span>
-          <ngb-highlight [result]="r.ItemName" [term]="t"></ngb-highlight>
-        </ng-template>
-
-        <label for="typeahead-template"><strong>Search for an Item:</strong></label>
-        <div class="input-group">
-          <input id="typeahead-template" type="text" class="form-control" name="AutoItemName" [(ngModel)]="AutoItemName"
-            [ngbTypeahead]="ItemName" [resultTemplate]="rt" [inputFormatter]="formatter" required />
-          <div class="input-group-append">
-            <button type="button" class="btn btn-block btn-info" (click)="getSAPItem()" title="Get record">
-              <i class="fa fa-sync {{spincls}}"></i>
-            </button>
-          </div>
-        </div>
-        <!-- <pre>Model: {{ AutoItemName | json }}</pre> -->
-        <!-- <label for="ItemName">
-                <strong>Item: </strong>
-            </label>
-            <br/>
-            <input [ngbTypeahead]="ItemName" class="form-control" name="AutoItemName" [(ngModel)]="AutoItemName" 
-            placeholder="Item name" required [inputFormatter]="formatter"> -->
+        
       </div>
       <div class="col-md-2">
-        <label for="Warehouse">
-          <strong>Warehouse: </strong>
-        </label>
-        <br />
-        <select name="AutoWarehouse" [(ngModel)]="AutoWarehouse" class="form-control" required>
-          <option value="FG">FG</option>
-          <option value="WIP">WIP</option>
-        </select>
       </div>
       <div class="form-group col-md-2">
-        <label for="AutoQty">
-          <strong>Auto Quantity</strong>
-        </label>
-        <div class="input-group">
-          <input type="number" min="0" class="form-control" name="AutoQty" [(ngModel)]="AutoQty"
-            (keyup)="makeQtyValid()" required>
-          <div class="input-group-append">
-            <button type="submit" [disabled]="!qtyForm.valid" class="btn btn-block btn-info" title="Add to list">
-              <i class="fa fa-plus"></i>
-            </button>
-          </div>
-        </div>
       </div>
       <div class="col-md-5"></div>
     </div>
@@ -218,19 +158,25 @@
       <table class="table table-sm table-hover" width="100px">
         <thead>
           <td>
-            <strong>Item Code</strong>
+            <strong>S/N</strong>
           </td>
           <td>
-            <strong>Item Name</strong>
+            <strong>TEST</strong>
           </td>
           <td>
-            <strong>Warehouse</strong>
+            <strong>STD.</strong>
           </td>
           <td>
-            <strong>Batch No.</strong>
+            <strong>MIN.</strong>
           </td>
           <td>
-            <strong>Quantity</strong>
+            <strong>MAX.</strong>
+          </td>
+          <td>
+            <strong>AVG.</strong>
+          </td>
+          <td>
+            <strong>TEST METHOD</strong>
           </td>
           <td>
             <strong>Action</strong>

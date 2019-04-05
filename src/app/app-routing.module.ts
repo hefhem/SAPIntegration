@@ -15,6 +15,7 @@ import { ViewGoodsReceiptComponent } from './goods-receipt/view-goods-receipt/vi
 import { ViewReceiptProdCanceledComponent } from './receipt-prod/view-receipt-prod-canceled/view-receipt-prod-canceled.component';
 import { COAComponent } from './coa/coa.component';
 import { ViewCOAComponent } from './coa/view-coa/view-coa.component';
+import { COATypeComponent } from './coa/coa-type/coa-type.component';
 
 const routes: Routes = [
   {
@@ -89,6 +90,10 @@ const routes: Routes = [
   {
     path: 'view-coa',
     component: ViewCOAComponent
+  },
+  {
+    path: 'coa-type',
+    component: COATypeComponent
   },
   {
     path: 'view-users',

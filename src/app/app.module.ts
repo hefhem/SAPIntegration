@@ -36,6 +36,7 @@ import { ViewReceiptProdCanceledComponent } from './receipt-prod/view-receipt-pr
 import { ViewReceiptProdTComponent } from './receipt-prod/view-receipt-prod-t/view-receipt-prod-t.component';
 import { COAComponent } from './coa/coa.component';
 import { ViewCOAComponent } from './coa/view-coa/view-coa.component';
+import { COATypeComponent } from './coa/coa-type/coa-type.component';
 
 
 @NgModule({
@@ -58,6 +59,7 @@ import { ViewCOAComponent } from './coa/view-coa/view-coa.component';
     ViewReceiptProdTComponent,
     COAComponent,
     ViewCOAComponent,
+    COATypeComponent
   ],
   imports: [
     BrowserModule,
