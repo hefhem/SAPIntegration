@@ -5,7 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../shared/services/auth.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
-import { COA, COADetail } from '../shared/models/coa';
+import { COA, COADetail, COAType } from '../shared/models/coa';
 
 @Component({
   selector: 'app-coa',
@@ -16,6 +16,8 @@ export class COAComponent implements OnInit {
   coa: COA = new COA();
   coa_detail: COADetail = new COADetail();
   coa_details: COADetail[] = [];
+  cod: COADetail = new COADetail();
+  coaType: COAType[] = [];
   formValid = false;
   print = false;
   saveBtn = '';
@@ -30,6 +32,7 @@ export class COAComponent implements OnInit {
   userID = 1;
   lbl = false;
   userRole: any;
+  addBtn = 'Add';
   constructor(
     private modalService: NgbModal,
     private handleAPI: HandleAPIService,
@@ -50,6 +53,7 @@ export class COAComponent implements OnInit {
     this.id = this.route.snapshot.params['id'];
     if (this.id > 0) {
       this.getCOAByID(this.id);
+      this.getCOAType();
     } else {
       // this.currentDate = Date.now();
       // this.coaDate = this.calendar.getToday();
@@ -57,6 +61,7 @@ export class COAComponent implements OnInit {
       // console.log(this.goodsReceiptMaster.ProdDate);
       // console.log(this.prodDate);
       this.coa.CreatedBy = this.userName;
+      this.getCOAType();
     }
     // console.log(this.auth.userRole);
   }
@@ -90,17 +95,37 @@ export class COAComponent implements OnInit {
     //   this.auth.loading = false;
     // }
   }
+  getCOAType() {
+    // console.log('hello');
+    //this.auth.loading = true;
+    // tslint:disable-next-line:triple-equals
+    // if (this.goodsReceiptMaster.DocNum != '') {
+      this.handleAPI.get('api/GetCOAType')
+        .subscribe( (data: any) => {
+          //console.log(data);
+          this.coaType = data;
+          //this.auth.loading = false;
+        },
+        error => {
+          this.toastr.warning(error, 'Oops! An error occurred');
+          //this.auth.loading = false;
+        }
+      );
+    // } else {
+    //   this.auth.loading = false;
+    // }
+  }
   getSAPDeliveryDetails() {
     // console.log('hello');
     // tslint:disable-next-line:triple-equals
-    if (this.coa.SAPDocNum.trim() == '' || this.coa.SAPDocNum == null) {
+    if (this.coa.SAPDocNum == null || this.coa.SAPDocNum.trim() == '') {
       this.resetForm(true);
       return;
     }
     this.auth.loading = true;
     this.spincls = 'fa-spin';
     // tslint:disable-next-line:triple-equals
-    if (this.coa.SAPDocNum.trim() != '' || this.coa.SAPDocNum != null) {
+    if (this.coa.SAPDocNum != null || this.coa.SAPDocNum.trim() != '') {
       this.handleAPI.get('api/GetSAPDeliveryDetails/' + this.coa.SAPDocNum)
         .subscribe( (data: any) => {
             console.log(data);
@@ -132,8 +157,8 @@ export class COAComponent implements OnInit {
     this.coa.DocDate = new Date(this.coaDate.year + '-' + this.coaDate.month + '-' + this.coaDate.day);
     // console.log(this.goodsReceiptMaster.ProdDate);
   }
-  open(content, idt: COADetail) {
-    this.setLabelValue(idt, this.printRecord);
+  open(content) {
+    // this.setLabelValue(idt, this.printRecord);
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size: 'lg'});
     setTimeout(() => { this.printRecord('print-section'); }, 300);
     setTimeout(() => { this.modalService.dismissAll(); }, 1000);
@@ -150,7 +175,18 @@ export class COAComponent implements OnInit {
     this.coa.Quantity = item.Quantity;
     this.coa.UOM = item.UOM;
   }
-  openModalPost(content, sz: any = 'lg') {
+  openModal(content, sz: any = 'lg') {
+    this.cod = new COADetail();
+    this.addBtn = 'Add'
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: sz});
+  }
+  openModalEdit(content, idt: COADetail, sz: any = 'sm') {
+    this.cod = idt;
+    if (idt.COADetailID > 0){
+      this.addBtn = 'Update';
+    } else {
+      this.addBtn = 'Done';
+    }
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: sz});
   }
 
@@ -166,14 +202,14 @@ export class COAComponent implements OnInit {
           <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
           <link rel="stylesheet" href="../assets/css/fontawesome-all.css">
           <style>
-          .table {
+          .table1 {
             height:90%;
             width:100%;
-            font-size:40pt;
+            font-size:12pt;
           }
           td {
-            height:50px;
-            text-align:left;
+            //height:50px;
+            //text-align:left;
           }
           </style>
         </head>
@@ -196,6 +232,7 @@ export class COAComponent implements OnInit {
         return;
       }
     }
+    this.router.navigate(['/coa']);
     this.coa = new COA();
     this.coa_detail = new COADetail();
     this.coa_details = [];
@@ -206,7 +243,7 @@ export class COAComponent implements OnInit {
     this.coaDate = this.calendar.getToday();
     this.coa.CreatedBy = this.userName;
   }
-  onSubmit(form?: NgForm) {
+  saveRecord() {
     if (!confirm('Are you sure you want to save?')) {
       return;
     }
@@ -234,13 +271,14 @@ export class COAComponent implements OnInit {
     this.handleAPI.create(dt, 'api/AddCOA')
       .subscribe( (data: any) => {
         if (data.IsSuccess) {
-          this.toastr.success('Goods Receipt created!', 'Success');
+          this.toastr.success('COA created!', 'Success');
           // console.log(data);
           this.print = true;
           // this.isPostable = true;
           this.coa.COA_ID = data.ID;
           this.formValid = false;
           this.saveBtn = '';
+          this.router.navigate(['/coa/'+ data.ID])
         } else {
           this.toastr.warning(data.Response);
         }
@@ -280,6 +318,79 @@ export class COAComponent implements OnInit {
           this.auth.loading = false;
         }
       );
+  }
+  addToList(){
+    if(this.cod.COADetailID > 0){
+      this.handleAPI.create(this.cod, 'api/EditCOADetails')
+      .subscribe( (data: any) => {
+        if (data.IsSuccess) {
+          this.toastr.success('Row updated successfully!', 'Success');
+          //console.log(data);
+        } else {
+          this.toastr.warning(data.Response, 'Warning');
+          //console.log(data);
+        }
+        this.auth.loading = false;
+        },
+        error => {
+          this.toastr.warning(error, 'Oops! An error occurred');
+          this.auth.loading = false;
+        }
+      );
+    } else {
+      if (this.addBtn == 'Done'){
+        this.modalService.dismissAll();
+      } else {
+        const cc = this.coa_details.filter( x => x.COATypeID == this.cod.COATypeID);
+        if(cc.length > 0){
+          this.toastr.warning('Item exists in the list','Validation Error!');
+          return;
+        }
+        const cot = this.coaType.filter(x => x.COATypeID == this.cod.COATypeID)[0];
+        this.cod.COATypeName = cot.COATypeName;
+        this.coa_details.push(this.cod);
+        this.cod = new COADetail();
+        this.print = true;
+
+      }
+    }
+  }
+  deleteTest(idt: COADetail){
+    if(!confirm('Are you sure you want to remove this record?')){
+      return;
+    }
+    if (idt.COADetailID > 0){
+      const obj = {
+        Username: this.userName,
+        ObjectID: idt.COADetailID
+      }
+      this.handleAPI.create(obj, 'api/DeleteCOADetail')
+      .subscribe( (data: any) => {
+        if (data.IsSuccess) {
+          this.toastr.success('Row deleted successfully!', 'Success');
+          const i = this.coa_details.indexOf(idt);
+          if (i !== -1) {
+            this.coa_details.splice(i, 1);
+          }
+              //console.log(data);
+        } else {
+          this.toastr.warning(data.Response, 'Warning');
+          //console.log(data);
+        }
+        this.auth.loading = false;
+        },
+        error => {
+          this.toastr.warning(error, 'Oops! An error occurred');
+          this.auth.loading = false;
+        }
+      );
+    } else {
+      const i = this.coa_details.indexOf(idt);
+  
+      if (i !== -1) {
+        this.coa_details.splice(i, 1);
+      }
+    }
   }
 }
 

@@ -311,6 +311,9 @@
       <table class="table table-sm table-hover" width="100px">
         <thead>
           <td>
+              <strong>S/N.</strong>
+            </td>
+          <td>
             <strong>Batch No.</strong>
           </td>
           <td>
@@ -327,7 +330,10 @@
           </td>
         </thead>
         <tbody>
-          <tr *ngFor="let idt of prodDetails">
+          <tr *ngFor="let idt of prodDetails; let i = index">
+              <td>
+                  {{i + 1}}
+                </td>
             <td>
               {{idt.BatchNo}}
             </td>

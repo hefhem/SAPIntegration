@@ -13,15 +13,16 @@
         <a class="nav-link text-white" routerLink="">Home</a>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Receipt from Production</a>
+        <a class="nav-link dropdown-toggle" id="dropdown01" data-toggle="dropdown" 
+          aria-haspopup="true" aria-expanded="false">Receipt from Production</a>
         <div class="dropdown-menu" aria-labelledby="dropdown01">
-          <a class="dropdown-item" routerLink="/receipt-prod">Create Production</a>
-          <a class="dropdown-item" routerLink="/view-receipt-prod">Production Details</a>
-          <a class="dropdown-item" routerLink="/view-receipt-prod-posted">Posted to SAP</a>
-          <a class="dropdown-item" routerLink="/view-receipt-prod-canceled">Cancelled Production</a>
-          <a class="dropdown-item" routerLink="/view-prod-summary">Production Summary</a>
-          <a class="dropdown-item" routerLink="/goods-receipt">Create Goods Receipt</a>
-          <a class="dropdown-item" routerLink="/view-goods-receipt">Goods Receipt Details</a>
+          <a class="dropdown-item" routerLink="/receipt-prod" *ngIf="this.auth.userRole.IsAdmin == 'Y' || this.auth.userRole.ViewPR == 'Y'">Create Production</a>
+          <a class="dropdown-item" routerLink="/view-receipt-prod" *ngIf="this.auth.userRole.IsAdmin == 'Y' || this.auth.userRole.ViewPR == 'Y'">Production Details</a>
+          <a class="dropdown-item" routerLink="/view-receipt-prod-posted" *ngIf="this.auth.userRole.IsAdmin == 'Y' || this.auth.userRole.ViewPR == 'Y'">Posted to SAP</a>
+          <a class="dropdown-item" routerLink="/view-receipt-prod-canceled" *ngIf="this.auth.userRole.IsAdmin == 'Y' || this.auth.userRole.ViewPR == 'Y'">Cancelled Production</a>
+          <a class="dropdown-item" routerLink="/view-prod-summary" *ngIf="this.auth.userRole.IsAdmin == 'Y' || this.auth.userRole.ViewPR == 'Y'">Production Summary</a>
+          <a class="dropdown-item" routerLink="/goods-receipt" *ngIf="this.auth.userRole.IsAdmin == 'Y' || this.auth.userRole.ViewGR == 'Y'">Create Goods Receipt</a>
+          <a class="dropdown-item" routerLink="/view-goods-receipt" *ngIf="this.auth.userRole.IsAdmin == 'Y' || this.auth.userRole.ViewGR == 'Y'">Goods Receipt Details</a>
         </div>
       </li>
       <!-- <li class="nav-item dropdown">
@@ -32,14 +33,14 @@
         </div>
       </li> -->
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Delivery</a>
+        <a class="nav-link dropdown-toggle" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" *ngIf="this.auth.userRole.IsAdmin == 'Y' || this.auth.userRole.ViewDV == 'Y'">Delivery</a>
         <div class="dropdown-menu" aria-labelledby="dropdown01">
           <a class="dropdown-item" routerLink="/ar-delivery">Create</a>
           <a class="dropdown-item" routerLink="/view-ar-delivery">View</a>
         </div>
       </li>
       <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">COA</a>
+          <a class="nav-link dropdown-toggle" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" *ngIf="this.auth.userRole.IsAdmin == 'Y' || this.auth.userRole.ViewCOA == 'Y'">COA</a>
           <div class="dropdown-menu" aria-labelledby="dropdown01">
             <a class="dropdown-item" routerLink="/coa">Create</a>
             <a class="dropdown-item" routerLink="/view-coa">View</a>

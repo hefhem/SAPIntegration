@@ -6,6 +6,8 @@ export class COA {
     ItemName: string;
     MaterialType: string;
     JobNo: string;
+    PD: string;
+    EXP: string;
     Quantity: number;
     NoOfRolls: string;
     UOM: string;
@@ -27,6 +29,7 @@ export class COADetail {
      COA_ID : number;
      LineID : number;
      COATypeID : number;
+     COATypeName: string;
      Std : string;
      Min : string;
      Max : string;

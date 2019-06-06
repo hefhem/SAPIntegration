@@ -5,6 +5,10 @@ export class UserRole {
     ApprovePR: string;
     ApproveDV: string;
     ApproveGR: string;
+    ApproveCOA: string;
+    ViewPR: string;
+    ViewDV: string;
+    ViewGR: string;
     ViewCOA: string;
     Password: string;
 }

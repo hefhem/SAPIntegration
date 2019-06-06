@@ -12,12 +12,12 @@
       <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover table table-sm table-hover">
         <thead>
           <tr>
-            <th><strong>COA ID</strong></th>
+            <th><strong>ID</strong></th>
             <th><strong>Date</strong></th>
-            <th><strong>SAP Delivery No.</strong></th>
+            <th><strong>SAP Del. No.</strong></th>
             <th><strong>Customer Name</strong></th>
             <th><strong>Item Name</strong></th>
-            <th><strong>Is Approved</strong></th>
+            <th><strong>Approved</strong></th>
             <th><strong>Approved By</strong></th>
             <th><strong>Action</strong></th>
           </tr>
@@ -31,7 +31,7 @@
                 {{idt.DocDate | date:'dd-MM-yyyy'}}
               </td>
               <td>
-                {{idt.DocNum}}
+                {{idt.SAPDocNum}}
               </td>
               <td>
                 {{idt.CustomerName}}

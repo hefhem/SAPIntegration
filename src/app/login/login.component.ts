@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
           this.auth.saveInLocal('token', data.Token);
           this.auth.saveInLocal('username', data.UserName);
           this.auth.saveInLocal('isAdmin', data.IsAdmin);
-          // const userRole = this.auth.getUserRole(data.UserName);
+          this.auth.getUserRight(data.UserName);
           // this.auth.saveInLocal('userRole');
           this.toastr.success('Authenticated!');
           // window.location.href = '';

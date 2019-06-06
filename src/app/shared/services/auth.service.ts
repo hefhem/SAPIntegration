@@ -125,6 +125,11 @@ export class AuthService implements OnInit {
           this.userRole.ApprovePR = data.ApprovePR;
           this.userRole.ApproveDV = data.ApproveDV;
           this.userRole.ApproveGR = data.ApproveGR;
+          this.userRole.ApproveCOA = data.ApproveCOA;
+          this.userRole.ViewPR = data.ViewPR;
+          this.userRole.ViewDV = data.ViewDV;
+          this.userRole.ViewGR = data.ViewGR;
+          this.userRole.ViewCOA = data.ViewCOA;
         },
         error => {
           console.log(error);

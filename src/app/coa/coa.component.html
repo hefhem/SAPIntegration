@@ -10,10 +10,17 @@
     <div class="col-md-6">
       <!-- <button class="btn btn-primary" (click)="openModal(packingList)">View Packing List</button>
       &nbsp; -->
-      <button class="btn btn-secondary" (click)="resetForm()">New Record</button>
-      &nbsp;
-      <button [hidden]="this.auth.userRole.ApproveCOA != 'Y'" class="btn btn-info" (click)="approveCOA()"
-        *ngIf="!coa.IsApproved">Approve</button>
+      <button class="btn btn-secondary" (click)="resetForm()"><i class="fa fa-plus"></i> New</button>
+      <span *ngIf="!(coa.COA_ID > 0)">&nbsp;</span> 
+      <button [hidden]="coa.COA_ID > 0" class="btn btn-primary" (click)="saveRecord()"><i class="fa fa-save"></i> Save</button>
+      <span *ngIf="!coa.IsApproved && coa.COA_ID > 0">&nbsp;</span> 
+      <!-- <button [hidden]="this.auth.userRole.ApproveCOA != 'Y'" class="btn btn-info" (click)="approveCOA()"
+        *ngIf="!coa.IsApproved"><i class="fa fa-check"></i> Approve</button> -->
+        <button [hidden]="this.auth.userRole.ApproveCOA != 'Y'" class="btn btn-info" (click)="approveCOA()"
+        *ngIf="!coa.IsApproved && coa.COA_ID > 0"><i class="fa fa-check"></i> Approve</button>
+        &nbsp;
+        <button [hidden]="!coa.IsApproved" class="btn btn-primary" (click)="open(packingList)"><i class="fa fa-print"></i> Print</button>
+        
     </div>
     <div class="col-md-3"></div>
 
@@ -21,7 +28,7 @@
   <hr />
   <div class="row">
     <div class="col-md-12">
-      <form class="inv-form" #coaForm="ngForm" (ngSubmit)="onSubmit(coaForm)">
+      <form class="inv-form" #coaForm="ngForm">
         <div class="form-row">
           <input type="hidden" name="COA_ID" #COA_ID="ngModel"
             [(ngModel)]="coa.COA_ID" value="0">
@@ -84,8 +91,7 @@
             
           </div>
           <div class="form-group col-md-2">
-              <label for="ItemName" *ngIf="!print"><strong>Material Type</strong></label>
-              <input type="text" name="MaterialType" [(ngModel)]="coa.MaterialType" class="form-control" required >
+              
           </div>
           <!-- <div class="form-group col-md-1"></div> -->
           <div class="form-group col-md-2">
@@ -126,33 +132,48 @@
                 <span>{{coa.UOM}}</span>
           </div>
 
-          <div class="form-group col-md-2" *ngIf="print">
-
+          <div class="form-group col-md-2">
+              <label for="ItemName"><strong>Material Type</strong></label>
+              <br/>
+              <span *ngIf="coa.COA_ID > 0">{{coa.MaterialType}}</span>
+              <input *ngIf="!(coa.COA_ID > 0)" type="text" name="MaterialType" [(ngModel)]="coa.MaterialType" class="form-control" required >
           </div>
-          <div class="form-group col-md-2" *ngIf="!print">
-
+          <div class="form-group col-md-2">
+              <label for="JobNo"><strong>Job/Batch No.</strong></label>
+              <br/>
+              <span *ngIf="coa.COA_ID > 0">{{coa.JobNo}}</span>
+              <input *ngIf="!(coa.COA_ID > 0)" type="text" name="JobNo" [(ngModel)]="coa.JobNo" class="form-control" required >
           </div>
-          <div class="form-group col-md-2" *ngIf="!print">
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="Remarks"><strong>Remarks</strong></label>
+                <br/>
+                <span *ngIf="coa.COA_ID > 0">{{coa.Remarks}}</span>
+                <textarea rows="2" *ngIf="!(coa.COA_ID > 0)" name="Remarks" [(ngModel)]="coa.Remarks" class="form-control"></textarea>
+            </div>
+            <div class="form-group col-md-2">
+              <label for="JobNo"><strong>Production Date:</strong></label>
+              <br/>
+              <span *ngIf="coa.COA_ID > 0">{{coa.PD}}</span>
+              <input *ngIf="!(coa.COA_ID > 0)" type="text" name="pd" [(ngModel)]="coa.PD" class="form-control">
+            </div>
+            <div class="form-group col-md-2">
+              <label for="JobNo"><strong>Expiry Date:</strong></label>
+              <br/>
+              <span *ngIf="coa.COA_ID > 0">{{coa.EXP}}</span>
+              <input *ngIf="!(coa.COA_ID > 0)" type="text" name="exp" [(ngModel)]="coa.EXP" class="form-control">
           </div>
         </div>
       </form>
     </div>
   </div>
-  <div *ngIf="!print">
+  <div>
     <hr />
-  </div>
-  <form class="inv-form" #qtyForm="ngForm" (ngSubmit)="onAddBatch()" *ngIf="!print">
-    <div class="form-row">
-      <div class="col-md-3">
-        
-      </div>
-      <div class="col-md-2">
-      </div>
-      <div class="form-group col-md-2">
-      </div>
-      <div class="col-md-5"></div>
+    <div class="form-group col-md-2">
+      <button [hidden]="!coaForm.valid || coa.COA_ID > 0" type="button" class="form-control" (click)="openModal(test, 'sm')">Add Test</button>
     </div>
-  </form>
+  </div>
   <div class="row">
     <div class="col-md-12">
       <table class="table table-sm table-hover" width="100px">
@@ -178,40 +199,42 @@
           <td>
             <strong>TEST METHOD</strong>
           </td>
-          <td>
+          <td *ngIf="!coa.IsApproved">
             <strong>Action</strong>
           </td>
         </thead>
         <tbody>
-          <tr *ngFor="let idt of goodsReceiptDetails">
+          <tr *ngFor="let idt of coa_details; let i = index">
             <td>
-              {{idt.ItemCode}}
+                {{i+1}}
+              </td>
+            <td>
+              {{idt.COATypeName}}
             </td>
             <td>
-              {{idt.ItemName}}
+              {{idt.Std}}
             </td>
             <td>
-              {{idt.Warehouse}}
+              {{idt.Min}}
             </td>
             <td>
-              {{idt.BatchNo}}
+              {{idt.Max}}
             </td>
             <td>
-              {{idt.Quantity | number: '1.2'}}
+              {{idt.Avg}}
             </td>
             <td>
+              {{idt.TestMethod}}
+            </td>
+            <td *ngIf="!coa.IsApproved">
               <!-- <a class="btn btn-primary" (click)="showForEdit(idt)" >
               <i class="fa fa-pencil-square-o"></i>
             </a> -->
-            <a class="btn btn-primary text-white" (click)="open(newSticker,idt)" title="Preview Mini label"style="margin-right: 1%">
-                <i class="fas fa-tags"></i>
+            <a [hidden]="coa.IsApproved" class="btn btn-primary text-white" (click)="openModalEdit(test,idt)" title="Edit" style="margin-right: 1%">
+                <i class="fas fa-edit"></i>
               </a>
               &nbsp;
-              <a class="btn btn-success text-white" (click)="open(content,idt)" title="Preview label">
-                <i class="fas fa-eye"></i>
-              </a>
-              &nbsp;
-              <a class="btn btn-danger text-white" (click)="onRemoveBatch(idt)" title="Remove from list" *ngIf="!print">
+              <a [hidden]="coa.IsApproved" class="btn btn-danger text-white" (click)="deleteTest(idt)" title="Remove from list">
                 <i class="fas fa-trash"></i>
               </a>
             </td>
@@ -221,186 +244,182 @@
       </table>
     </div>
   </div>
-  <br />
-  <div class="row">
-    <div class="form-group col-md-3">
-      <button [disabled]="saveBtn=='disabled'" [hidden]="!formValid" type="submit"
-        class="btn btn-lg btn-block btn-success" (click)="onSubmit()" title="Save record">
-        <i class="far fa-save"> Save</i>
-      </button>
-    </div>
-    <div class="form-group col-md-3">
-      <button [hidden]="!isPostable || goodsReceiptMaster.IsPosted" type="button"
-        class="btn btn-lg btn-block btn-secondary" (click)="openModalPost(saplogin,'sm')" title="Clear form">
-        <i class="fas fa-rocket"> Post to SAP</i>
-      </button>
-    </div>
-    <div class="form-group col-md-6">
-
-
-    </div>
-  </div>
-
 </div>
 <!-- <ng-template #content let-modal> -->
-<ng-template #content let-modal>
+
+<ng-template #test let-modal>
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Barcode Printing</h4>
+    <h5 class="modal-title" id="modal-basic-title">Test Details</h5>
     <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
+  <form class="inv-form" #COADetailForm="ngForm">
+    <div class="modal-body" >
+      <div class="form-group" style="margin-bottom:0%;">
+        <input type="hidden" class="form-control" name="COADetailID" [(ngModel)]="cod.COADetailID">
+        <label for="COAType"><strong>Test</strong></label>
+        <select type="text" class="form-control" name="COATypeID" [(ngModel)]="cod.COATypeID" required>
+          <option *ngFor="let cot of coaType" value="{{cot.COATypeID}}">{{cot.COATypeName}}</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0%;">
+        <label for="Std"><strong>Standard</strong> </label>
+        <input type="text" class="form-control" name="Std" [(ngModel)]="cod.Std"
+          placeholder="Standard" required>
+      </div>
+      <div class="form-group" style="margin-bottom:0%;">
+        <label for="Min"><strong>Minimum</strong> </label>
+        <input type="text" class="form-control" name="Min" [(ngModel)]="cod.Min"
+          placeholder="Minimum" required>
+
+      </div>
+      <div class="form-group" style="margin-bottom:0%;">
+        <label for="Max"><strong>Maximum</strong> </label>
+        <input type="text" class="form-control" name="Max" [(ngModel)]="cod.Max"
+          placeholder="Maximum" required>
+
+      </div>
+      <div class="form-group" style="margin-bottom:0%;">
+        <label for="Avg"><strong>Average</strong> </label>
+        <input type="text" class="form-control" name="Avg" [(ngModel)]="cod.Avg"
+          placeholder="Average" required>
+      </div>
+      <div class="form-group" style="margin-bottom:0%;">
+        <label for="TestMethod"><strong>Test Method</strong> </label>
+        <input type="text" class="form-control" name="TestMethod" [(ngModel)]="cod.TestMethod"
+          placeholder="TestMethod" required>
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button [disabled]="!COADetailForm.valid  || this.auth.loading" class="btn btn-primary"
+        (click)="addToList()">{{addBtn}}</button>
+    </div>
+  </form>
+</ng-template>
+<ng-template #packingList let-modal>
+  <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">COA</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
   <div class="modal-body">
-    <div class="row" id="print-section">
+  <div class="row" id="print-section">
+    <!-- <div class="row"> -->
+      <div class="row text-center">
+          <div class="col-md-2 text-center">
+              <img src="../../assets/images/Logo_PLD.jpg" alt="" width="70" height="120">
+          </div>
+          <div class="col-md-8">
+              <h6 class="text-center" style="font-size:25pt;">
+                <strong>ARISTOCRAT INDUSTRIES LIMITED</strong> 
+              </h6>
+              <p class="text-center">
+                <strong>MANUFACTURER OF INDUSTRIAL PACKAGING FILMS AND BAGS</strong> 
+              </p>
+              <p class="text-center">
+                PLOT 7, BLOCK 10, OTTA INDUSTRIAL ESTATE, SANGO OTTA, OGUN STATE, NIGERIA
+              <br/>
+                Tel: +2348106687923 | Email: qcm@ailng.com | Website: www.aristocratng.com
+              </p>
+          </div>
+      </div>
+      <br/>
       <div class="col-md-12 text-center">
-        <table class="table text-center">
-          <tr>
-            <td colspan="2" style="text-align:center;">
-              <h6 style="font-size:45pt;"><strong>ARISTOCRAT INDUSTRIES LTD.</strong></h6>
-              <P style="font-size:30pt;">
-                PLOT NO. 7&B, BLOCK-X, OTA, INDUSTRIAL ESTATE
-              </P>
-              <P style="font-size:30pt;">
-                <strong>OGUN STATE, NIGERIA</strong>
-              </P>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2" style="text-align:center;">
-              <strong>{{lblName}}</strong>
-            </td>
-          </tr>
-          <tr>
-            <td><strong>Roll No</strong><br /> {{bc_batchno}}</td>
-            <td><strong>Weight</strong><br /> {{bc_weight}} </td>
-          </tr>
-          <tr>
-            <td><strong>PACKED ON</strong><br /> {{goodsReceiptMaster.ProdDate | date: 'dd/MM/yyyy'}}</td>
-            <td><strong>Machine No</strong><br /> {{goodsReceiptMaster.MachineNo}}</td>
-          </tr>
-          <tr>
-            <td colspan="2" style="text-align:center;">
-              <ngx-barcode [bc-element-type]="elementType" [bc-value]="value" [bc-format]="format"
-                [bc-line-color]="lineColor" [bc-width]="width" [bc-height]="height" [bc-display-value]="displayValue"
-                [bc-font-options]="fontOptions" [bc-font]="font" [bc-text-align]="textAlign"
-                [bc-text-position]="textPosition" [bc-text-margin]="textMargin" [bc-font-size]="fontSize"
-                [bc-background]="background" [bc-margin]="margin" [bc-margin-top]="marginTop"
-                [bc-margin-bottom]="marginBottom" [bc-margin-left]="marginLeft" [bc-margin-right]="marginRight">
-              </ngx-barcode>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2" style="text-align:center;">
-              <strong>SUPERVISOR</strong><br /> {{goodsReceiptMaster.Supervisor}}
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <strong>Note:</strong> Goods sold in good condition can not be returned.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>Batch No:</strong> {{goodsReceiptMaster.DocNum}}
-            </td>
-            <td>
-              <strong>BBD:</strong> {{expiry | date: 'dd/MM/yyyy' }}
-            </td>
-          </tr>
-        </table>
+        <h6 class="text-center" style="font-size:18pt;"><strong>QUALITY ASSURANCE DEPARTMENT</strong> </h6>
+      </div>
+      <div class="col-md-12 text-center" style="font-size:14pt;">
+          <p class="text-center"><strong>CERTIFICATE OF ANALYSIS</strong> </p>
+      </div>
+    <!-- </div> -->
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-md-9"></div>
+        <div class="col-md-1"><strong>Date:</strong> </div>
+        <div class="col-md-2">{{coa.DocDate | date: 'yyyy-MM-dd' }}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-2"><strong>Customer Name:</strong></div>
+        <div class="col-md-8">{{coa.CustomerName}}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-2"><strong>Job Name:</strong></div>
+        <div class="col-md-8">{{coa.ItemName}}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-2"><strong>Material Type:</strong></div>
+        <div class="col-md-8">{{coa.MaterialType}}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-2"><strong>Job/Batch No:</strong></div>
+        <div class="col-md-8">{{coa.JobNo}}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-2"><strong>Waybill No:</strong></div>
+        <div class="col-md-8">{{coa.SAPDocNum}}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-2"><strong>Quantity:</strong></div>
+        <div class="col-md-2">{{coa.Quantity | number: "1.2"}} {{coa.UOM}}</div>
+        <div class="col-md-1"><strong>PD:</strong></div>
+        <div class="col-md-1">{{coa.PD}}</div>
+        <div class="col-md-1"><strong>EXP:</strong></div>
+        <div class="col-md-1">{{coa.EXP}}</div>
+      </div>
+      
+      <br/>
+      <br/>
+      <table class="table table-bordered table-striped">
+       <thead>
+        <tr>
+            <td><strong>S/N</strong></td>
+            <td><strong>TEST</strong></td>
+            <td><strong>STD.</strong></td>
+            <td><strong>MIN.</strong></td>
+            <td><strong>MAX.</strong></td>
+            <td><strong>AVG.</strong></td>
+            <td><strong>TEST METHODS.</strong></td>
+        </tr>
+      </thead>
+        <tbody>
+        <tr *ngFor="let idt of coa_details; let i = index">
+            <td>{{i + 1}}</td>
+            <td>{{idt.COATypeName}}</td>
+            <td>{{idt.Std}}</td>
+            <td>{{idt.Min}}</td>
+            <td>{{idt.Max}}</td>
+            <td>{{idt.Avg}}</td>
+            <td>{{idt.TestMethod}}</td>
+        </tr>
+      </tbody>
+      </table>
+      <br/>
+      <br/>
+      <div class="ro">REMARKS: {{coa.Remarks}}</div>
+      <br/>
+      <br/>
+      <div class="row">
+        <div class="col-md-6 text-center">
+          PREPARED BY
+          <br/>
+          <br/>
+          <br/>
+          --------------------------
+        </div>
+        <div class="col-md-6 text-center">
+          APPROVED BY
+          <br/>
+          <br/>
+          <br/>
+          --------------------------
+        </div>
       </div>
     </div>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-primary" (click)="printRecord('print-section')">print</button>
+      <button class="btn btn-primary" (click)="printRecord('print-section')">Print</button>
+  </div>
   </div>
 </ng-template>
-<ng-template #saplogin let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title" id="modal-basic-title">SAP Credentials</h5>
-    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <form class="inv-form" #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
-    <div class="modal-body">
-      <div class="form-group">
-        <div class="input-group">
-          <input readonly class="form-control" placeholder="yyyy-mm-dd" name="PostDate" [(ngModel)]="postDate"
-            ngbDatepicker #p="ngbDatepicker" required>
-          <div class="input-group-append">
-            <button class="btn btn-outline-secondary calendar" (click)="p.toggle()" type="button">
-              <i class="far fa-calendar"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <!-- <label for="AutoQty">Auto Quantity</label> -->
-        <input readonly type="text" class="form-control" name="sapUserName" [(ngModel)]="postProd.sapUserName"
-          placeholder="Username" required>
-
-      </div>
-      <div class="form-group">
-        <!-- <label for="AutoQty">Auto Quantity</label> -->
-        <input type="password" class="form-control" name="sapPassword" [(ngModel)]="postProd.sapPassword"
-          placeholder="Password" required>
-
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button [disabled]="!loginForm.valid  || this.auth.loading" class="btn btn-primary"
-        (click)="postToSAP()">Post</button>
-    </div>
-  </form>
-</ng-template>
-<ng-template #newSticker let-modal>
-    <div class="modal-header">
-      <h4 class="modal-title" id="modal-basic-title">Barcode Printing</h4>
-      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="modal-body">
-      <div class="row" id="print-section">
-        <div class="col-md-12 text-center">
-          <table class="table text-center">
-            <tr>
-              <td colspan="2" style="text-align:center;">
-                <h6 style="font-size:50pt;"><strong>ARISTOCRAT INDUSTRIES LTD.</strong></h6>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2" style="text-align:center;">
-                <strong>{{lblName}}</strong> 
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Roll No</strong><br/> <strong>{{bc_batchno}}</strong> </td>
-              <td><strong>Weight/Qty</strong><br/> <strong>{{bc_weight  | number: '1.2'}} {{goodsReceiptMaster.UOM}}</strong> </td>
-            </tr>
-            <tr>
-              <td><strong>PACKED ON</strong><br/>  {{goodsReceiptMaster.ProdDate | date: 'dd/MM/yyyy'}}</td>
-              <td><strong>Machine No</strong><br/>  {{goodsReceiptMaster.MachineNo}}</td>
-            </tr>
-            <tr>
-              <td colspan="2" style="text-align:center;">
-                <strong>SUPERVISOR:</strong>&nbsp;{{goodsReceiptMaster.Supervisor}}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <strong>Batch No:</strong> <strong>{{goodsReceiptMaster.DocNum}}</strong> 
-              </td>
-              <td>
-                <strong>BBD:</strong>  {{expiry | date: 'dd/MM/yyyy' }}
-              </td>
-            </tr>
-          </table>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-primary" (click)="printRecord('print-section')">print</button>
-    </div>
-  </ng-template>
