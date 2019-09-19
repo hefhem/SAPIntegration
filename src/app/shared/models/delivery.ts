@@ -30,6 +30,7 @@ export class DeliveryDetail {
 export class DeliveryPacking {
     DeliveryPackingID = 0;
     DeliveryDetailID = 0;
+    ProdOrderNo = "";
     ItemName = '';
     PackingNo = '';
     Quantity = 0;

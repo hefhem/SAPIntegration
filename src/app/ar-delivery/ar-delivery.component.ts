@@ -309,6 +309,7 @@ export class ArDeliveryComponent implements OnInit {
               const dt = {
                 DeliveryPackingID: 0,
                 DeliveryDetailID: this.ddid,
+                ProdOrderNo: data.ProdOrderNo,
                 ItemName: this.scanItem,
                 PackingNo: this.barcode,
                 Quantity: data.TotalQty,

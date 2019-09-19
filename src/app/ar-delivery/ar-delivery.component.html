@@ -304,6 +304,7 @@
           <div class="form-row">
             <table class="table table-hover">
               <thead>
+                  <td><strong>PO No.</strong> </td>
                   <td><strong>Packing No.</strong> </td>
                   <td><strong>Item Description</strong> </td>
                   <td><strong>UOM</strong> </td>
@@ -313,6 +314,7 @@
               </thead>
               <tbody>
                 <tr *ngFor="let dt of deliveryPacking" >
+                  <td>{{dt.ProdOrderNo}}</td>
                   <td>{{dt.PackingNo}}</td>
                   <td>{{dt.ItemName}}</td>
                   <td>{{dt.UOM}}</td>
@@ -321,6 +323,23 @@
                   <td *ngIf="!print"><a class="btn btn-danger text-white" (click)="removeFromPickList(dt)" title="Remove from list">
                       <i class="fas fa-trash"></i>
                     </a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="form-row">
+            <span class="col-md-12"><strong>Summary</strong></span>
+            <table class="table table-hover">
+              <thead>
+                <th>Item Name</th>
+                <th>UOM</th>
+                <th>Total</th>
+              </thead>
+              <tbody>
+                <tr *ngFor="let dt of deliveryDetails" >
+                  <td>{{dt.ItemName}}</td>
+                  <td>{{dt.UOM}}</td>
+                  <td>{{dt.SelectedQty | number: '1.2'}}</td>
                 </tr>
               </tbody>
             </table>
