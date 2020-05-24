@@ -8,7 +8,9 @@
   <div class="form-row text-center">
       <div class="col-md-3"></div>
     <div class="col-md-6">
-      <button class="btn btn-primary" (click)="openModal(packingList)" *ngIf="prodMaster.Status != 'C'">View Packing List</button>
+      <button class="btn btn-primary" (click)="openModal(packingList)" *ngIf="prodMaster.Status != 'C'">View Packing List Detailed</button>
+      &nbsp;
+      <button class="btn btn-primary" (click)="openModal(packingListNew)" *ngIf="prodMaster.Status != 'C'">View Packing List</button>
       &nbsp;
       <button class="btn btn-secondary" (click)="resetForm()">New Record</button>
       &nbsp;
@@ -643,6 +645,67 @@
         </tr>
         
       </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="modal-footer">
+      <button class="btn btn-primary" (click)="printPlist('packingList')">Print</button>
+  </div>
+  </div>
+</ng-template>
+<ng-template #packingListNew let-modal>
+  <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Packing List</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+  <div class="modal-body">
+  <div class="row" id="packingList">
+    <!-- <div class="row"> -->
+      <div class="col-md-12 text-center">
+        <h5 class="text-center" style="font-size:35pt;"><strong><u>ARISTOCRAT INDUSTRIES LTD.</u></strong> </h5>
+      </div>
+      <div class="col-md-12 text-center">
+        <h6 class="text-center" style="font-size:28pt;"><strong>{{prodMaster.ItemName}}</strong> </h6>
+      </div>
+      <div class="col-md-12 text-center" style="font-size:20pt;">
+          <p class="text-center"><strong>PACKING LIST</strong> </p>
+      </div>
+    <!-- </div> -->
+    <div class="col-md-12 text-center">
+      <table class="table">
+        <thead>
+        <tr>
+            <td colspan="5" style="text-align:center;">
+                <ngx-barcode [bc-element-type]="elementType" [bc-value]="prodMaster.PackingNo" [bc-format]="format" [bc-line-color]="lineColor" [bc-width]="pwidth"
+                [bc-height]="pheight" [bc-display-value]="displayValue" [bc-font-options]="fontOptions" [bc-font]="font" [bc-text-align]="textAlign"
+                [bc-text-position]="textPosition" [bc-text-margin]="textMargin" [bc-font-size]="pfontSize" [bc-background]="background"
+                [bc-margin]="margin" [bc-margin-top]="marginTop" [bc-margin-bottom]="marginBottom" [bc-margin-left]="marginLeft"
+                [bc-margin-right]="marginRight"></ngx-barcode>
+            </td>
+        </tr>
+        <tr style="font-size:25pt;">
+          <td colspan="5" style="text-align:center;">Packing No. <strong>{{prodMaster.PackingNo}}</strong></td>
+        </tr>
+        <tr style="font-size:25pt;">
+            <td colspan="5" style="text-align:center;"><strong>Date:</strong> {{prodMaster.ProdDate | date: 'dd/MM/yyyy'}}</td>
+          </tr>
+          
+        <tr style="font-size:25pt;">
+            <td colspan="2"><strong>BATCH NO.</strong> </td>
+            <!-- <td><strong>PRODUCT</strong></td> -->
+            <td style="text-align:center;"><strong>UOM</strong></td>
+            <td style="text-align:center;"><strong>TOTAL ROLLS</strong></td>
+            <td style="text-align:right;"><strong>QTY</strong></td>
+        </tr>
+        <tr style="font-size:25pt;">
+            <td colspan="2">{{prodMaster.DocNum}}</td>
+            <td style="text-align:center;">{{prodMaster.UOM}}</td>
+            <td style="text-align:center;">{{prodDetails.length}}</td>
+            <td style="text-align:right;">{{prodMaster.TotalQty  | number: '1.2'}}</td>
+        </tr>
+      </thead>
       </table>
     </div>
   </div>

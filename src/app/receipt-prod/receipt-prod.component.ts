@@ -678,13 +678,14 @@ export class ReceiptProdComponent implements OnInit {
           }
           </style>
         </head>
-        <body onload="window.print();window.close()">
+        <body onload="window.print();">
         ${printContents}
         </div>
         </div>
         </body>
       </html>`
     );
+    //<body onload="window.print();window.close()">
     popupWin.document.close();
   }
   generateBatchNo() {
