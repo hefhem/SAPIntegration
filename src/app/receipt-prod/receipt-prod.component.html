@@ -664,13 +664,19 @@
   <div class="row" id="packingList">
     <!-- <div class="row"> -->
       <div class="col-md-12 text-center">
-        <h5 class="text-center" style="font-size:35pt;"><strong><u>ARISTOCRAT INDUSTRIES LTD.</u></strong> </h5>
+        <h5 class="text-center" style="font-size:40pt;"><strong><u>ARISTOCRAT INDUSTRIES LTD.</u></strong> </h5>
       </div>
       <div class="col-md-12 text-center">
-        <h6 class="text-center" style="font-size:28pt;"><strong>{{prodMaster.ItemName}}</strong> </h6>
+        <h6 class="text-center" style="font-size:28pt;"><strong>e-mail: sales@ailng.net contact: 08150651226</strong> </h6>
       </div>
-      <div class="col-md-12 text-center" style="font-size:20pt;">
-          <p class="text-center"><strong>PACKING LIST</strong> </p>
+      <br/>
+      <div class="col-md-12 text-center" style="font-size:35pt;">
+        <p class="text-center"><strong>PACKING LIST</strong> </p>
+      </div>
+      <br/>
+      <div class="col-md-12 text-center">
+        <br/>
+        <h6 class="text-center" style="font-size:35pt;"><strong>{{prodMaster.ItemName}}</strong> </h6>
       </div>
     <!-- </div> -->
     <div class="col-md-12 text-center">
@@ -685,28 +691,46 @@
                 [bc-margin-right]="marginRight"></ngx-barcode>
             </td>
         </tr>
-        <tr style="font-size:25pt;">
+        <tr style="font-size:40pt;">
           <td colspan="5" style="text-align:center;">Packing No. <strong>{{prodMaster.PackingNo}}</strong></td>
         </tr>
-        <tr style="font-size:25pt;">
+        <tr style="font-size:40pt;">
             <td colspan="5" style="text-align:center;"><strong>Date:</strong> {{prodMaster.ProdDate | date: 'dd/MM/yyyy'}}</td>
-          </tr>
+        </tr>
           
-        <tr style="font-size:25pt;">
-            <td colspan="2"><strong>BATCH NO.</strong> </td>
-            <!-- <td><strong>PRODUCT</strong></td> -->
-            <td style="text-align:center;"><strong>UOM</strong></td>
-            <td style="text-align:center;"><strong>TOTAL ROLLS</strong></td>
-            <td style="text-align:right;"><strong>QTY</strong></td>
+        <!-- <tr style="font-size:40pt;">
+            <td colspan="5" style="text-align:center;"><strong>BATCH NO.: </strong>{{prodMaster.DocNum}}</td>
         </tr>
-        <tr style="font-size:25pt;">
-            <td colspan="2">{{prodMaster.DocNum}}</td>
-            <td style="text-align:center;">{{prodMaster.UOM}}</td>
-            <td style="text-align:center;">{{prodDetails.length}}</td>
-            <td style="text-align:right;">{{prodMaster.TotalQty  | number: '1.2'}}</td>
+        <tr style="font-size:40pt;">
+            <td colspan="5" style="text-align:center;"><strong>TOTAL ROLLS: </strong>{{prodDetails.length}} </td>
         </tr>
+        <tr style="font-size:40pt;">
+            <td colspan="5" style="text-align:center;"><strong>QTY: </strong>{{prodMaster.TotalQty  | number: '1.2'}} </td>
+        </tr>
+        <tr style="font-size:40pt;">
+            <td colspan="5" style="text-align:center;  margin-top: 50%;"><strong>UOM: </strong>{{prodMaster.UOM}} </td>
+        </tr> -->
       </thead>
       </table>
+      <div class="col-md-12 text-center">
+        <br/>
+        <h6 class="text-center" style="font-size:40pt;"><strong>BATCH NO.: </strong>{{prodMaster.DocNum}} </h6>
+      </div>
+      <br/>
+      <div class="col-md-12 text-center">
+        <br/>
+        <h6 class="text-center" style="font-size:40pt;"><strong>TOTAL ROLLS: </strong>{{prodDetails.length}}</h6>
+      </div>
+      <br/>
+      <div class="col-md-12 text-center">
+        <br/>
+        <h6 class="text-center" style="font-size:40pt;"><strong>QTY: </strong>{{prodMaster.TotalQty  | number: '1.2'}}</h6>
+      </div>
+      <br/>
+      <div class="col-md-12 text-center">
+        <br/>
+        <h6 class="text-center" style="font-size:40pt;"><strong>UOM: </strong>{{prodMaster.UOM}} </h6>
+      </div>
     </div>
   </div>
   <div class="modal-footer">
