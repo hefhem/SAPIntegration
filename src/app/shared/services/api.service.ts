@@ -52,7 +52,27 @@ export class ApiService implements OnInit {
         catchError(this.handleError.handleError)
       );
   }
+  getURL(endpoint: string, params?: any, reqOpts?: any) {
+    if (!reqOpts) {
+      reqOpts = {
+        params: new HttpParams()
+      };
+    }
 
+    // Support easy query params for GET requests
+    if (params) {
+      reqOpts.params = new HttpParams();
+      // tslint:disable-next-line:forin
+      for (const k in params) {
+        reqOpts.params = reqOpts.params.set(k, params[k]);
+      }
+    }
+
+    return this.http.get(endpoint, reqOpts)
+      .pipe(
+        catchError(this.handleError.handleError)
+      );
+  }
   post(endpoint: string, body: any, reqOpts?: any) {
     // this.url = this.setApiURL();
     return this.http.post(this.url + '/' + endpoint, body, reqOpts)

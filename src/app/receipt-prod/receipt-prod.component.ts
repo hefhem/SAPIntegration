@@ -24,7 +24,7 @@ export class ReceiptProdComponent implements OnInit {
   prodOrderModel: ProductionOrderModel = new ProductionOrderModel();
   AutoBatch = '';
   AutoQty = null;
-  KgQty = null;
+  KgQty = 0;
   IsKg = true;
   AutoIsRedressed = 'N';
   qtyValid = false;
@@ -35,13 +35,13 @@ export class ReceiptProdComponent implements OnInit {
   saveBtn = '';
   lineCount = -1;
   userName = '';
-
+  ComPort = 'COM4';
   elementType = 'svg';
   value = '';
   format = 'CODE128';
   lineColor = '#000000';
-  width = 8;
-  height = 300;
+  width = 10;
+  height = 400;
   pwidth = 5;
   pheight = 150;
   displayValue = false;
@@ -78,6 +78,11 @@ export class ReceiptProdComponent implements OnInit {
   supervisors = [];
   lastValue = 0;
   postLoading = 'Post';
+  account = {
+    UserCode: '',
+    UserPassword: ''
+  };
+  KgQtyVisible = 'N';
   @Input() cssSelector: string;
   search = (text$: Observable<string>) =>
     text$.pipe(
@@ -132,6 +137,73 @@ export class ReceiptProdComponent implements OnInit {
       this.prodDate = this.calendar.getToday();
     }
   }
+
+  getWeight(){
+    this.auth.loading = true;
+    this.handleAPI.getURL("http://localhost:62107/api/Weight?ComPort="+this.ComPort).subscribe ((data: any) => {
+        if( data.IsSuccess){
+          this.KgQty = data.Weight;
+          this.setUOMQty();
+          if (this.prodMaster.AutoConvert != 'Y') {
+            setTimeout(() => {
+              this.onAddBatch();
+            }, 200);
+          }
+        } else {
+          this.KgQty = 20; //to be removed
+          this.setUOMQty(); //to be removed
+          this.toastr.warning(data.Message);
+        }
+        this.auth.loading = false;
+        // console.log(data);
+        // console.log(this.covid);
+        // console.log(this.covidNG);
+    }, error => {
+      // console.log(error);
+      this.KgQty = 20; //to be removed
+      this.setUOMQty(); //to be removed
+      this.auth.loading = false;
+    })
+  }
+  KgQtyDisable(){
+    this.KgQtyVisible = 'N';
+  }
+  enableWeightField(){
+    if (this.account.UserCode.trim() == '') {
+      this.toastr.warning('Username is required');
+      return;
+    }
+    if (this.account.UserPassword.trim() == '') {
+      this.toastr.warning('Password is required');
+      return;
+    }
+    this.auth.loading = true;
+    this.auth.login(this.account).subscribe ((data: any) => {
+        if( data.IsSuccess){
+          this.auth.userRight(data.UserName).subscribe((dt: any) => {
+            if(dt.IsAdmin == 'Y'){
+              this.KgQtyVisible = 'Y';
+              this.modalService.dismissAll();
+            } else {
+              this.toastr.warning('Permission denied for this action');
+              this.modalService.dismissAll();
+            }
+          }, error => {
+            this.toastr.error(error);
+          });
+        } else {
+          this.toastr.warning(data.Message);
+        }
+        this.auth.loading = false;
+        // console.log(data);
+        // console.log(this.covid);
+        // console.log(this.covidNG);
+    }, error => {
+      // console.log(error);
+      this.auth.loading = false;
+    })
+  }
+
   getProdMasterDetails(id: any) {
     // console.log('hello');
     this.auth.loading = true;
@@ -547,6 +619,9 @@ export class ReceiptProdComponent implements OnInit {
   }
   openModalPost(content, sz: any = 'lg') {
     this.postProd.sapUserName = this.auth.getUserName();
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: sz});
+  }
+  openModalEditWeight(content, sz: any = 'sm') {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', backdrop: 'static', size: sz});
   }
   openModal(content, sz: any = 'lg') {

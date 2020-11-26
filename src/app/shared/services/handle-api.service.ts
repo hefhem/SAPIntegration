@@ -42,6 +42,13 @@ export class HandleAPIService {
 
     return seq;
   }
+  getURL(url: string) {
+    const body = '';
+    // const requestOptions = new HttpRequest(({method: RequestMethod.Post, headers: headerOption});
+    const seq = this.api.getURL(url, body, this.getHeader());
+
+    return seq;
+  }
   get_param(body: any, url: string) {
     // const body = '';
     // const requestOptions = new HttpRequest(({method: RequestMethod.Post, headers: headerOption});

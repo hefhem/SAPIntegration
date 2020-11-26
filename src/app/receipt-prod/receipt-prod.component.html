@@ -6,9 +6,9 @@
     </h2>
   </div>
   <div class="form-row text-center">
-      <div class="col-md-3"></div>
-    <div class="col-md-6">
-      <button class="btn btn-primary" (click)="openModal(packingList)" *ngIf="prodMaster.Status != 'C'">View Packing List Detailed</button>
+      <div class="col-md-2"></div>
+    <div class="col-md-8">
+      <button class="btn btn-primary" (click)="openModal(packingList)" *ngIf="prodMaster.Status != 'C'">Detailed Packing List</button>
       &nbsp;
       <button class="btn btn-primary" (click)="openModal(packingListNew)" *ngIf="prodMaster.Status != 'C'">View Packing List</button>
       &nbsp;
@@ -20,7 +20,7 @@
       &nbsp;
       <button class="btn btn-danger" (click)="openRecord()" *ngIf="prodMaster.ProdMasterID > 0 && prodMaster.Status == 'C'">Re-Open Record</button>
     </div>
-    <div class="col-md-3"></div>
+    <div class="col-md-2"></div>
     
   </div>
   <hr/>
@@ -243,39 +243,53 @@
               Batches:
             </label>
             <br/>
-            <span style="font-size:30pt;">
+            <span style="font-size:20pt;">
               {{ prodDetails.length}}
             </span>
         </div>
-      <div class="form-group col-md-2 text-center">
+      <div class="form-group col-md-1 text-center">
           <label for="AutoIsRedressed">
-              <strong>Redress Material: </strong>
+              <strong>Redress?: </strong>
           </label>
           <br/>
           <div>
-            <select name="AutoIsRedressed" [(ngModel)]="AutoIsRedressed" class="form-control form-control-lg" required style="font-size: 20pt;">
+            <select name="AutoIsRedressed" [(ngModel)]="AutoIsRedressed" class="form-control form-control-lg" required style="font-size: 12pt;">
               <option value="N">No</option>
               <option value="Y">Yes</option>
             </select>
           </div>
       </div>
       
-      <div class="form-group col-md-2 text-center">
+    <div class="form-group col-md-1 text-center">
+        <label for="KgQty">
+            <strong>&nbsp;</strong>
+          </label>
+          <br/>
+          <span style="font-size:15pt;" *ngIf="KgQtyVisible == 'N'">
+            <i class="fa fa-unlock" (click)="openModalEditWeight(weightEditLogin)" title="Click to enable manual input"></i>
+          </span>
+          <span style="font-size:15pt;" *ngIf="KgQtyVisible == 'Y'">
+            <i class="fa fa-lock" (click)="KgQtyDisable()" title="Click to disable manual input"></i>
+          </span>
+    </div>
+      <div class="form-group col-md-2 text-center" *ngIf="KgQtyVisible == 'N'">
           <label for="KgQty">
               <strong>Qty in Kgs:</strong>
             </label>
-          <!-- <div class="input-group"> -->
-              <input type="number" class="form-control" name="KgQty" id="KQty" cssSelector="#KQty"
-              [(ngModel)]="KgQty" (keyup)="setUOMQty()" style="background-color:rgb(0, 255, 98); font-size: 20pt; font-weight: bold;" required >
-              <!-- <input type="number" class="form-control" name="KgQty" id="KQty" cssSelector="#KQty"
-              [(ngModel)]="KgQty" (keyup)="setUOMQty()" style="background-color:rgb(0, 255, 98); font-size: 20pt; font-weight: bold;" required > -->
-              <!-- <div class="input-group-append">
-                  <button type="submit" [disabled]="!qtyForm.valid" class="btn btn-block btn-info" title="Add to list">
-                      <i class="fa fa-plus"></i>
-                    </button>
-              </div>
-            </div> -->
-        </div>
+            <br/>
+            <span style="font-size:20pt;">
+              {{KgQty | number: '1.2'}}
+            </span>
+      </div>
+      <div class="form-group col-md-2 text-center" *ngIf="KgQtyVisible == 'Y'">
+        <label for="KgQty">
+            <strong>Qty in Kgs:</strong>
+          </label>
+        
+            <input type="number" class="form-control" name="KgQty" id="KQty" cssSelector="#KQty"
+            [(ngModel)]="KgQty" (keyup)="setUOMQty()" style="background-color:rgb(0, 255, 98); font-size: 20pt; font-weight: bold;" required >
+            
+    </div>
       <div class="col-md-2 text-center" *ngIf="!IsKg">
         <label for="AutoQty" >
           <strong>Qty in {{prodMaster.UOM}}:</strong>
@@ -289,20 +303,48 @@
             [(ngModel)]="AutoQty" style="font-size: 20pt; font-weight: bold;" (keyup)="setKgQty()">  -->
           
       </div>
-      <div class="col-md-2 text-center">
+      <div class="col-md-1 text-center">
           <label for="">
                &nbsp;
             </label>
-        <button type="submit" [disabled]="!qtyForm.valid" class="btn btn-block btn-lg btn-info" title="Add to list">
+        <button type="submit" [disabled]="!qtyForm.valid || KgQty <= 0" class="btn btn-block btn-lg btn-info" title="Add to list">
           <i class="fa fa-plus"></i>
         </button>
       </div>
-      <div class="col-md-3 text-center">
+      <div class="form-group col-md-1 text-center">
+        <label for="ComPort">
+            <strong>{{ComPort}}: </strong>
+        </label>
+        <br/>
+        <div>
+          <select name="ComPort" [(ngModel)]="ComPort" class="form-control form-control-lg" required style="font-size: 10pt;">
+            <option value="COM1">COM1</option>
+            <option value="COM2">COM2</option>
+            <option value="COM3">COM3</option>
+            <option value="COM4">COM4</option>
+            <option value="COM5">COM5</option>
+            <option value="COM6">COM6</option>
+            <option value="COM7">COM7</option>
+            <option value="COM8">COM8</option>
+            <option value="COM9">COM9</option>
+            <option value="COM10">COM10</option>
+          </select>
+        </div>
+    </div>
+      <div class="col-md-1 text-center">
+        <label for="">
+             &nbsp;
+          </label>
+      <button type="button" (click)="getWeight()" class="btn btn-block btn-lg btn-success" title="Get Weight">
+        Get
+      </button>
+    </div>
+      <div class="col-md-2 text-center">
           <label for="TotalQty">
               <strong>Current Total Qty:</strong>
             </label>
             <br/>
-            <span style="font-size:30pt;">
+            <span style="font-size:20pt;">
               {{prodMaster.TotalQty | number: '1.2'}}
             </span>
       </div>
@@ -691,12 +733,12 @@
                 [bc-margin-right]="marginRight"></ngx-barcode>
             </td>
         </tr>
-        <tr style="font-size:40pt;">
-          <td colspan="5" style="text-align:center;">Packing No. <strong>{{prodMaster.PackingNo}}</strong></td>
+        <tr style="font-size:50pt;">
+          <td colspan="5" style="text-align:center;">PACKING NO. <strong>{{prodMaster.PackingNo}}</strong></td>
         </tr>
-        <tr style="font-size:40pt;">
-            <td colspan="5" style="text-align:center;"><strong>Date:</strong> {{prodMaster.ProdDate | date: 'dd/MM/yyyy'}}</td>
-        </tr>
+        <!-- <tr style="font-size:50pt;">
+            <td colspan="5" style="text-align:center;"><strong>DATE:</strong> {{prodMaster.ProdDate | date: 'dd/MM/yyyy'}}</td>
+        </tr> -->
           
         <!-- <tr style="font-size:40pt;">
             <td colspan="5" style="text-align:center;"><strong>BATCH NO.: </strong>{{prodMaster.DocNum}}</td>
@@ -714,22 +756,31 @@
       </table>
       <div class="col-md-12 text-center">
         <br/>
-        <h6 class="text-center" style="font-size:40pt;"><strong>BATCH NO.: </strong>{{prodMaster.DocNum}} </h6>
+        <h6 class="text-center" style="font-size:50pt;"><strong>DATE: </strong>{{prodMaster.ProdDate | date: 'dd/MM/yyyy'}} </h6>
       </div>
+      <br/>
       <br/>
       <div class="col-md-12 text-center">
         <br/>
-        <h6 class="text-center" style="font-size:40pt;"><strong>TOTAL ROLLS: </strong>{{prodDetails.length}}</h6>
+        <h6 class="text-center" style="font-size:50pt;"><strong>BATCH NO.: </strong>{{prodMaster.DocNum}} </h6>
       </div>
+      <br/>
       <br/>
       <div class="col-md-12 text-center">
         <br/>
-        <h6 class="text-center" style="font-size:40pt;"><strong>QTY: </strong>{{prodMaster.TotalQty  | number: '1.2'}}</h6>
+        <h6 class="text-center" style="font-size:50pt;"><strong>TOTAL ROLLS: </strong>{{prodDetails.length}}</h6>
       </div>
+      <br/>
       <br/>
       <div class="col-md-12 text-center">
         <br/>
-        <h6 class="text-center" style="font-size:40pt;"><strong>UOM: </strong>{{prodMaster.UOM}} </h6>
+        <h6 class="text-center" style="font-size:50pt;"><strong>QTY: </strong>{{prodMaster.TotalQty  | number: '1.2'}}</h6>
+      </div>
+      <br/>
+      <br/>
+      <div class="col-md-12 text-center">
+        <br/>
+        <h6 class="text-center" style="font-size:50pt;"><strong>UOM: </strong>{{prodMaster.UOM}} </h6>
       </div>
     </div>
   </div>
@@ -737,4 +788,30 @@
       <button class="btn btn-primary" (click)="printPlist('packingList')">Print</button>
   </div>
   </div>
+</ng-template>
+<ng-template #weightEditLogin let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="modal-basic-title">Admin Credentials</h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form class="inv-form" #weightEditForm="ngForm">
+    <div class="modal-body">
+      <div class="form-group">
+        <!-- <label for="AutoQty">Auto Quantity</label> -->
+        <input type="text" class="form-control" name="UserCode" [(ngModel)]="account.UserCode" placeholder="Username" required>
+
+      </div>
+      <div class="form-group">
+        <!-- <label for="AutoQty">Auto Quantity</label> -->
+        <input type="password" class="form-control" name="UserPassword" [(ngModel)]="account.UserPassword" placeholder="Password"
+          required>
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button [disabled]="!weightEditForm.valid  || this.auth.loading" class="btn btn-primary" (click)="enableWeightField()">Enable Field</button>
+    </div>
+  </form>
 </ng-template>
