@@ -17,6 +17,7 @@ export class AuthService implements OnInit {
     url = '';
     constructor(
       @Inject(SESSION_STORAGE) private storage: WebStorageService,
+      @Inject(LOCAL_STORAGE) private localStorage: WebStorageService,
       private api: ApiService) {
       }
 
@@ -53,10 +54,16 @@ export class AuthService implements OnInit {
         // console.log('recieved= key:' + key + 'value:' + val);
         this.storage.set(key, val);
     }
+    saveInLocalStorage(key, val): void {
+      this.localStorage.set(key, val);
+    }
     getFromLocal(key): string {
       // console.log('recieved= key:' + key);
       return this.storage.get(key);
       // console.log(this.data);
+    }
+    getFromLocalStorage(key): any {
+      return this.localStorage.get(key);
     }
     decodeToken() {
       const tk = this.getFromLocal('token');

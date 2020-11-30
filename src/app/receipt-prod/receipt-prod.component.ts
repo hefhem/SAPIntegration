@@ -109,6 +109,7 @@ export class ReceiptProdComponent implements OnInit {
         return;
     }
     this.userName = this.auth.getUserName();
+    this.ComPort = this.auth.getFromLocalStorage('comport');
     this.id = this.route.snapshot.params['id'];
     if (this.id > 0) {
       this.getProdMasterDetails(this.id);
@@ -149,9 +150,10 @@ export class ReceiptProdComponent implements OnInit {
               this.onAddBatch();
             }, 200);
           }
+          this.auth.saveInLocalStorage('comport',this.ComPort);
         } else {
-          this.KgQty = 20; //to be removed
-          this.setUOMQty(); //to be removed
+          // this.KgQty = 20; //to be removed
+          // this.setUOMQty(); //to be removed
           this.toastr.warning(data.Message);
         }
         this.auth.loading = false;
@@ -160,8 +162,8 @@ export class ReceiptProdComponent implements OnInit {
         // console.log(this.covidNG);
     }, error => {
       // console.log(error);
-      this.KgQty = 20; //to be removed
-      this.setUOMQty(); //to be removed
+      // this.KgQty = 20; //to be removed
+      // this.setUOMQty(); //to be removed
       this.auth.loading = false;
     })
   }
