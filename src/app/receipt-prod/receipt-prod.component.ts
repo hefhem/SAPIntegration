@@ -141,11 +141,12 @@ export class ReceiptProdComponent implements OnInit {
 
   getWeight(){
     this.auth.loading = true;
+    // console.log(this.prodMaster.AutoConvert );
     this.handleAPI.getURL("http://localhost:62107/api/Weight?ComPort="+this.ComPort).subscribe ((data: any) => {
         if( data.IsSuccess){
           this.KgQty = data.Weight;
           this.setUOMQty();
-          if (this.prodMaster.AutoConvert != 'Y') {
+          if (this.IsKg || this.prodMaster.AutoConvert == 'Y') {
             setTimeout(() => {
               this.onAddBatch();
             }, 200);
@@ -185,6 +186,8 @@ export class ReceiptProdComponent implements OnInit {
           this.auth.userRight(data.UserName).subscribe((dt: any) => {
             if(dt.IsAdmin == 'Y'){
               this.KgQtyVisible = 'Y';
+              this.account.UserPassword = '';
+              this.account.UserCode = '';
               this.modalService.dismissAll();
             } else {
               this.toastr.warning('Permission denied for this action');
@@ -406,7 +409,7 @@ export class ReceiptProdComponent implements OnInit {
         }
       }
     }
-    console.log(this.lastValue);
+    //console.log(this.lastValue);
     this.auth.loading = true;
 
     let batch = this.generateBatchNo();

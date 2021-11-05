@@ -37,7 +37,7 @@
             <span *ngIf="print">{{prodMaster.DocNum}}</span>
             <div class="input-group" *ngIf="!print">
               <input (blur)="getOrderDetails()" class="form-control" name="DocNum" #DocNum="ngModel" [(ngModel)]="prodMaster.DocNum" placeholder="e.g 20180101" autofocus
-                required>
+                required maxlength="10">
               <div class="input-group-append">
                 <button [disabled]="!DocNum.valid" type="button" class="btn btn-block btn-info" (click)="getOrderDetails()" title="Get record">
                   <i class="fa fa-sync {{spincls}}"></i>
@@ -265,14 +265,14 @@
             <strong>&nbsp;</strong>
           </label>
           <br/>
-          <span style="font-size:15pt;" *ngIf="KgQtyVisible == 'N'">
+          <span style="font-size:15pt;" *ngIf="KgQtyVisible == 'N' && IsKg">
             <i class="fa fa-unlock" (click)="openModalEditWeight(weightEditLogin)" title="Click to enable manual input"></i>
           </span>
-          <span style="font-size:15pt;" *ngIf="KgQtyVisible == 'Y'">
+          <span style="font-size:15pt;" *ngIf="KgQtyVisible == 'Y' || !IsKg">
             <i class="fa fa-lock" (click)="KgQtyDisable()" title="Click to disable manual input"></i>
           </span>
     </div>
-      <div class="form-group col-md-2 text-center" *ngIf="KgQtyVisible == 'N'">
+      <div class="form-group col-md-2 text-center" *ngIf="KgQtyVisible == 'N' && IsKg">
           <label for="KgQty">
               <strong>Qty in Kgs:</strong>
             </label>
@@ -281,7 +281,7 @@
               {{KgQty | number: '1.2'}}
             </span>
       </div>
-      <div class="form-group col-md-2 text-center" *ngIf="KgQtyVisible == 'Y'">
+      <div class="form-group col-md-2 text-center" *ngIf="KgQtyVisible == 'Y' || !IsKg">
         <label for="KgQty">
             <strong>Qty in Kgs:</strong>
           </label>
