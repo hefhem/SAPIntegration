@@ -108,8 +108,12 @@
               <strong>Machine No.:</strong>
             </label>
             <br/>
-            <!-- <input disabled class="form-control" name="MachineNo" #MachineNo="ngModel" [(ngModel)]="prodMaster.MachineNo"> -->
-            {{prodMaster.MachineNo}}
+            <span *ngIf="print">{{prodMaster.MachineNo}}</span>
+            <div *ngIf="!print">
+              <select name="MachineNo" #MachineNo="ngModel" [(ngModel)]="prodMaster.MachineNo" class="form-control" required>
+                <option value="{{machine.Code}}" *ngFor="let machine of machines">{{machine.Name}}</option>
+              </select>
+            </div>
           </div>
           <div class="form-group col-md-2">
             <label for="IsPosted">

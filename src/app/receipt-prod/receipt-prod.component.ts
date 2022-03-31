@@ -76,6 +76,7 @@ export class ReceiptProdComponent implements OnInit {
   BalanceQty = 0;
   expiry: Date;
   supervisors = [];
+  machines = [];
   lastValue = 0;
   postLoading = 'Post';
   account = {
@@ -125,7 +126,8 @@ export class ReceiptProdComponent implements OnInit {
       // this.prodMaster.ProdDate = this.cDate;
       // console.log(this.prodMaster.ProdDate);
       // console.log(this.prodDate);
-      this.getSupervisors();
+      // this.getSupervisors();
+      // this.getMachines();
       this.prodMaster.CreatedBy = this.userName;
     }
     // console.log(this.auth.userRole);
@@ -266,6 +268,21 @@ export class ReceiptProdComponent implements OnInit {
       );
     }
   }
+  getMachines() {
+    // console.log('hello');
+    // tslint:disable-next-line:triple-equals
+    
+    this.handleAPI.get('api/GetSAPMachine')
+      .subscribe( (data: any) => {
+        // console.log(data);
+          this.machines = data;
+        },
+        error => {
+          console.log(error);
+        }
+    );
+    
+  }
   getOrderDetails() {
     // console.log('hello');
     // tslint:disable-next-line:triple-equals
@@ -309,8 +326,9 @@ export class ReceiptProdComponent implements OnInit {
             }
             // tslint:disable-next-line:max-line-length
             this.OpenQty = (this.prodMaster.PlannedQty - this.prodMaster.CompletedQty) < 0 ? 0 : (this.prodMaster.PlannedQty - this.prodMaster.CompletedQty);
-            this.getSupervisors();
+            //this.getSupervisors();
             this.getProducedQty();
+            this.getMachines();
           }
             // this.BalanceQty = this.prodMaster.PlannedQty - this.ProducedQty;
             this.auth.loading = false;
