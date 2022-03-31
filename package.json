@@ -31,7 +31,7 @@
     "datatables.net-buttons-dt": "^1.5.4",
     "datatables.net-dt": "^1.10.19",
     "jquery": "^3.3.1",
-    "jszip": "^3.1.5",
+    "jszip": "^3.7.0",
     "jwt-decode": "^2.2.0",
     "ng2-search-filter": "^0.4.7",
     "ngx-barcode": "^0.2.4",
