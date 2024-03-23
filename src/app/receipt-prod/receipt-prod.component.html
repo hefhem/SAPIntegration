@@ -179,7 +179,7 @@
         </div>
 
         <div class="form-row">
-          <div class="form-group col-md-4">
+          <div class="form-group col-md-3">
             <label for="CardName">
               <strong>Customer Name:</strong>
             </label>
@@ -189,19 +189,19 @@
             {{prodMaster.CardName}}
           </div>
           
-          <div class="form-group col-md-2">
+          <div class="form-group col-md-3 text-center">
             <label for="OpenQty">
-                <strong>Produced Qty: </strong>
+                <strong>Cumm. Qty Produced: </strong>
               </label>
               <br/>
               <!-- <input type="text" class="form-control" name="OpenQty" #OpenQty="ngModel" [(ngModel)]="prodMaster.OpenQty"> -->
-              <span style="font-size: 20pt; font-weight: bold;">
+              <span class="text-center" style="font-size: 20pt; font-weight: bold;">
               {{ProducedQty | number: '1.2'}}
               </span>
           </div>
-          <div class="form-group col-md-2">
+          <div class="form-group col-md-2 text-center">
               <label for="TotalQty">
-                <strong>% Produced:</strong>
+                <strong>% Cumm. Qty:</strong>
               </label>
               <br/>
               <span style="font-size: 20pt; font-weight: bold; color: red;">
@@ -233,6 +233,17 @@
               <br/>
               {{ prodMaster.PlannedQty - ProducedQty < 0 ? 0 : prodMaster.PlannedQty - ProducedQty  | number: '1.2'}}
           </div> -->
+        </div>
+        <div class="form-row" *ngIf="prodMaster.IsApproved">
+          <div class="form-group col-md-4">
+            <label for="CardName">
+              <strong>Document Total Qty:</strong>
+            </label>
+            <br/>
+            <span style="font-size:20pt;">
+              {{prodMaster.TotalQty | number: '1.2'}}
+            </span>
+          </div>
         </div>
       </form>
     </div>

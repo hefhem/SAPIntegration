@@ -115,6 +115,9 @@ export class ReceiptProdComponent implements OnInit {
     if (this.id > 0) {
       this.getProdMasterDetails(this.id);
       this.getCurrentDate();
+      setInterval(() => {
+        this.getProducedQty();
+      }, 5000);
     } else {
       this.getCurrentDate();
       this.prodMaster.TotalQty = 0;
